@@ -20,10 +20,10 @@ struct Token {
   char *str;      // A string of the token
 };
 
-// Current token
+// Point to Current token.
 Token *token;
 
-
+// Reports the error with a formatted message.
 void error(char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
@@ -33,7 +33,7 @@ void error(char *fmt, ...) {
 }
 
 // If a next token is equel to expected one,
-// then consume a token and returns True,
+// then consume a token and returns True.
 // Otherwise, returns False value.
 bool consume(char op) {
   if (token->kind != TK_RESERVED || token->str[0] != op)
@@ -43,7 +43,7 @@ bool consume(char op) {
 }
 
 // If a next token is equel to expected one,
-// then consume a token and returns True,
+// then consume a token and returns True.
 // Otherwise, reports error.
 void expect(char op) {
   if (token->kind != TK_RESERVED || token->str[0] != op)
@@ -51,7 +51,8 @@ void expect(char op) {
   token = token->next;
 }
 
-// If the next token type is a number, consume a token and returns the value.
+// If the next token type is a number,
+// consume a token and returns the value.
 // Otherwise, reports error.
 int expect_number() {
   if (token->kind != TK_NUM)
@@ -74,7 +75,7 @@ Token *new_token(TokenKind kind, Token *cur, char *str) {
   return tok;
 }
 
-// tokenize input charactors, returns it.
+// Tokenize input charactors, returns it.
 Token *tokenize(char *p) {
   Token head;
   head.next = NULL;
@@ -104,34 +105,29 @@ Token *tokenize(char *p) {
   new_token(TK_EOF, cur, p);
   return head.next;
 }
+
 int main(int argc, char **argv) {
   if (argc != 2) {
     fprintf(stderr, "The number of arguments is not correct\n");
     return 1;
   }
 
-  char *p = argv[1];
+  token = tokenize(argv[1]);
 
   printf(".intel_syntax noprefix\n");
   printf(".globl main\n");
   printf("main:\n");
-  printf("  mov rax, %ld\n", strtol(p, &p, 10));
 
-  while (*p) {
-    if (*p == '+') {
-      p++;
-      printf("  add rax, %ld\n", strtol(p, &p, 10));
+  printf("  mov rax, %d\n", expect_number());
+
+  while (!at_eof()) {
+    if (consume('+')) {
+      printf("  add rax, %d\n", expect_number());
       continue;
     }
 
-    if (*p == '-') {
-      p++;
-      printf("  sub rax, %ld\n", strtol(p, &p, 10));
-      continue;
-    }
-
-    fprintf(stderr, "Unexpected charactor: '%c'\n", *p);
-    return 1;
+    expect('-');
+    printf("  sub rax, %d\n", expect_number());
   }
 
   printf("  ret\n");
