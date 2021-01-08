@@ -23,6 +23,23 @@ struct Token {
 // Point to Current token.
 Token *token;
 
+// Input program.
+char *user_input;
+
+// Reports the error with the location in the input.
+void error_at(char *loc, char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+
+  int pos = loc - user_input;
+  fprintf(stderr, "%s\n", user_input);
+  fprintf(stderr, "%*s", pos, " ");
+  fprintf(stderr, "^ ");
+  vfprintf(stderr, fmt, ap);
+  fprintf(stderr, "\n");
+  exit(1);
+}
+
 // Reports the error with a formatted message.
 void error(char *fmt, ...) {
   va_list ap;

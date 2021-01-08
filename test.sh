@@ -16,8 +16,18 @@ assert() {
   fi
 }
 
+assert_fail() {
+  input=$1
+  ./cycc "$input" > tmp.s
+  if [ $? -ne 1 ]; then
+      echo "$input should cause an error."
+      exit 1
+  fi
+}
+
 assert 0 0
 assert 42 42
 assert 41 " 12 + 34 - 5 "
-
+assert_fail "1+3++"
+assert_fail "1 + foo + 5"
 echo "OK"
