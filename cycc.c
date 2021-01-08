@@ -64,7 +64,7 @@ bool consume(char op) {
 // Otherwise, reports error.
 void expect(char op) {
   if (token->kind != TK_RESERVED || token->str[0] != op)
-    error("expected '%c', but '%c'", op, token->str[0]);
+    error_at(token->str, "expected '%c', but '%c'", op, token->str[0]);
   token = token->next;
 }
 
@@ -73,7 +73,7 @@ void expect(char op) {
 // Otherwise, reports error.
 int expect_number() {
   if (token->kind != TK_NUM)
-    error("数ではありません");
+    error_at(token->str, "Token is not a NUMBER");
   int val = token->val;
   token = token->next;
   return val;
@@ -116,7 +116,7 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    error("cannot tokenize");
+    error_at(p, "cannot tokenize");
   }
 
   new_token(TK_EOF, cur, p);
@@ -128,6 +128,8 @@ int main(int argc, char **argv) {
     fprintf(stderr, "The number of arguments is not correct\n");
     return 1;
   }
+
+  user_input = argv[1]; // error_at reports using this pointer.
 
   token = tokenize(argv[1]);
 
