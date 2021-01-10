@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -std=c11 -Wall -Werror -static
+CFLAGS = -g -std=c11 -Wall -static
 LD = gcc
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
