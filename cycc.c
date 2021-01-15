@@ -7,6 +7,12 @@
 
 // Kinds of node for Abstract Ayntax Tree.
 typedef enum {
+  ND_EQL, // ==
+  ND_NEQ, // !=
+  ND_LEQ, // <=
+  ND_GEQ, // >=
+  ND_LES, // <
+  ND_GRE, // >
   ND_ADD, // +
   ND_SUB, // -
   ND_MUL, // *
@@ -26,6 +32,9 @@ struct Node {
 
 // Syntaxes.
 Node *expr();
+Node *equality();
+Node *relational();
+Node *add();
 Node *mul();
 Node *unary();
 Node *primary();
@@ -194,6 +203,38 @@ Node *new_node_num(int val) {
 }
 
 Node *expr() {
+  return equality();
+}
+
+Node *equality() {
+  Node *node = relational();
+  for (;;) {
+    if (consume("=="))
+      node = new_node(ND_EQL, node, relational());
+    else if (consume("!="))
+      node = new_node(ND_NEQ, node, relational());
+    else
+      return node;
+  }
+}
+
+Node *relational() {
+  Node *node = add();
+  for (;;) {
+    if (consume("<="))
+      node = new_node(ND_LEQ, node, add());
+    else if (consume(">="))
+      node = new_node(ND_GEQ, node, add());
+    else if (consume("<"))
+      node = new_node(ND_LES, node, add());
+    else if (consume(">="))
+      node = new_node(ND_GRE, node, add());
+    else
+      return node;
+  }
+}
+
+Node *add() {
   Node *node = mul();
   for (;;) {
     if (consume("+"))
