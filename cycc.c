@@ -10,9 +10,7 @@ typedef enum {
   ND_EQL, // ==
   ND_NEQ, // !=
   ND_LEQ, // <=
-  ND_GEQ, // >=
   ND_LES, // <
-  ND_GRE, // >
   ND_ADD, // +
   ND_SUB, // -
   ND_MUL, // *
@@ -220,15 +218,16 @@ Node *equality() {
 
 Node *relational() {
   Node *node = add();
+
   for (;;) {
     if (consume("<="))
       node = new_node(ND_LEQ, node, add());
     else if (consume(">="))
-      node = new_node(ND_GEQ, node, add());
+      node = new_node(ND_LEQ, add(), node);
     else if (consume("<"))
       node = new_node(ND_LES, node, add());
-    else if (consume(">="))
-      node = new_node(ND_GRE, node, add());
+    else if (consume(">"))
+      node = new_node(ND_LES, add(), node);
     else
       return node;
   }
@@ -303,6 +302,26 @@ void gen(Node *node) {
   case ND_DIV:
     printf("  cqo\n");
     printf("  idiv rdi\n");
+    break;
+  case ND_EQL:
+    printf("  cmp rax, rdi\n");
+    printf("  sete al\n");
+    printf("  movzb rax, al\n");
+    break;
+  case ND_NEQ:
+    printf("  cmp rax, rdi\n");
+    printf("  setne al\n");
+    printf("  movzb rax, al\n");
+    break;
+  case ND_LEQ:
+    printf("  cmp rax, rdi\n");
+    printf("  setle al\n");
+    printf("  movzb rax, al\n");
+    break;
+  case ND_LES:
+    printf("  cmp rax, rdi\n");
+    printf("  setl al\n");
+    printf("  movzb rax, al\n");
     break;
   }
 
