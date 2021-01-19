@@ -3,7 +3,7 @@ assert() {
   expected="$1"
   input="$2"
 
-  ./cycc "$input" > tmp.s
+  ./main "$input" > tmp.s
   cc -o tmp tmp.s
   ./tmp
   actual="$?"
@@ -18,7 +18,7 @@ assert() {
 
 assert_fail() {
   input=$1
-  ./cycc "$input" > tmp.s
+  ./main "$input" > tmp.s
   if [ $? -ne 1 ]; then
       echo "$input should cause an error."
       exit 1
