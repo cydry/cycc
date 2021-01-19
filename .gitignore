@@ -2,5 +2,5 @@
 *.o
 tmp*
 a.out
-cycc
+main
 misc

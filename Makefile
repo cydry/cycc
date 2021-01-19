@@ -4,17 +4,17 @@ LD = gcc
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
 
-cycc: $(OBJS) 
+main: $(OBJS)
 	$(LD) -o $@ $(OBJS)
 
 %.o: %.c %.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-test: cycc
+test: main
 	./test.sh
 
 clean:
-	rm -f cycc *.o tmp*
+	rm -f main *.o tmp*
 
 .PHONY:
 	clean test
