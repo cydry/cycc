@@ -51,3 +51,13 @@ void gen(Node *node) {
   printf("  push rax\n");
 }
 
+void genasm(Node* node) {
+  printf(".intel_syntax noprefix\n");
+  printf(".globl main\n");
+  printf("main:\n");
+
+  gen(node);
+
+  printf("  pop rax\n");
+  printf("  ret\n");
+}

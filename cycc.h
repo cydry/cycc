@@ -61,5 +61,5 @@ Node *unary();
 Node *primary();
 
 // Generates assemly.
-void gen(Node *node);
+void genasm(Node *node);
 
