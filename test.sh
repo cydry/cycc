@@ -54,4 +54,6 @@ assert 0 '2 > 3'
 assert 0 '2 > 2'
 assert 1 '3 > 2'
 
+assert_fail 'a'
+
 echo "OK"

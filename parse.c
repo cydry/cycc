@@ -85,6 +85,12 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    // identifier
+    if ('a' <= *p && *p <= 'z') {
+      cur = new_token(TK_IDENT, cur, p++, 1);
+      continue;
+    }
+
     // equality
     if (strncmp(p, "==", 2) == 0 ||
 	strncmp(p, "!=", 2) == 0) {
