@@ -15,6 +15,8 @@ typedef enum {
   ND_SUB, // -
   ND_MUL, // *
   ND_DIV, // /
+  ND_ASSIGN, // =
+  ND_LVAR,   // local variable.
   ND_NUM, // number
 } NodeKind;
 
@@ -26,6 +28,7 @@ struct Node {
   Node *lhs;     // left  hand side
   Node *rhs;     // right hand side
   int val;       // If kind is TK_NUM、then it's value.
+  int offset;    // If kind is ND_LVAR, then it's offset from stack base pointer.
 };
 
 typedef enum {
@@ -51,9 +54,15 @@ Token *token;
 // Input program.
 char *user_input;
 
+// AST of the code.
+Node* code[100];
+
 // Parse.
 Token *tokenize(char *p);
+void program();
+Node *stmt();
 Node *expr();
+Node *assign();
 Node *equality();
 Node *relational();
 Node *add();
@@ -62,5 +71,5 @@ Node *unary();
 Node *primary();
 
 // Generates assemly.
-void genasm(Node *node);
+void genasm();
 

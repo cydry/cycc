@@ -9,9 +9,10 @@ int main(int argc, char **argv) {
   user_input = argv[1]; // error_at reports using this pointer.
 
   token = tokenize(argv[1]);
-  Node* node = expr();
 
-  genasm(node);
+  program();
+
+  genasm();
 
   return 0;
 }

@@ -35,6 +35,17 @@ bool consume(char* op) {
   return true;
 }
 
+// If a next token is identifier,
+// then consume a token and returns True.
+// Otherwise, returns False value.
+Token* consume_ident() {
+  if (token->kind != TK_IDENT)
+    return NULL;
+  Token* cur = token;
+  token = token->next;
+  return cur;
+}
+
 // If a next token is equel to expected one,
 // then consume a token and returns True.
 // Otherwise, reports error.
@@ -42,7 +53,7 @@ void expect(char* op) {
   if (token->kind != TK_RESERVED ||
       strlen(op) != token->len  ||
       memcmp(token->str, op, token->len)) {
-    error_at(token->str, "expected '%d', but '%d'", strlen(op), token->len);
+    error_at(token->str, "expected '%s', but '%s'", op, token->str);
   }
   token = token->next;
 }
@@ -111,6 +122,18 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    // assign
+    if (*p == '=') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
+    // statement
+    if (*p == ';') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
     if (*p == '+' || *p == '-' ||
         *p == '*' || *p == '/' ||
 	*p == '(' || *p == ')' ) {
@@ -146,8 +169,28 @@ Node *new_node_num(int val) {
   return node;
 }
 
+void program() {
+  int i = 0;
+  while (!at_eof())
+    code[i++] = stmt();
+  code[i] = NULL;
+}
+
+Node *stmt() {
+  Node *node = expr();
+  expect(";");
+  return node;
+}
+
 Node *expr() {
-  return equality();
+  return assign();
+}
+
+Node *assign() {
+  Node *node = equality();
+  if (consume("="))
+    node = new_node(ND_ASSIGN, node, assign());
+  return node;
 }
 
 Node *equality() {
@@ -213,6 +256,14 @@ Node *unary() {
 }
 
 Node *primary() {
+  Token *tok = consume_ident();
+  if (tok) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_LVAR;
+    node->offset = (tok->str[0] - 'a' + 1) * 8;
+    return node;
+  }
+
   if (consume("(")) {
     Node *node = expr();
     expect(")");
