@@ -57,6 +57,19 @@ char *user_input;
 // AST of the code.
 Node* code[100];
 
+typedef struct LVar LVar;
+
+// Local variable.
+struct LVar {
+  LVar *next;
+  char *name;
+  int len;
+  int offset; // Offset from stack base pointer
+};
+
+// Dictionary for Local variable.
+LVar *locals;
+
 // Parse.
 Token *tokenize(char *p);
 void program();
