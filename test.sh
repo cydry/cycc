@@ -57,4 +57,7 @@ assert 1 '3 > 2;'
 assert 1 'a = 1;'
 assert 1 'foo = 1;'
 
+assert 5 'return 5;'
+assert 8 'return 8;'
+
 echo "OK;"
