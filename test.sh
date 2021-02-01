@@ -55,7 +55,9 @@ assert 0 '2 > 2;'
 assert 1 '3 > 2;'
 
 assert 1 'a = 1;'
-assert 1 'foo = 1;'
+assert 1 'a = 1; return a;'
+assert 5 'foo = 5;'
+assert 5 'foo = 5; return foo;'
 
 assert 5 'return 5;'
 assert 8 'return 8;'

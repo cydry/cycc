@@ -130,7 +130,7 @@ Token *tokenize(char *p) {
       char* begin = p;
       while (isalnum(*p))
 	p++;
-      cur = new_token(TK_IDENT, cur, begin, begin - p);
+      cur = new_token(TK_IDENT, cur, begin, p - begin);
       continue;
     }
 
