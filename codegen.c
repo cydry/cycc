@@ -1,5 +1,10 @@
 #include "cycc.h"
 
+int unique_number = 0;
+int unique_num() {
+  return unique_number++;
+}
+
 void gen_lval(Node *node) {
   if (node->kind != ND_LVAR)
     error("Not lvalue of the assignment");
@@ -10,6 +15,8 @@ void gen_lval(Node *node) {
 }
 
 void gen(Node *node) {
+  int uniq; // Make a label to have a unique label.
+
   switch (node->kind) {
   case ND_NUM:
     printf("  push %d\n", node->val);
@@ -42,17 +49,19 @@ void gen(Node *node) {
     printf("  cmp rax, 0\n");
     if (node->rhs->kind == ND_ELSE)
       return gen(node->rhs);
-    printf("  je .LendXXX\n");
+    uniq = unique_num();
+    printf("  je .Lend%d\n", uniq);
     gen(node->rhs);
-    printf(".LendXXX:\n");
+    printf(".Lend%d:\n", uniq);
     return;
   case ND_ELSE:
-    printf("  je  .LelseXXX\n");
+    uniq = unique_num();
+    printf("  je  .Lelse%d\n", uniq);
     gen(node->lhs);
-    printf("  jmp .LendXXX\n");
-    printf(".LelseXXX:\n");
+    printf("  jmp .Lend%d\n", uniq);
+    printf(".Lelse%d:\n", uniq);
     gen(node->rhs);
-    printf(".LendXXX:\n");
+    printf(".Lend%d:\n", uniq);
     return;
   }
 
