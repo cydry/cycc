@@ -62,5 +62,8 @@ assert 8 'return 8;'
 assert 5 'return 2 + 3;'
 
 assert 2 'if (1) return 2; return 1;'
+assert 3 'if (0) return 1; else return 3; return 2;'
+assert 1 'if (2>1) return 1; else return 3; return 2;'
+assert 3 'if (2<1) return 1; else return 3; return 2;'
 
 echo "OK;"

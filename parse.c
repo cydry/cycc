@@ -113,10 +113,15 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    // Control flow, if
+    // Control flow, if else
     if (strncmp(p, "if", 2) == 0 && !is_alnum(p[2])) {
       cur = new_token(TK_RESERVED, cur, p, 2);
       p += 2;
+      continue;
+    }
+    if (strncmp(p, "else", 4) == 0 && !is_alnum(p[4])) {
+      cur = new_token(TK_RESERVED, cur, p, 4);
+      p += 4;
       continue;
     }
 
@@ -216,6 +221,8 @@ void program() {
 
 Node *stmt() {
   Node* node;
+
+  // Control flow if-else.
   if (consume("if")) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_IF;
@@ -223,6 +230,11 @@ Node *stmt() {
     node->lhs = expr();
     expect(")");
     node->rhs = stmt();
+
+    if (consume("else")) {
+      Node* tmp = calloc(1, sizeof(Node));
+      tmp->kind = ND_ELSE;
+    }
     return node;
   }
 
@@ -233,6 +245,7 @@ Node *stmt() {
   } else {
     node = expr();
   }
+
   expect(";");
   return node;
 }
