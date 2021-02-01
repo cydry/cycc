@@ -87,3 +87,6 @@ Node *primary();
 // Generates assemly.
 void genasm();
 
+// Utilities.
+void error(char *fmt, ...);
+
