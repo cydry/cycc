@@ -113,6 +113,13 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    // Control flow, if
+    if (strncmp(p, "if", 2) == 0 && !is_alnum(p[2])) {
+      cur = new_token(TK_RESERVED, cur, p, 2);
+      p += 2;
+      continue;
+    }
+
     // identifier
     if (isalpha(*p)) {
       char* begin = p;
@@ -209,6 +216,15 @@ void program() {
 
 Node *stmt() {
   Node* node;
+  if (consume("if")) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_IF;
+    expect("(");
+    node->lhs = expr();
+    expect(")");
+    node->rhs = stmt();
+    return node;
+  }
 
   if (consume("return")) {
     node = calloc(1, sizeof(Node));
@@ -217,7 +233,6 @@ Node *stmt() {
   } else {
     node = expr();
   }
-
   expect(";");
   return node;
 }

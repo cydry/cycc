@@ -61,4 +61,6 @@ assert 5 'return 5;'
 assert 8 'return 8;'
 assert 5 'return 2 + 3;'
 
+assert 2 'if (1) return 2; return 1;'
+
 echo "OK;"
