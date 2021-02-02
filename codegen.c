@@ -74,6 +74,19 @@ void gen(Node *node) {
     printf("  jmp .Lbegin%d\n", uniq);
     printf(".Lend%d:\n", uniq);
     return;
+  case ND_FOR:
+    uniq = unique_num();
+    gen(node->lhs->lhs);
+    printf(".Lbegin%d:\n", uniq);
+    gen(node->lhs->rhs);
+    printf("  pop rax\n");
+    printf("  cmp rax, 0\n");
+    printf("  je  .Lend%d\n", uniq);
+    gen(node->rhs->rhs);
+    gen(node->rhs->lhs);
+    printf("  jmp .Lbegin%d\n", uniq);
+    printf(".Lend%d:\n", uniq);
+    return;
   }
 
   gen(node->lhs);

@@ -22,6 +22,7 @@ typedef enum {
   ND_IF,     // control flow, if
   ND_ELSE,   // control flow, if-else
   ND_WHILE,  // control flow, while
+  ND_FOR,    // control flow, for
 } NodeKind;
 
 typedef struct Node Node;

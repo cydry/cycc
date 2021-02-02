@@ -124,6 +124,12 @@ Token *tokenize(char *p) {
       p += 4;
       continue;
     }
+    // Control flow, for, while
+    if (strncmp(p, "for", 3) == 0 && !is_alnum(p[3])) {
+      cur = new_token(TK_RESERVED, cur, p, 3);
+      p += 3;
+      continue;
+    }
     if (strncmp(p, "while", 5) == 0 && !is_alnum(p[5])) {
       cur = new_token(TK_RESERVED, cur, p, 5);
       p += 5;
@@ -242,7 +248,27 @@ Node *stmt() {
     }
     return node;
   }
-  // Control flow while.
+  // Control flow, for, while.
+  if (consume("for")) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_FOR;
+
+    Node* tmp = calloc(1, sizeof(Node));
+    expect("(");
+    tmp->lhs = expr();
+    expect(";");
+    tmp->rhs = expr();
+    expect(";");
+    node->lhs = tmp;
+
+    tmp = calloc(1, sizeof(Node));
+    tmp->lhs = expr();
+    expect(")");
+    tmp->rhs = stmt();
+
+    node->rhs = tmp;
+    return node;
+  }
   if (consume("while")) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_WHILE;
