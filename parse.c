@@ -124,8 +124,13 @@ Token *tokenize(char *p) {
       p += 4;
       continue;
     }
+    if (strncmp(p, "while", 5) == 0 && !is_alnum(p[5])) {
+      cur = new_token(TK_RESERVED, cur, p, 5);
+      p += 5;
+      continue;
+    }
 
-    // identifier
+    // Identifier
     if (isalpha(*p)) {
       char* begin = p;
       while (isalnum(*p))
@@ -235,6 +240,16 @@ Node *stmt() {
       Node* tmp = calloc(1, sizeof(Node));
       tmp->kind = ND_ELSE;
     }
+    return node;
+  }
+  // Control flow while.
+  if (consume("while")) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_WHILE;
+    expect("(");
+    node->lhs = expr();
+    expect(")");
+    node->rhs = stmt();
     return node;
   }
 

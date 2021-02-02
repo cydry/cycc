@@ -21,6 +21,7 @@ typedef enum {
   ND_RETURN, // return statement
   ND_IF,     // control flow, if
   ND_ELSE,   // control flow, if-else
+  ND_WHILE,  // control flow, while
 } NodeKind;
 
 typedef struct Node Node;

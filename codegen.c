@@ -63,6 +63,17 @@ void gen(Node *node) {
     gen(node->rhs);
     printf(".Lend%d:\n", uniq);
     return;
+  case ND_WHILE:
+    uniq = unique_num();
+    printf(".Lbegin%d:\n", uniq);
+    gen(node->lhs);
+    printf("  pop rax\n");
+    printf("  cmp rax, 0\n");
+    printf("  je  .Lend%d\n", uniq);
+    gen(node->rhs);
+    printf("  jmp .Lbegin%d\n", uniq);
+    printf(".Lend%d:\n", uniq);
+    return;
   }
 
   gen(node->lhs);

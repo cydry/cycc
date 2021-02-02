@@ -68,4 +68,6 @@ assert 3 'if (0) return 1; else return 3; return 2;'
 assert 1 'if (2>1) return 1; else return 3; return 2;'
 assert 5 'if (2<1) return 1; else return 2 + 3; return 2;'
 
+assert 9 'a = 0; while(a<9) a = a + 1; return a;'
+
 echo "OK;"
