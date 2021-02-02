@@ -1,8 +1,17 @@
 #include "cycc.h"
 
+void gen(Node *node);
+
 int unique_number = 0;
 int unique_num() {
   return unique_number++;
+}
+
+void gen_blocks(Vec* elem) {
+  if (!elem)
+    return;
+  gen_blocks(elem->next);
+  gen(elem->node);
 }
 
 void gen_lval(Node *node) {
@@ -86,6 +95,9 @@ void gen(Node *node) {
     gen(node->rhs->lhs);
     printf("  jmp .Lbegin%d\n", uniq);
     printf(".Lend%d:\n", uniq);
+    return;
+  case ND_BLOCK:
+    gen_blocks(node->blocks);
     return;
   }
 

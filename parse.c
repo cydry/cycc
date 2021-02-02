@@ -176,6 +176,10 @@ Token *tokenize(char *p) {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
+    if (*p == '{' || *p == '}') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
 
     if (*p == '+' || *p == '-' ||
         *p == '*' || *p == '/' ||
@@ -232,6 +236,20 @@ void program() {
 
 Node *stmt() {
   Node* node;
+
+  // Compound statements.
+  if (consume("{")) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_BLOCK;
+
+    while(!consume("}")) {
+      Vec* elem = calloc(1, sizeof(Vec));
+      elem->node = stmt();
+      elem->next = node->blocks;
+      node->blocks = elem;
+    }
+    return node;
+  }
 
   // Control flow if-else.
   if (consume("if")) {

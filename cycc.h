@@ -23,7 +23,11 @@ typedef enum {
   ND_ELSE,   // control flow, if-else
   ND_WHILE,  // control flow, while
   ND_FOR,    // control flow, for
+  ND_BLOCK,  // {}, compound statement.
 } NodeKind;
+
+// A Vector for block, compound statement.
+typedef struct Vec Vec;
 
 typedef struct Node Node;
 
@@ -34,6 +38,12 @@ struct Node {
   Node *rhs;     // right hand side
   int val;       // If kind is TK_NUM、then it's value.
   int offset;    // If kind is ND_LVAR, then it's offset from stack base pointer.
+  Vec* blocks;  // If kind is ND_BLOCK, then it's Vector for statements.
+};
+
+struct Vec {
+  Vec*  next;
+  Node* node;
 };
 
 typedef enum {

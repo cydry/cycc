@@ -71,4 +71,8 @@ assert 5 'if (2<1) return 1; else return 2 + 3; return 2;'
 assert 9 'a = 0; while(a<9) a = a + 1; return a;'
 assert 18 'b = 0; for (a = 0; a<9; a = a + 1) b = b + 2; return b;'
 
+assert 18 'a = 0; while(a<18) { a = a + 1; a = a + 1; } return a;'
+assert 36 'b = 0; for (a = 0; a<9; a = a + 1) { b = b + 2; b = b + 2; } return b;'
+assert 5  'a = 2<1; if (a) { return 1; } else { return 2 + 3; } return 2;'
+
 echo "OK;"
