@@ -7,10 +7,10 @@ int unique_num() {
   return unique_number++;
 }
 
-void gen_blocks(Vec* elem) {
+void gen_block(Vec* elem) {
   if (!elem)
     return;
-  gen_blocks(elem->next);
+  gen_block(elem->next);
   gen(elem->node);
 }
 
@@ -97,7 +97,7 @@ void gen(Node *node) {
     printf(".Lend%d:\n", uniq);
     return;
   case ND_BLOCK:
-    gen_blocks(node->blocks);
+    gen_block(node->block);
     return;
   }
 

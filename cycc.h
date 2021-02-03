@@ -38,7 +38,7 @@ struct Node {
   Node *rhs;     // right hand side
   int val;       // If kind is TK_NUM、then it's value.
   int offset;    // If kind is ND_LVAR, then it's offset from stack base pointer.
-  Vec* blocks;  // If kind is ND_BLOCK, then it's Vector for statements.
+  Vec* block;    // If kind is ND_BLOCK, then it's Vector for statements.
 };
 
 struct Vec {

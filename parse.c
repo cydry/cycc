@@ -245,8 +245,8 @@ Node *stmt() {
     while(!consume("}")) {
       Vec* elem = calloc(1, sizeof(Vec));
       elem->node = stmt();
-      elem->next = node->blocks;
-      node->blocks = elem;
+      elem->next = node->block;
+      node->block = elem;
     }
     return node;
   }
