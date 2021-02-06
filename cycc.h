@@ -24,6 +24,7 @@ typedef enum {
   ND_WHILE,  // control flow, while
   ND_FOR,    // control flow, for
   ND_BLOCK,  // {}, compound statement.
+  ND_CALL,   // function call
 } NodeKind;
 
 // A Vector for block, compound statement.
@@ -39,6 +40,7 @@ struct Node {
   int val;       // If kind is TK_NUM、then it's value.
   int offset;    // If kind is ND_LVAR, then it's offset from stack base pointer.
   Vec* block;    // If kind is ND_BLOCK, then it's Vector for statements.
+  char* call;    // If kind is ND_CALL, then it's name of the function.
 };
 
 struct Vec {

@@ -25,6 +25,22 @@ assert_fail() {
   fi
 }
 
+assert_stdout() {
+  expected="$1"
+  input="$2"
+
+  ./main "$input" > tmp.s
+  cc -o tmp tmp.s foo.o
+  actual=`./tmp`
+
+  if [ "$actual" = "$expected" ]; then
+    echo "$input => $actual"
+  else
+    echo "$input => $expected expected, but got $actual"
+    exit 1
+  fi
+}
+
 assert 0 '0;'
 assert 42 '42;'
 assert 41 " 12 + 34 - 5 ;"
@@ -74,5 +90,7 @@ assert 18 'b = 0; for (a = 0; a<9; a = a + 1) b = b + 2; return b;'
 assert 18 'a = 0; while(a<18) { a = a + 1; a = a + 1; } return a;'
 assert 36 'b = 0; for (a = 0; a<9; a = a + 1) { b = b + 2; b = b + 2; } return b;'
 assert 5  'a = 2<1; if (a) { return 1; } else { return 2 + 3; } return 2;'
+
+assert_stdout 2 'foo();'
 
 echo "OK;"
