@@ -30,6 +30,7 @@ assert_stdout() {
   input="$2"
 
   ./main "$input" > tmp.s
+  cc -c foo.c
   cc -o tmp tmp.s foo.o
   actual=`./tmp`
 
@@ -92,5 +93,7 @@ assert 36 'b = 0; for (a = 0; a<9; a = a + 1) { b = b + 2; b = b + 2; } return b
 assert 5  'a = 2<1; if (a) { return 1; } else { return 2 + 3; } return 2;'
 
 assert_stdout 2 'foo();'
+assert_stdout 5 'bar(2,3);'
+assert_stdout 41 'buzz(2,3,5,7,11,13);'
 
 echo "OK;"

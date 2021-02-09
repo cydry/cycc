@@ -181,6 +181,12 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    // comma separated expressions
+    if (*p == ',') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
     if (*p == '+' || *p == '-' ||
         *p == '*' || *p == '/' ||
 	*p == '(' || *p == ')' ) {
@@ -391,7 +397,14 @@ Node *primary() {
       node->call = calloc(1, sizeof(tok->len)+1);
       strncpy(node->call, tok->str, tok->len);
       node->call[tok->len] = '\0';
-      expect(")");
+
+      while(!consume(")")) {
+	Vec* param = calloc(1, sizeof(Vec));
+	param->node = expr();
+	param->next = node->param;
+	node->param = param;
+	consume(",");
+      }
 
     } else {
       node->kind = ND_LVAR;

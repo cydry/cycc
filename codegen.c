@@ -1,5 +1,7 @@
 #include "cycc.h"
 
+char* arg_to_reg[6] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+
 void gen(Node *node);
 
 int unique_number = 0;
@@ -12,6 +14,24 @@ void gen_block(Vec* elem) {
     return;
   gen_block(elem->next);
   gen(elem->node);
+}
+
+void gen_vec(Vec* elem) {
+  if (!elem)
+    return;
+  gen(elem->node);
+  gen_vec(elem->next);
+}
+
+int vec_length(Vec* elem, int acc) {
+  if (!elem)
+    return acc;
+  acc++;
+  return vec_length(elem->next, acc);
+}
+
+int vec_len(Vec* elem) {
+  return vec_length(elem, 0);
 }
 
 void gen_lval(Node *node) {
@@ -100,6 +120,9 @@ void gen(Node *node) {
     gen_block(node->block);
     return;
   case ND_CALL:
+    gen_vec(node->param);
+    for (int i = 0; i < vec_len(node->param); i++)
+      printf("  pop %s\n", arg_to_reg[i]);
     printf("  call %s\n", node->call);
     return;
   }
