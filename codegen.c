@@ -126,23 +126,22 @@ void gen(Node *node) {
     printf("  movzb r10, r10b\n");
     printf("  and rax, r10\n");
     printf("  cmp rax, 0\n");
-    printf("  jne  .Lend%d\n", uniq);
-    printf("  sub rsp, 8\n");
+    printf("  je  .Lelse%d\n", uniq);
+    printf("  push 1\n");
+    printf("  jmp  .Lend%d\n", uniq);
+    printf(".Lelse%d:\n", uniq);
+    printf("  push 1\n");
+    printf("  push 2\n");
     printf(".Lend%d:\n", uniq);
-    printf("  sub rsp, 8\n");
     printf("  mov rax, %d\n", vec_len(node->param));
     printf("  call %s\n", node->call);
 
     uniq = unique_num();
-    printf("  mov rdi, rsp\n");
-    printf("  mov sil, 15\n");
-    printf("  movzb rsi, sil\n");
-    printf("  and rdi, rsi\n");
-    printf("  cmp rdi, 0\n");
-    printf("  jne  .Lend%d\n", uniq);
-    printf("  add rsp, 8\n");
+    printf("  pop rdi\n");
+    printf("  cmp rdi, 1\n");
+    printf("  je  .Lend%d\n", uniq);
+    printf("  pop rdi\n");
     printf(".Lend%d:\n", uniq);
-    printf("  add rsp, 8\n");
     printf("  push rax\n");
     return;
   case ND_FUNC:
