@@ -23,15 +23,12 @@ void gen_vec(Vec* elem) {
   gen_vec(elem->next);
 }
 
-int vec_length(Vec* elem, int acc) {
-  if (!elem)
-    return acc;
-  acc++;
-  return vec_length(elem->next, acc);
-}
-
 int vec_len(Vec* elem) {
-  return vec_length(elem, 0);
+  if (!elem)
+    return 0;
+  int acc = vec_len(elem->next);
+  acc++;
+  return acc;
 }
 
 void gen_lval(Node *node) {
