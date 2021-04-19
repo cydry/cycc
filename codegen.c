@@ -130,6 +130,7 @@ void gen(Node *node) {
     printf("  sub rsp, 8\n");
     printf(".Lend%d:\n", uniq);
     printf("  sub rsp, 8\n");
+    printf("  mov rax, %d\n", vec_len(node->param));
     printf("  call %s\n", node->call);
 
     uniq = unique_num();
