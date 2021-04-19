@@ -101,4 +101,13 @@ assert 2 'fuzz(a){return a;} main(){return fuzz(2);}'
 assert 5 'fuzz(a,b){return a+b;} main(){return fuzz(2,3);}'
 assert 41 'fuzz(a,b,c,e,f,g){return a+b+c+e+f+g;} main(){return fuzz(2,3,5,7,11,13);}'
 
+assert 1   'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(1); }'
+assert 1   'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(2); }'
+assert 2   'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(3); }'
+assert 3   'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(4); }'
+assert 5   'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(5); }'
+assert 8   'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(6); }'
+assert 13  'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(7); }'
+assert 233 'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(13);}'
+
 echo "OK;"
