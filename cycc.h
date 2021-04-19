@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Kinds of node for Abstract Ayntax Tree.
+// Kinds of node for Abstract Syntax Tree.
 typedef enum {
   ND_EQL, // ==
   ND_NEQ, // !=
