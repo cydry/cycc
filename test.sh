@@ -97,5 +97,8 @@ assert_stdout 5 'main(){bar(2,3);}'
 assert_stdout 41 'main(){buzz(2,3,5,7,11,13);}'
 
 assert 2 'fuzz(){return 2;} main(){return fuzz();}'
+assert 2 'fuzz(a){return a;} main(){return fuzz(2);}'
+assert 5 'fuzz(a,b){return a+b;} main(){return fuzz(2,3);}'
+assert 41 'fuzz(a,b,c,e,f,g){return a+b+c+e+f+g;} main(){return fuzz(2,3,5,7,11,13);}'
 
 echo "OK;"

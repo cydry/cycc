@@ -151,6 +151,11 @@ void gen(Node *node) {
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
     printf("  sub rsp, 208\n");
+    gen_vec(node->param);
+    for (int i = 0; i < vec_len(node->param); i++) {
+      printf(" pop rax\n");
+      printf(" mov [rax], %s\n", arg_to_reg[i]);
+    }
 
     // statements of the function.
     gen(node->rhs);
@@ -160,6 +165,9 @@ void gen(Node *node) {
     printf("  mov rsp, rbp\n");
     printf("  pop rbp\n");
     printf("  ret\n");
+    return;
+  case ND_DECL:
+    gen_lval(node->lhs);
     return;
   }
 

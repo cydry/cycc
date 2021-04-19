@@ -26,6 +26,7 @@ typedef enum {
   ND_BLOCK,  // {}, compound statement.
   ND_CALL,   // function call
   ND_FUNC,   // function
+  ND_DECL,   // declaration for function parameters
 } NodeKind;
 
 // A Vector for block, compound statement.

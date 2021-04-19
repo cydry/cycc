@@ -253,7 +253,7 @@ Node *func() {
 
       while(!consume(")")) {
 	Vec* param = calloc(1, sizeof(Vec));
-	param->node = expr();
+	param->node = new_node(ND_DECL, primary(), NULL);
 	param->next = node->param;
 	node->param = param;
 	consume(",");
