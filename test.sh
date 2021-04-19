@@ -110,4 +110,5 @@ assert 8   'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n
 assert 13  'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(7); }'
 assert 233 'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(13);}'
 
+assert 1 'main(){a; &a;}'
 echo "OK;"
