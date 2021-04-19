@@ -120,7 +120,28 @@ void gen(Node *node) {
     gen_vec(node->param);
     for (int i = 0; i < vec_len(node->param); i++)
       printf("  pop %s\n", arg_to_reg[i]);
+    uniq = unique_num();
+    printf("  mov rax, rsp\n");
+    printf("  mov r10b, 15\n");
+    printf("  movzb r10, r10b\n");
+    printf("  and rax, r10\n");
+    printf("  cmp rax, 0\n");
+    printf("  jne  .Lend%d\n", uniq);
+    printf("  sub rsp, 8\n");
+    printf(".Lend%d:\n", uniq);
+    printf("  sub rsp, 8\n");
     printf("  call %s\n", node->call);
+
+    uniq = unique_num();
+    printf("  mov rdi, rsp\n");
+    printf("  mov sil, 15\n");
+    printf("  movzb rsi, sil\n");
+    printf("  and rdi, rsi\n");
+    printf("  cmp rdi, 0\n");
+    printf("  jne  .Lend%d\n", uniq);
+    printf("  add rsp, 8\n");
+    printf(".Lend%d:\n", uniq);
+    printf("  add rsp, 8\n");
     return;
   }
 
