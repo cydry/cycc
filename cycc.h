@@ -25,7 +25,6 @@ typedef enum {
   ND_FOR,    // control flow, for
   ND_BLOCK,  // {}, compound statement.
   ND_CALL,   // function call
-  ND_PARAM,  // function call's parameters
   ND_FUNC,   // function
 } NodeKind;
 
