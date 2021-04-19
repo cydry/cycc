@@ -9,10 +9,11 @@ int unique_num() {
   return unique_number++;
 }
 
-void gen_block(Vec* elem) {
+// Generates each node of Vecs by reverse order.
+void gen_vec_rev(Vec* elem) {
   if (!elem)
     return;
-  gen_block(elem->next);
+  gen_vec_rev(elem->next);
   gen(elem->node);
 }
 
@@ -114,7 +115,7 @@ void gen(Node *node) {
     printf(".Lend%d:\n", uniq);
     return;
   case ND_BLOCK:
-    gen_block(node->block);
+    gen_vec_rev(node->block);
     return;
   case ND_CALL:
     gen_vec(node->param);
