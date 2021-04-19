@@ -26,6 +26,7 @@ typedef enum {
   ND_BLOCK,  // {}, compound statement.
   ND_CALL,   // function call
   ND_PARAM,  // function call's parameters
+  ND_FUNC,   // function
 } NodeKind;
 
 // A Vector for block, compound statement.
@@ -92,6 +93,7 @@ LVar *locals;
 // Parse.
 Token *tokenize(char *p);
 void program();
+Node *func();
 Node *stmt();
 Node *expr();
 Node *assign();

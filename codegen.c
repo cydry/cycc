@@ -143,6 +143,23 @@ void gen(Node *node) {
     printf("  add rsp, 8\n");
     printf(".Lend%d:\n", uniq);
     printf("  add rsp, 8\n");
+    printf("  push rax\n");
+    return;
+  case ND_FUNC:
+    printf("%s:\n", node->call);
+    // Prologue
+    printf("  push rbp\n");
+    printf("  mov rbp, rsp\n");
+    printf("  sub rsp, 208\n");
+
+    // statements of the function.
+    gen(node->rhs);
+    printf("  pop rax\n");
+
+    // Epilogue
+    printf("  mov rsp, rbp\n");
+    printf("  pop rbp\n");
+    printf("  ret\n");
     return;
   }
 
@@ -194,21 +211,9 @@ void gen(Node *node) {
 void genasm(Node* node) {
   printf(".intel_syntax noprefix\n");
   printf(".globl main\n");
-  printf("main:\n");
-
-  // Prologue
-  printf("  push rbp\n");
-  printf("  mov rbp, rsp\n");
-  printf("  sub rsp, 208\n");
 
   int i = 0;
   while (code[i]) {
     gen(code[i++]);
-    printf("  pop rax\n");
   }
-
-  // Epilogue
-  printf("  mov rsp, rbp\n");
-  printf("  pop rbp\n");
-  printf("  ret\n");
 }

@@ -236,8 +236,34 @@ LVar *find_lvar(Token *tok) {
 void program() {
   int i = 0;
   while (!at_eof())
-    code[i++] = stmt();
+    code[i++] = func();
   code[i] = NULL;
+}
+
+Node *func() {
+  Node *node = NULL;
+  Token *tok = consume_ident();
+  if (tok) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_FUNC;
+    if (consume("(")) {
+      node->call = calloc(1, sizeof(tok->len)+1);
+      strncpy(node->call, tok->str, tok->len);
+      node->call[tok->len] = '\0';
+
+      while(!consume(")")) {
+	Vec* param = calloc(1, sizeof(Vec));
+	param->node = expr();
+	param->next = node->param;
+	node->param = param;
+	consume(",");
+      }
+    }
+  } else {
+    error("Not found identifier of function");
+  }
+  node->rhs = stmt();
+  return node;
 }
 
 Node *stmt() {
