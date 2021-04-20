@@ -106,6 +106,13 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    // Type
+    if (strncmp(p, "int", 3) == 0 && !is_alnum(p[3])) {
+      cur = new_token(TK_RESERVED, cur, p, 3);
+      p += 3;
+      continue;
+    }
+
     // Return statemment
     if (strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
       cur = new_token(TK_RESERVED, cur, p, 6);
@@ -293,6 +300,21 @@ Node *stmt() {
     return node;
   }
 
+  // Declaration.
+  if (consume("int")) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_DECL;
+    Token* tok = consume_ident();
+    LVar* lvar = calloc(1, sizeof(LVar));
+    lvar->next = locals;
+    lvar->name = tok->str;
+    lvar->len = tok->len;
+    lvar->offset = locals ? locals->offset + 8 : 0 + 8;
+    locals = lvar;
+    expect(";");
+    return node;
+  }
+
   // Control flow if-else.
   if (consume("if")) {
     node = calloc(1, sizeof(Node));
@@ -453,13 +475,7 @@ Node *primary() {
       if (lvar) {
 	node->offset = lvar->offset;
       } else {
-	lvar = calloc(1, sizeof(LVar));
-	lvar->next = locals;
-	lvar->name = tok->str;
-	lvar->len = tok->len;
-	lvar->offset = locals ? locals->offset + 8 : 0 + 8;
-	node->offset = lvar->offset;
-	locals = lvar;
+	error_at(tok->str, "No declaration.");
       }
     }
     return node;
