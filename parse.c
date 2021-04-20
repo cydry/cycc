@@ -269,6 +269,10 @@ Node *func() {
   }
   node->rhs = stmt();
   node->locals = locals ? locals->offset : 0; // total of offsets for locals.
+
+  // Reset dictionary of local variable, for total of offset to be correct.
+  // About memory leaks, let the kernel do the memory freeing.
+  locals = NULL;
   return node;
 }
 

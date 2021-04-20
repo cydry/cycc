@@ -116,4 +116,6 @@ assert 2 'main(){a; b; a=2; b=&a; *b;}'
 assert 2 'main(){a; b; a=2; b=&a; return *b;}'
 assert 3 'main(){a; b; a=2; b=&a; a=a+1; return *b;}'
 
+assert 1 'foo(a,b,c,d,e){a;} bar(a){a;} main(){b=bar(1); b;}'
+
 echo "OK;"
