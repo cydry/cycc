@@ -120,4 +120,7 @@ assert 3 'main(){int a; int b; a=2; b=&a; *b=*b+1; return a;}'
 
 assert 1 'foo(int a, int b, int c, int d, int e){a;} bar(int a){a;} main(){int b; b=bar(1); b;}'
 
+assert 1 'foo(int *a){a;} main(){0;}'
+assert 1 'foo(int **a){a;} main(){0;}'
+assert 1 'foo(int ********a){a;} main(){0;}'
 echo "OK;"

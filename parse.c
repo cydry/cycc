@@ -250,6 +250,14 @@ Node* decl_param() {
   if (consume("int")) {
     Type* ty = calloc(1, sizeof(Type));
     ty->kind = INT;
+    Type* ptr;
+    while(consume("*")) {
+      ptr = calloc(1, sizeof(Type));
+      ptr->kind = PTR;
+      ptr->ptr_to = ty;
+      ty = ptr;
+    }
+
 
     Token* tok = consume_ident();
     if (tok) {
@@ -332,6 +340,13 @@ Node *stmt() {
   if (consume("int")) {
     Type* ty = calloc(1, sizeof(Type));
     ty->kind = INT;
+    Type* ptr;
+    while(consume("*")) {
+      ptr = calloc(1, sizeof(Type));
+      ptr->kind = PTR;
+      ptr->ptr_to = ty;
+      ty = ptr;
+    }
 
     node = calloc(1, sizeof(Node));
     node->kind = ND_DECL;
