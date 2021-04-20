@@ -42,6 +42,7 @@ assert_stdout() {
   fi
 }
 
+assert 0 'main(int a){0;}'
 assert 0 'main(){0;}'
 assert 42 'main(){42;}'
 assert 41 "main(){ 12 + 34 - 5 ;}"
@@ -97,25 +98,25 @@ assert_stdout 5 'main(){bar(2,3);}'
 assert_stdout 41 'main(){buzz(2,3,5,7,11,13);}'
 
 assert 2 'fuzz(){return 2;} main(){return fuzz();}'
-assert 2 'fuzz(a){return a;} main(){return fuzz(2);}'
-assert 5 'fuzz(a,b){return a+b;} main(){return fuzz(2,3);}'
-assert 41 'fuzz(a,b,c,e,f,g){return a+b+c+e+f+g;} main(){return fuzz(2,3,5,7,11,13);}'
+assert 2 'fuzz(int a){return a;} main(){return fuzz(2);}'
+assert 5 'fuzz(int a,int b){return a+b;} main(){return fuzz(2,3);}'
+assert 41 'fuzz(int a, int b, int c, int e, int f, int g){return a+b+c+e+f+g;} main(){return fuzz(2,3,5,7,11,13);}'
 
-assert 1   'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(1); }'
-assert 1   'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(2); }'
-assert 2   'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(3); }'
-assert 3   'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(4); }'
-assert 5   'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(5); }'
-assert 8   'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(6); }'
-assert 13  'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(7); }'
-assert 233 'fib(n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(13);}'
+assert 1   'fib(int n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(1); }'
+assert 1   'fib(int n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(2); }'
+assert 2   'fib(int n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(3); }'
+assert 3   'fib(int n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(4); }'
+assert 5   'fib(int n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(5); }'
+assert 8   'fib(int n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(6); }'
+assert 13  'fib(int n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(7); }'
+assert 233 'fib(int n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(13);}'
 
-assert 2 'main(){a=2; b=&a; *b;}'
-assert 2 'main(){a; b=&a; a=2; *b;}'
-assert 2 'main(){a; b; a=2; b=&a; *b;}'
-assert 2 'main(){a; b; a=2; b=&a; return *b;}'
-assert 3 'main(){a; b; a=2; b=&a; a=a+1; return *b;}'
+assert 2 'main(){int a; int b; a=2; b=&a; *b;}'
+assert 2 'main(){int a; int b; b=&a; a=2; *b;}'
+assert 2 'main(){int a; int b; a=2; b=&a; *b;}'
+assert 2 'main(){int a; int b; a=2; b=&a; return *b;}'
+assert 3 'main(){int a; int b; a=2; b=&a; a=a+1; return *b;}'
 
-assert 1 'foo(a,b,c,d,e){a;} bar(a){a;} main(){b=bar(1); b;}'
+assert 1 'foo(int a, int b, int c, int d, int e){a;} bar(int a){a;} main(){int b; b=bar(1); b;}'
 
 echo "OK;"

@@ -27,6 +27,7 @@ typedef enum {
   ND_CALL,   // function call
   ND_FUNC,   // function
   ND_DECL,   // declaration for function parameters
+  ND_NOP,    // No operational node for declarations
   ND_ADDR,   // &, addressing, reference.
   ND_DEREF,  // *, addressing, dereference.
 } NodeKind;

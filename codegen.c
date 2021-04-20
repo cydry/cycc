@@ -168,6 +168,9 @@ void gen(Node *node) {
     printf("  ret\n");
     return;
   case ND_DECL:
+    gen_lval(node->lhs);
+    return;
+  case ND_NOP:
     return;
   case ND_ADDR:
     gen_lval(node->rhs);
