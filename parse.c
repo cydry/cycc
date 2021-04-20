@@ -248,6 +248,9 @@ LVar *find_lvar(Token *tok) {
 Node* decl_param() {
   Node* node;
   if (consume("int")) {
+    Type* ty = calloc(1, sizeof(Type));
+    ty->kind = INT;
+
     Token* tok = consume_ident();
     if (tok) {
       LVar* lvar = calloc(1, sizeof(LVar));
@@ -255,11 +258,13 @@ Node* decl_param() {
       lvar->name = tok->str;
       lvar->len = tok->len;
       lvar->offset = locals ? locals->offset + 8 : 0 + 8;
+      lvar->ty = ty;
       locals = lvar;
 
       node = calloc(1, sizeof(Node));
       node->kind = ND_LVAR;
       node->offset = lvar->offset;
+      node->ty = ty;
     }
   } else {
     error_at(token->str, "No type for declaration.");
@@ -325,6 +330,9 @@ Node *stmt() {
 
   // Declaration.
   if (consume("int")) {
+    Type* ty = calloc(1, sizeof(Type));
+    ty->kind = INT;
+
     node = calloc(1, sizeof(Node));
     node->kind = ND_DECL;
     Token* tok = consume_ident();
@@ -333,6 +341,7 @@ Node *stmt() {
     lvar->name = tok->str;
     lvar->len = tok->len;
     lvar->offset = locals ? locals->offset + 8 : 0 + 8;
+    lvar->ty = ty;
     locals = lvar;
     expect(";");
     return node;

@@ -35,6 +35,9 @@ typedef enum {
 // A Vector for block, compound statement.
 typedef struct Vec Vec;
 
+// A Type for variables.
+typedef struct Type Type;
+
 typedef struct Node Node;
 
 // A node for AST.
@@ -44,6 +47,7 @@ struct Node {
   Node *rhs;     // right hand side
   int val;       // If kind is TK_NUM、then it's value.
   int offset;    // If kind is ND_LVAR, then it's offset from stack base pointer.
+  Type* ty;      // If kind is ND_LVAR, then it's type of the data.
   Vec* block;    // If kind is ND_BLOCK, then it's Vector for statements.
   char* call;    // If kind is ND_CALL, then it's name of the function.
   Vec* param;    // If kind is ND_CALL, then it's parameters for function call.
@@ -53,6 +57,16 @@ struct Node {
 struct Vec {
   Vec*  next;
   Node* node;
+};
+
+typedef enum {
+  INT,
+  PTR,
+} TypeKind;
+
+struct Type {
+  TypeKind kind;
+  Type* ty;
 };
 
 typedef enum {
@@ -89,6 +103,7 @@ struct LVar {
   char *name;
   int len;
   int offset; // Offset from stack base pointer
+  Type* ty;   // Type of the data.
 };
 
 // Dictionary for Local variable.
