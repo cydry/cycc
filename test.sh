@@ -116,6 +116,7 @@ assert 2 'main(){int a; int b; b=&a; a=2; *b;}'
 assert 2 'main(){int a; int b; a=2; b=&a; *b;}'
 assert 2 'main(){int a; int b; a=2; b=&a; return *b;}'
 assert 3 'main(){int a; int b; a=2; b=&a; a=a+1; return *b;}'
+assert 3 'main(){int a; int b; a=2; b=&a; *b=*b+1; return a;}'
 
 assert 1 'foo(int a, int b, int c, int d, int e){a;} bar(int a){a;} main(){int b; b=bar(1); b;}'
 
