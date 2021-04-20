@@ -151,7 +151,7 @@ void gen(Node *node) {
     // Prologue
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
-    printf("  sub rsp, 208\n");
+    printf("  sub rsp, %d\n", node->locals);
     gen_vec(node->param);
     for (int i = 0; i < vec_len(node->param); i++) {
       printf(" pop rax\n");

@@ -46,6 +46,7 @@ struct Node {
   Vec* block;    // If kind is ND_BLOCK, then it's Vector for statements.
   char* call;    // If kind is ND_CALL, then it's name of the function.
   Vec* param;    // If kind is ND_CALL, then it's parameters for function call.
+  int locals;    // If kind is ND_FUNC, it's length of stack space for local variables.
 };
 
 struct Vec {

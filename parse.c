@@ -238,7 +238,6 @@ LVar *find_lvar(Token *tok) {
   return NULL;
 }
 
-
 void program() {
   int i = 0;
   while (!at_eof())
@@ -269,6 +268,7 @@ Node *func() {
     error("Not found identifier of function");
   }
   node->rhs = stmt();
+  node->locals = locals ? locals->offset : 0; // total of offsets for locals.
   return node;
 }
 
