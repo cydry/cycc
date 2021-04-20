@@ -521,6 +521,7 @@ Node *primary() {
       LVar *lvar = find_lvar(tok);
       if (lvar) {
 	node->offset = lvar->offset;
+	node->ty = lvar->ty;
       } else {
 	error_at(tok->str, "No declaration.");
       }

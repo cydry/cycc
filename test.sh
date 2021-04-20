@@ -16,6 +16,24 @@ assert() {
   fi
 }
 
+assert_with() {
+  expected="$1"
+  input="$2"
+
+  ./main "$input" > tmp.s
+  cc -c foo.c
+  cc -o tmp tmp.s foo.o
+  ./tmp
+  actual="$?"
+
+  if [ "$actual" = "$expected" ]; then
+    echo "$input => $actual"
+  else
+    echo "$input => $expected expected, but got $actual"
+    exit 1
+  fi
+}
+
 assert_fail() {
   input=$1
   ./main "$input" > tmp.s
@@ -41,6 +59,8 @@ assert_stdout() {
     exit 1
   fi
 }
+
+assert 7 'foo(int ***a){***a;} main(){int a; int *p; int **pp; int ***ppp; ppp=&pp; pp=&p; p=&a; a=7; foo(ppp);}'
 
 assert 0 'main(int a){0;}'
 assert 0 'main(){0;}'
@@ -111,12 +131,12 @@ assert 8   'fib(int n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + f
 assert 13  'fib(int n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(7); }'
 assert 233 'fib(int n){if(n==1) return 1; if(n==2) return 1; return fib(n-2) + fib(n-1);} main(){return fib(13);}'
 
-assert 2 'main(){int a; int b; a=2; b=&a; *b;}'
-assert 2 'main(){int a; int b; b=&a; a=2; *b;}'
-assert 2 'main(){int a; int b; a=2; b=&a; *b;}'
-assert 2 'main(){int a; int b; a=2; b=&a; return *b;}'
-assert 3 'main(){int a; int b; a=2; b=&a; a=a+1; return *b;}'
-assert 3 'main(){int a; int b; a=2; b=&a; *b=*b+1; return a;}'
+assert 2 'main(){int a; int* b; a=2; b=&a; *b;}'
+assert 2 'main(){int a; int* b; b=&a; a=2; *b;}'
+assert 2 'main(){int a; int* b; a=2; b=&a; *b;}'
+assert 2 'main(){int a; int* b; a=2; b=&a; return *b;}'
+assert 3 'main(){int a; int* b; a=2; b=&a; a=a+1; return *b;}'
+assert 3 'main(){int a; int* b; a=2; b=&a; *b=*b+1; return a;}'
 
 assert 1 'foo(int a, int b, int c, int d, int e){a;} bar(int a){a;} main(){int b; b=bar(1); b;}'
 
@@ -128,5 +148,11 @@ assert 3 'foo(int *a){*a;} main(){int a; int p; p=&a; a=3; foo(p);}'
 assert 5 'foo(int **a){int *p; p=*a; *p;} main(){int a; int *p; int **pp; pp=&p; p=&a; a=5; foo(pp);}'
 assert 7 'foo(int ***a){***a;} main(){int a; int *p; int **pp; int ***ppp; ppp=&pp; pp=&p; p=&a; a=7; foo(ppp);}'
 assert 7 'foo(int ***a){***a;} main(){int a; int *p; int **pp; int ***ppp; a=7; ppp=&pp; pp=&p; p=&a; foo(ppp);}'
+
+assert_with 1 'main(){int *p; int **pp; pp=&p; alloc4(pp, 1, 2, 4, 8); *p;}'
+assert_with 1 'main(){int *p; alloc4(&p, 1, 2, 4, 8); p=p+0; *p;}'
+assert_with 2 'main(){int *p; alloc4(&p, 1, 2, 4, 8); p=p+1; *p;}'
+assert_with 4 'main(){int *p; alloc4(&p, 1, 2, 4, 8); p=p+2; *p;}'
+assert_with 8 'main(){int *p; alloc4(&p, 1, 2, 4, 8); p=p+3; *p;}'
 
 echo "OK;"

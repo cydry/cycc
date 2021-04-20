@@ -194,9 +194,21 @@ void gen(Node *node) {
 
   switch (node->kind) {
   case ND_ADD:
+    if (node->lhs->ty && (node->lhs->ty->kind == PTR)) {
+      if (node->lhs->ty->ptr_to->kind == PTR)
+	printf("  imul rdi, 8\n");
+      if (node->lhs->ty->ptr_to->kind == INT)
+	printf("  imul rdi, 4\n");
+    }
     printf("  add rax, rdi\n");
     break;
   case ND_SUB:
+    if (node->lhs->ty && (node->lhs->ty->kind == PTR)) {
+      if (node->lhs->ty->ptr_to->kind == PTR)
+	printf("  imul rdi, 8\n");
+      if (node->lhs->ty->ptr_to->kind == INT)
+	printf("  imul rdi, 4\n");
+    }
     printf("  sub rax, rdi\n");
     break;
   case ND_MUL:
