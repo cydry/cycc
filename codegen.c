@@ -1,3 +1,4 @@
+
 #include "cycc.h"
 
 char* arg_to_reg[6] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
@@ -171,6 +172,12 @@ void gen(Node *node) {
     return;
   case ND_ADDR:
     gen_lval(node->rhs);
+    return;
+  case ND_DEREF:
+    gen(node->rhs);
+    printf("  pop rax\n");
+    printf("  mov rax, [rax]\n");
+    printf("  push rax\n");
     return;
   }
 

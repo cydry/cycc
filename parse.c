@@ -419,6 +419,8 @@ Node *unary() {
     return new_node(ND_SUB, new_node_num(0), primary());
   if (consume("&"))
     return new_node(ND_ADDR, NULL, primary());
+  if (consume("*"))
+    return new_node(ND_DEREF, NULL, primary());
   return primary();
 }
 

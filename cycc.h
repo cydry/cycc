@@ -28,6 +28,7 @@ typedef enum {
   ND_FUNC,   // function
   ND_DECL,   // declaration for function parameters
   ND_ADDR,   // &, addressing, reference.
+  ND_DEREF,  // *, addressing, dereference.
 } NodeKind;
 
 // A Vector for block, compound statement.
