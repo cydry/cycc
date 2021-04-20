@@ -126,5 +126,7 @@ assert 2 'foo(int ********a){a;} main(){2;}'
 
 assert 3 'foo(int *a){*a;} main(){int a; int p; p=&a; a=3; foo(p);}'
 assert 5 'foo(int **a){int *p; p=*a; *p;} main(){int a; int *p; int **pp; pp=&p; p=&a; a=5; foo(pp);}'
+assert 7 'foo(int ***a){***a;} main(){int a; int *p; int **pp; int ***ppp; ppp=&pp; pp=&p; p=&a; a=7; foo(ppp);}'
+assert 7 'foo(int ***a){***a;} main(){int a; int *p; int **pp; int ***ppp; a=7; ppp=&pp; pp=&p; p=&a; foo(ppp);}'
 
 echo "OK;"

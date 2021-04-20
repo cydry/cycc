@@ -493,7 +493,7 @@ Node *unary() {
   if (consume("&"))
     return new_node(ND_ADDR, NULL, primary());
   if (consume("*"))
-    return new_node(ND_DEREF, NULL, primary());
+    return new_node(ND_DEREF, NULL, unary());
   return primary();
 }
 
