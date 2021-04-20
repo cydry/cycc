@@ -167,10 +167,10 @@ void gen(Node *node) {
     printf("  pop rbp\n");
     printf("  ret\n");
     return;
-  case ND_DECL:
+  case ND_PARAM:
     gen_lval(node->lhs);
     return;
-  case ND_NOP:
+  case ND_DECL:
     return;
   case ND_ADDR:
     gen_lval(node->rhs);

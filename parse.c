@@ -288,7 +288,7 @@ Node *func() {
 
       while(!consume(")")) {
 	Vec* param = calloc(1, sizeof(Vec));
-	param->node = new_node(ND_DECL, decl_param(), NULL);
+	param->node = new_node(ND_PARAM, decl_param(), NULL);
 	param->next = node->param;
 	node->param = param;
 	consume(",");
@@ -326,7 +326,7 @@ Node *stmt() {
   // Declaration.
   if (consume("int")) {
     node = calloc(1, sizeof(Node));
-    node->kind = ND_NOP;
+    node->kind = ND_DECL;
     Token* tok = consume_ident();
     LVar* lvar = calloc(1, sizeof(LVar));
     lvar->next = locals;
