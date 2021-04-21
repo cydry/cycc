@@ -60,7 +60,6 @@ assert_stdout() {
   fi
 }
 
-assert 7 'foo(int ***a){***a;} main(){int a; int *p; int **pp; int ***ppp; ppp=&pp; pp=&p; p=&a; a=7; foo(ppp);}'
 
 assert 0 'main(int a){0;}'
 assert 0 'main(){0;}'
