@@ -214,6 +214,9 @@ void gen(Node *node) {
   case ND_DEREF:
     gen_deref(node, 0);
     return;
+  case ND_SIZE:
+    gen(node->rhs);
+    return;
   }
 
   gen(node->lhs);

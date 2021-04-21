@@ -106,6 +106,13 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    // Size of the type.
+    if (strncmp(p, "sizeof", 6) == 0 && !is_alnum(p[6])) {
+      cur = new_token(TK_RESERVED, cur, p, 6);
+      p += 6;
+      continue;
+    }
+
     // Type
     if (strncmp(p, "int", 3) == 0 && !is_alnum(p[3])) {
       cur = new_token(TK_RESERVED, cur, p, 3);
@@ -278,6 +285,20 @@ Node* decl_param() {
     error_at(token->str, "No type for declaration.");
   }
   return node;
+}
+
+// Evaluate the size of types.
+Node* size_of() {
+  int size = 0;
+  consume("(");
+  if (consume("int")) {
+    size = 4;
+  }
+  if (consume("*")) {
+    size = 8;
+  }
+  consume(")");
+  return new_node_num(size);
 }
 
 
@@ -486,6 +507,8 @@ Node *mul() {
 }
 
 Node *unary() {
+  if (consume("sizeof"))
+    return new_node(ND_SIZE, NULL, size_of());
   if (consume("+"))
     return primary();
   if (consume("-"))

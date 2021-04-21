@@ -155,4 +155,7 @@ assert_with 2 'main(){int *p; alloc4(&p, 1, 2, 4, 8); p=p+1; *p;}'
 assert_with 4 'main(){int *p; alloc4(&p, 1, 2, 4, 8); p=p+2; *p;}'
 assert_with 8 'main(){int *p; alloc4(&p, 1, 2, 4, 8); p=p+3; *p;}'
 
+assert 4 'main(){ sizeof(int); }'
+assert 8 'main(){ sizeof(int*); }'
+
 echo "OK;"

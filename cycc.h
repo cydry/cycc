@@ -30,6 +30,7 @@ typedef enum {
   ND_DECL,   // declaration
   ND_ADDR,   // &, addressing, reference.
   ND_DEREF,  // *, addressing, dereference.
+  ND_SIZE,   // sizeof operator.
 } NodeKind;
 
 // A Vector for block, compound statement.
