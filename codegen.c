@@ -33,6 +33,39 @@ int vec_len(Vec* elem) {
   return acc;
 }
 
+void gen_deref(Node* node, int acc) {
+  // Counts the number of dereferencing, using accumrator parameter.
+  if (node->rhs->kind == ND_DEREF) {
+    acc++;
+    gen_deref(node->rhs, acc);
+    return;
+  }
+
+  // Do dereferencing.
+  if (node->rhs->kind == ND_LVAR) {
+    gen(node->rhs);
+    for (int i = 0; i < acc; i++) {
+      printf("  pop rax\n");
+      printf("  mov rax, [rax]\n");
+      printf("  push rax\n");
+    }
+
+    // The type, be pointed to.
+    if (node->rhs->ty->ptr_to->kind == INT) {
+      printf("  pop rax\n");
+      printf("  mov eax, DWORD PTR[rax]\n");
+      printf("  push rax\n");
+    } else if (node->rhs->ty->ptr_to->kind == PTR) {
+      printf("  pop rax\n");
+      printf("  mov rax, QWORD PTR[rax]\n");
+      printf("  push rax\n");
+    } else {
+      error("Invalid type at dereferencing.\n");
+    }
+  }
+  return;
+}
+
 void gen_lval(Node *node) {
   if (node->kind != ND_LVAR)
     error("Not lvalue of the assignment");
@@ -179,10 +212,7 @@ void gen(Node *node) {
     gen_lval(node->rhs);
     return;
   case ND_DEREF:
-    gen(node->rhs);
-    printf("  pop rax\n");
-    printf("  mov rax, [rax]\n");
-    printf("  push rax\n");
+    gen_deref(node, 0);
     return;
   }
 
