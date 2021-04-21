@@ -66,7 +66,6 @@ typedef enum {
 
 struct Type {
   TypeKind kind;
-  Type* ty;
   Type* ptr_to;
 };
 
