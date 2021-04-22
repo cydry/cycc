@@ -287,18 +287,69 @@ Node* decl_param() {
   return node;
 }
 
-// Evaluate the size of types.
+
+// At Evaluating a sizeof, find size of the node.
+int find_size(Node* node) {
+  // Supports only Integer(32bit), about number.
+  if (node->kind == ND_NUM)
+    return 4;
+
+  // Local Variable's size with the type
+  if (node->kind == ND_LVAR) {
+    if (node->ty->kind == INT)
+      return 4;
+    if (node->ty->kind == PTR)
+      return 8;
+  }
+
+  // Evaluates size of dereferecing a variable.
+  if(node->kind == ND_DEREF) {
+    if (node->rhs->ty->ptr_to->kind == INT)
+      return 4;
+    if (node->rhs->ty->ptr_to->kind == PTR)
+      return 8;
+  }
+
+  // Evaluates expressions by recursive call with the AST.
+  // Or addressing is pointer size. Otherwise causes an error.
+  switch (node->kind) {
+  case ND_ASSIGN:
+  case ND_LEQ:
+  case ND_EQL:
+  case ND_LES:
+  case ND_ADD:
+  case ND_SUB:
+  case ND_MUL:
+  case ND_DIV:
+    return find_size(node->lhs);
+  case ND_SIZE:
+    return find_size(node->rhs);
+  case ND_ADDR:
+    return 8;
+  case ND_CALL:
+    error_at(token->str, "Invalid evaluation at `sizeof`: function call");
+  default:
+    break;
+  }
+  error_at(token->str, "Unreachable line at `sizeof`, calling with unsupported kind of a node");
+}
+
+// Evaluate the size of types, expressions.
 Node* size_of() {
   int size = 0;
   consume("(");
   if (consume("int")) {
     size = 4;
+    if (consume("*")) {
+      while(consume("*"))
+	;
+      size = 8;
+    }
+    consume(")");
+    return new_node_num(size);
   }
-  if (consume("*")) {
-    while(consume("*"))
-	  ;
-    size = 8;
-  }
+
+  size = find_size(expr());
   consume(")");
   return new_node_num(size);
 }

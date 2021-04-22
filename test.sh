@@ -159,4 +159,12 @@ assert 8 'main(){ sizeof(int*); }'
 assert 8 'main(){ sizeof(int**); }'
 assert 8 'main(){ sizeof(int********); }'
 
+assert 4 'main(){int x;  sizeof(x);}'
+assert 4 'main(){int x;  sizeof(x+3);}'
+assert 8 'main(){int* x; sizeof(x);}'
+assert 8 'main(){int* x; sizeof(x+3);}'
+assert 4 'main(){int* x; sizeof(*x);}'
+assert 4 'main(){sizeof(1);}'
+assert 4 'main(){sizeof(sizeof(1));}'
+
 echo "OK;"
