@@ -295,6 +295,8 @@ Node* size_of() {
     size = 4;
   }
   if (consume("*")) {
+    while(consume("*"))
+	  ;
     size = 8;
   }
   consume(")");
