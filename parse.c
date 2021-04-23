@@ -592,17 +592,50 @@ Node *mul() {
 }
 
 Node *unary() {
+  Node* node;
   if (consume("sizeof"))
     return new_node(ND_SIZE, NULL, size_of());
-  if (consume("+"))
-    return primary();
-  if (consume("-"))
-    return new_node(ND_SUB, new_node_num(0), primary());
+  if (consume("+")) {
+      node = primary();
+      if (node->ty && node->ty->kind == ARRAY) {
+	Type* ty = calloc(1, sizeof(Type));
+	ty->kind = PTR;
+	ty->ptr_to = node->ty;
+	node->ty = ty;
+      }
+      return node;
+  }
+  if (consume("-")) {
+    node = primary();
+    if (node->ty && node->ty->kind == ARRAY) {
+      Type* ty = calloc(1, sizeof(Type));
+      ty->kind = PTR;
+      ty->ptr_to = node->ty;
+      node->ty = ty;
+    }
+    return new_node(ND_SUB, new_node_num(0), node);
+  }
   if (consume("&"))
     return new_node(ND_ADDR, NULL, primary());
-  if (consume("*"))
-    return new_node(ND_DEREF, NULL, unary());
-  return primary();
+  if (consume("*")) {
+    node = unary();
+    if (node->ty && node->ty->kind == ARRAY) {
+      Type* ty = calloc(1, sizeof(Type));
+      ty->kind = PTR;
+      ty->ptr_to = node->ty;
+      node->ty = ty;
+    }
+    return new_node(ND_DEREF, NULL, node);
+  }
+
+  node = primary();
+  if (node->ty && node->ty->kind == ARRAY) {
+    Type* ty = calloc(1, sizeof(Type));
+    ty->kind = PTR;
+    ty->ptr_to = node->ty;
+    node->ty = ty;
+  }
+  return node;
 }
 
 Node *primary() {

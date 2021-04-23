@@ -59,6 +59,19 @@ void gen_deref(Node* node, int acc) {
       printf("  pop rax\n");
       printf("  mov rax, QWORD PTR[rax]\n");
       printf("  push rax\n");
+
+    } else if (node->rhs->ty->ptr_to->kind == ARRAY) {  // Dereferencing an array, 
+      if (node->rhs->ty->ptr_to->ptr_to->kind == INT) { // the unit is element's size.
+	printf("  pop rax\n");
+	printf("  mov eax, DWORD PTR[rax]\n");
+	printf("  push rax\n");
+      } else if (node->rhs->ty->ptr_to->ptr_to->kind == PTR) {
+	printf("  pop rax\n");
+	printf("  mov rax, QWORD PTR[rax]\n");
+	printf("  push rax\n");
+      } else {
+	error("Invalid type at dereferencing an array.\n");
+      }
     } else {
       error("Invalid type at dereferencing.\n");
     }
@@ -84,6 +97,10 @@ void gen(Node *node) {
     return;
   case ND_LVAR:
     gen_lval(node);
+    if (node->ty->kind == PTR &&
+	node->ty->ptr_to &&
+	node->ty->ptr_to->kind == ARRAY)
+      return;
     printf("  pop rax\n");
     printf("  mov rax, [rax]\n");
     printf("  push rax\n");
@@ -232,6 +249,18 @@ void gen(Node *node) {
 	printf("  imul rdi, 8\n");
       if (node->lhs->ty->ptr_to->kind == INT)
 	printf("  imul rdi, 4\n");
+
+      // Evaluating addition of pointer to array, the unit is determined by the element's size.
+      // Array's data structure is...
+      //
+      // PTR -> ARRAY -> (Element's type)
+      //
+      if (node->lhs->ty->ptr_to->kind == ARRAY) {
+	if (node->lhs->ty->ptr_to->ptr_to->kind == PTR) // elements of the array..
+	  printf("  imul rdi, 8\n");
+	if (node->lhs->ty->ptr_to->ptr_to->kind == INT)
+	  printf("  imul rdi, 4\n");
+      }
     }
     printf("  add rax, rdi\n");
     break;
@@ -241,6 +270,14 @@ void gen(Node *node) {
 	printf("  imul rdi, 8\n");
       if (node->lhs->ty->ptr_to->kind == INT)
 	printf("  imul rdi, 4\n");
+
+      // Evaluating substraction of pointer to array, same as addition of it.
+      if (node->lhs->ty->ptr_to->kind == ARRAY) {
+	if (node->lhs->ty->ptr_to->ptr_to->kind == PTR)
+	  printf("  imul rdi, 8\n");
+	if (node->lhs->ty->ptr_to->ptr_to->kind == INT)
+	  printf("  imul rdi, 4\n");
+      }
     }
     printf("  sub rax, rdi\n");
     break;
