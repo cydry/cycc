@@ -364,6 +364,16 @@ void program() {
 
 Node *func() {
   Node *node = NULL;
+
+  // Return type.
+  // Only supports int and the pointer.
+  if (consume("int")) {
+    while(consume("*"))
+      ;
+  } else {
+    error_at(token->str, "Not found a return type of function");
+  }
+
   Token *tok = consume_ident();
   if (tok) {
     node = calloc(1, sizeof(Node));
