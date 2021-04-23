@@ -119,6 +119,11 @@ Token *tokenize(char *p) {
       p += 3;
       continue;
     }
+    if ((*p == '[') || (*p == ']')) {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
 
     // Return statemment
     if (strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
@@ -442,6 +447,23 @@ Node *stmt() {
     lvar->offset = locals ? locals->offset + 8 : 0 + 8;
     lvar->ty = ty;
     locals = lvar;
+
+    if (consume("[")) {
+      int elem = expect_number();
+      expect("]");
+
+      while (consume("[")) {
+	elem *= expect_number();
+	expect("]");
+      }
+
+      ty = calloc(1, sizeof(Type));
+      ty->kind = ARRAY;
+      ty->array_size = elem;
+      lvar->offset = (lvar->offset - 8) + (elem * 8);
+      ty->ptr_to = lvar->ty;
+      lvar->ty = ty;
+    }
     expect(";");
     return node;
   }

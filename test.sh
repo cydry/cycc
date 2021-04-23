@@ -167,4 +167,9 @@ assert 4 'int main(){int* x; sizeof(*x);}'
 assert 4 'int main(){sizeof(1);}'
 assert 4 'int main(){sizeof(sizeof(1));}'
 
+assert 2 'int main(){int a[10]; a=2; a;}'
+assert 2 'int main(){int a[10]; int* p; a=2; p=&a; p=p+1; *p=3; a;}'
+assert 3 'int main(){int a[10]; int* p; a=2; p=&a; p=p+1; *p=3; *p;}'
+assert 3 'int main(){int a[10]; int* p; a=2; p=&a; p=p+1; *p=3; p=p+1; *p=5; p=p-1; *p;}'
+
 echo "OK;"

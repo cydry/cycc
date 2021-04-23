@@ -63,11 +63,13 @@ struct Vec {
 typedef enum {
   INT,
   PTR,
+  ARRAY,
 } TypeKind;
 
 struct Type {
   TypeKind kind;
   Type* ptr_to;
+  int array_size;
 };
 
 typedef enum {
