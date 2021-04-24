@@ -726,6 +726,7 @@ Node *primary() {
 
     } else if (consume("[")) {
       node->kind = ND_LVAR;
+
       LVar *lvar = find_lvar(tok);
       if (lvar) {
 	node->offset = lvar->offset;
@@ -733,15 +734,21 @@ Node *primary() {
       } else {
 	error_at(tok->str, "No declaration.");
       }
+
+      if (node->ty && node->ty->kind == ARRAY) {
+	Type* ty = calloc(1, sizeof(Type));
+	ty->kind = PTR;
+	ty->ptr_to = node->ty;
+	node->ty = ty;
+      }
       // Change `index of array` to dereferencing of a pointer calculation.
       //
       // a[i] -> *(a + i)
       //
       node = new_node(ND_DEREF, NULL,
-		      new_node(ND_ADD, node,
-			       new_node_num(expect_number())));
+		      new_node(ND_ADD, node, unary()));
       expect("]");
-
+      return node;
     } else {
       node->kind = ND_LVAR;
 
