@@ -196,6 +196,11 @@ assert 3 'int main(){int a[10]; int b; int* p; p=a+1; *p=3; b=9; *(a-2+3);}'
 assert 5 'int main(){int a[10]; int b; int* p; p=a+2; *p=5; b=9; *(a-3+5);}'
 assert 7 'int main(){int a[10]; int b; int* p; p=a+9; *p=7; b=9; *(a-9+18);}'
 
+assert 2 'int main(){int a[10]; int b; int* p; p=a;   *p=2; b=9; *(a+1-1);}'
+assert 3 'int main(){int a[10]; int b; int* p; p=a+1; *p=3; b=9; *(a+3-2);}'
+assert 5 'int main(){int a[10]; int b; int* p; p=a+2; *p=5; b=9; *(a+5-3);}'
+assert 7 'int main(){int a[10]; int b; int* p; p=a+9; *p=7; b=9; *(a+18-9);}'
+
 assert 2 'int main(){int a[10]; int b; int* p; p=a;   *p=2; b=9; a[0];}'
 assert 3 'int main(){int a[10]; int b; int* p; p=a+1; *p=3; b=9; a[1];}'
 assert 5 'int main(){int a[10]; int b; int* p; p=a+2; *p=5; b=9; a[2];}'

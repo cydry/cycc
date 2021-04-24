@@ -274,17 +274,21 @@ void gen(Node *node) {
     printf("  add rax, rdi\n");
     break;
   case ND_SUB:
-    if (node->lhs->ty && (node->lhs->ty->kind == PTR)) {
-      if (node->lhs->ty->ptr_to->kind == PTR)
+    lvar_node  = find_lvar_node(node->lhs);
+    deref_node = find_deref_node(node->lhs);
+    if (lvar_node && lvar_node->ty && (lvar_node->ty->kind == PTR) &&
+	(!deref_node || deref_node->rhs != lvar_node)) {
+
+      if (lvar_node->ty->ptr_to->kind == PTR)
 	printf("  imul rdi, 8\n");
-      if (node->lhs->ty->ptr_to->kind == INT)
+      if (lvar_node->ty->ptr_to->kind == INT)
 	printf("  imul rdi, 4\n");
 
       // Evaluating substraction of pointer to array, same as addition of it.
-      if (node->lhs->ty->ptr_to->kind == ARRAY) {
-	if (node->lhs->ty->ptr_to->ptr_to->kind == PTR)
+      if (lvar_node->ty->ptr_to->kind == ARRAY) {
+	if (lvar_node->ty->ptr_to->ptr_to->kind == PTR)
 	  printf("  imul rdi, 8\n");
-	if (node->lhs->ty->ptr_to->ptr_to->kind == INT)
+	if (lvar_node->ty->ptr_to->ptr_to->kind == INT)
 	  printf("  imul rdi, 4\n");
       }
     }
