@@ -292,7 +292,6 @@ Node* decl_param() {
   return node;
 }
 
-
 // At Evaluating a sizeof, find size of the node.
 int find_size(Node* node) {
   // Supports only Integer(32bit), about number.
@@ -303,6 +302,14 @@ int find_size(Node* node) {
   if (node->kind == ND_LVAR) {
     if (node->ty->kind == INT)
       return 4;
+
+    if (node->ty->kind == PTR && node->ty->ptr_to->kind == ARRAY) {
+      if (node->ty->ptr_to->ptr_to->kind == INT)
+	return 4 * node->ty->ptr_to->array_size;
+      if (node->ty->ptr_to->ptr_to->kind == PTR)
+	return 8 * node->ty->ptr_to->array_size;
+    }
+
     if (node->ty->kind == PTR)
       return 8;
   }
