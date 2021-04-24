@@ -176,7 +176,7 @@ assert 8  'int main(){int* a[10]; sizeof(a+1);}'
 assert 4  'int main(){int  a[10]; sizeof(*(a+1));}'
 assert 8  'int main(){int* a[10]; sizeof(*(a+1));}'
 
-assert 2 'int main(){int a[10]; int b; a=2; b=9; *a;}'
+assert 2 'int main(){int a[10]; int b; *a=2; b=9; *a;}'
 assert 2 'int main(){int a[10]; int b; int* p; a=2; p=&a; p=p+1; *p=3; b=9; *a;}'
 assert 3 'int main(){int a[10]; int b; int* p; a=2; p=&a; p=p+1; *p=3; b=9; *p;}'
 assert 3 'int main(){int a[10]; int b; int* p; a=2; p=&a; p=p+1; *p=3; p=p+1; *p=5; p=p-1; b=9; *p;}'
