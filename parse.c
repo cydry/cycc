@@ -656,6 +656,24 @@ Node *primary() {
 	consume(",");
       }
 
+    } else if (consume("[")) {
+      node->kind = ND_LVAR;
+      LVar *lvar = find_lvar(tok);
+      if (lvar) {
+	node->offset = lvar->offset;
+	node->ty = lvar->ty;
+      } else {
+	error_at(tok->str, "No declaration.");
+      }
+      // Change `index of array` to dereferencing of a pointer calculation.
+      //
+      // a[i] -> *(a + i)
+      //
+      node = new_node(ND_DEREF, NULL,
+		      new_node(ND_ADD, node,
+			       new_node_num(expect_number())));
+      expect("]");
+
     } else {
       node->kind = ND_LVAR;
 

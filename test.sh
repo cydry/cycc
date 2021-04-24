@@ -187,4 +187,9 @@ assert 3 'int main(){int a[10]; int* p; p=a+1; *p=3; *(a-2+3);}'
 assert 5 'int main(){int a[10]; int* p; p=a+2; *p=5; *(a-3+5);}'
 assert 7 'int main(){int a[10]; int* p; p=a+9; *p=7; *(a-9+18);}'
 
+assert 2 'int main(){int a[10]; int* p; p=a;   *p=2; a[0];}'
+assert 3 'int main(){int a[10]; int* p; p=a+1; *p=3; a[1];}'
+assert 5 'int main(){int a[10]; int* p; p=a+2; *p=5; a[2];}'
+assert 7 'int main(){int a[10]; int* p; p=a+9; *p=7; a[9];}'
+
 echo "OK;"
