@@ -169,6 +169,12 @@ assert 4 'int main(){sizeof(sizeof(1));}'
 
 assert 40 'int main(){int  a[10]; sizeof(a);}'
 assert 80 'int main(){int* a[10]; sizeof(a);}'
+assert 4  'int main(){int  a[10]; sizeof(*a);}'
+assert 8  'int main(){int* a[10]; sizeof(*a);}'
+assert 8  'int main(){int  a[10]; sizeof(a+1);}'
+assert 8  'int main(){int* a[10]; sizeof(a+1);}'
+assert 4  'int main(){int  a[10]; sizeof(*(a+1));}'
+assert 8  'int main(){int* a[10]; sizeof(*(a+1));}'
 
 assert 2 'int main(){int a[10]; a=2; *a;}'
 assert 2 'int main(){int a[10]; int* p; a=2; p=&a; p=p+1; *p=3; *a;}'

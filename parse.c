@@ -292,6 +292,25 @@ Node* decl_param() {
   return node;
 }
 
+// Find a node of local variables in a partial tree.
+// For using at evaluating a sizeof dereference.
+Node* find_lvar_node(Node* node) {
+  if (!node)
+    return NULL;
+
+  Node* ret;
+  ret = find_lvar_node(node->lhs);
+  if (ret)
+    return ret;
+
+  if (node->kind == ND_LVAR)
+    return node;
+
+  ret = find_lvar_node(node->rhs);
+  if (ret)
+    return ret;
+}
+
 // At Evaluating a sizeof, find size of the node.
 int find_size(Node* node) {
   // Supports only Integer(32bit), about number.
@@ -303,7 +322,9 @@ int find_size(Node* node) {
     if (node->ty->kind == INT)
       return 4;
 
+    // Array's size is the total bytes.
     if (node->ty->kind == PTR && node->ty->ptr_to->kind == ARRAY) {
+      // array's structure is..  PTR -> ARRAY -> (Element's type)
       if (node->ty->ptr_to->ptr_to->kind == INT)
 	return 4 * node->ty->ptr_to->array_size;
       if (node->ty->ptr_to->ptr_to->kind == PTR)
@@ -316,10 +337,31 @@ int find_size(Node* node) {
 
   // Evaluates size of dereferecing a variable.
   if(node->kind == ND_DEREF) {
-    if (node->rhs->ty->ptr_to->kind == INT)
+    node = find_lvar_node(node);
+    if (node->ty->ptr_to->kind == INT)
       return 4;
-    if (node->rhs->ty->ptr_to->kind == PTR)
+    if (node->ty->ptr_to->kind == PTR)
       return 8;
+
+    if (node->ty->ptr_to->kind == ARRAY) {
+      if (node->ty->ptr_to->ptr_to->kind == INT)
+	return 4;
+      if (node->ty->ptr_to->ptr_to->kind == PTR)
+	return 8;
+    }
+    error_at(token->str, "Invalid evaluation at `sizeof`: dereference");
+  }
+
+
+  if (node->kind == ND_ADD || node->kind == ND_SUB) {
+    // Calcuraing addtion and substraction of Pointer to array,
+    // the size is pointer size.
+    if (node->lhs->ty &&
+	node->lhs->ty->kind == PTR &&
+	node->lhs->ty->ptr_to->kind == ARRAY) {
+	return 8;
+    }
+    return find_size(node->lhs);
   }
 
   // Evaluates expressions by recursive call with the AST.
@@ -329,8 +371,6 @@ int find_size(Node* node) {
   case ND_LEQ:
   case ND_EQL:
   case ND_LES:
-  case ND_ADD:
-  case ND_SUB:
   case ND_MUL:
   case ND_DIV:
     return find_size(node->lhs);
