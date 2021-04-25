@@ -226,6 +226,10 @@ void gen(Node *node) {
   case ND_PARAM:
     gen_lval(node->lhs);
     return;
+  case ND_GDECL:
+    printf("%s:\n", node->call);
+    printf("   .byte %d\n", node->offset);
+    return;
   case ND_DECL:
     return;
   case ND_ADDR:

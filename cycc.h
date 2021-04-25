@@ -31,6 +31,7 @@ typedef enum {
   ND_ADDR,   // &, addressing, reference.
   ND_DEREF,  // *, addressing, dereference.
   ND_SIZE,   // sizeof operator.
+  ND_GDECL,  // declaration of global var.
 } NodeKind;
 
 // A Vector for block, compound statement.
@@ -111,6 +112,9 @@ struct LVar {
 
 // Dictionary for Local variable.
 LVar *locals;
+
+// Dictionary for Global variable.
+LVar *globals;
 
 // Parse.
 Token *tokenize(char *p);

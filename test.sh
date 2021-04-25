@@ -61,6 +61,8 @@ assert_stdout() {
 }
 
 
+assert 3 'int a; int main(){int b; b=3; b;}'
+
 assert 0 'int main(int a){0;}'
 assert 0 'int main(){0;}'
 assert 42 'int main(){42;}'
@@ -291,5 +293,6 @@ int main() {
     *(p+1) = 2;
     return a[0] + a[1];
 }'
+
 
 echo "OK;"

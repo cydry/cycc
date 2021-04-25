@@ -443,14 +443,21 @@ Node* size_of() {
 void program() {
   Node* node;
   Token *tok;
-
+  Type* ty;
   int i = 0;
   while (!at_eof()) {
     // Return type.
     // Only supports int and the pointer.
     if (consume("int")) {
-      while(consume("*"))
-	;
+      Type* ty = calloc(1, sizeof(Type));
+      ty->kind = INT;
+      Type* ptr;
+      while(consume("*")) {
+	ptr = calloc(1, sizeof(Type));
+	ptr->kind = PTR;
+	ptr->ptr_to = ty;
+	ty = ptr;
+      }
     } else {
       error_at(token->str, "Not found a type on top-level space.");
     }
@@ -458,7 +465,44 @@ void program() {
     tok = consume_ident();
     if (inspect("(")) {
       node = func(tok);
+
+    } else if (inspect(";")) {
+      // Definition of Global variable
+
+      node = calloc(1, sizeof(Node));
+      node->kind = ND_GDECL;
+      node->call = calloc(1, sizeof(tok->len)+1);
+      strncpy(node->call, tok->str, tok->len);
+      node->call[tok->len] = '\0';
+
+      LVar* lvar = calloc(1, sizeof(LVar));
+      lvar->next = globals;
+      lvar->name = tok->str;
+      lvar->len = tok->len;
+      lvar->offset = 8;
+      lvar->ty = ty;
+      globals = lvar;
+
+      if (consume("[")) {
+	int elem = expect_number();
+	expect("]");
+
+	while (consume("[")) {
+	  elem *= expect_number();
+	  expect("]");
+	}
+
+	ty = calloc(1, sizeof(Type));
+	ty->kind = ARRAY;
+	ty->array_size = elem;
+	lvar->offset = 8 * elem;
+	ty->ptr_to = lvar->ty;
+	lvar->ty = ty;
+      }
+      node->offset = lvar->offset;
+      expect(";");
     }
+
     code[i++] = node;
   }
   code[i] = NULL;
