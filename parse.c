@@ -635,19 +635,32 @@ Node *relational() {
 }
 
 Node *add() {
+  Type* ty;
   Node *node = mul();
   for (;;) {
     if (consume("+")) {
+      ty = node->ty;
       node = new_node(ND_ADD, node, mul());
+      node->ty = ty;
+      if (node->rhs->ty && node->rhs->ty->kind == PTR)
+	node->ty = node->rhs->ty;
     } else if (consume("-")) {
+      ty = node->ty;
       node = new_node(ND_SUB, node, mul());
+      node->ty = ty;
     } else if (consume("[")) {
       // Change `index of array` to dereferencing of a pointer calculation.
       //
       // a[i] -> *(a + i)
       //
-      node = new_node(ND_DEREF, NULL,
-		      new_node(ND_ADD, node, mul()));
+      ty = node->ty;
+      node = new_node(ND_ADD, node, mul());
+      node->ty = ty;
+      if (node->rhs->ty && node->rhs->ty->kind == PTR)
+	node->ty = node->rhs->ty;
+      node = new_node(ND_DEREF, NULL, node);
+      node->ty = node->rhs->ty;
+
       expect("]");
       return node;
     } else
@@ -656,20 +669,27 @@ Node *add() {
 }
 
 Node *mul() {
+  Type* ty;
   Node *node = unary();
 
   for (;;) {
-    if (consume("*"))
+    if (consume("*")) {
+      ty = node->ty;
       node = new_node(ND_MUL, node, unary());
-    else if (consume("/"))
+      node->ty = ty;
+    } else if (consume("/")) {
+      ty = node->ty;
       node = new_node(ND_DIV, node, unary());
-    else
+      node->ty = ty;
+    } else
       return node;
   }
 }
 
 Node *unary() {
+  Type* ty;
   Node* node;
+
   if (consume("sizeof"))
     return new_node(ND_SIZE, NULL, size_of());
   if (consume("+")) {
@@ -690,10 +710,18 @@ Node *unary() {
       ty->ptr_to = node->ty;
       node->ty = ty;
     }
-    return new_node(ND_SUB, new_node_num(0), node);
+    ty = node->ty;
+    node = new_node(ND_SUB, new_node_num(0), node);
+    node->ty = ty;
+    return node;
   }
-  if (consume("&"))
-    return new_node(ND_ADDR, NULL, primary());
+  if (consume("&")) {
+    node = primary();
+    ty = node->ty;
+    node = new_node(ND_ADDR, NULL, node);
+    node->ty = ty;
+    return node;
+  }
   if (consume("*")) {
     node = unary();
     if (node->ty && node->ty->kind == ARRAY) {
@@ -702,7 +730,10 @@ Node *unary() {
       ty->ptr_to = node->ty;
       node->ty = ty;
     }
-    return new_node(ND_DEREF, NULL, node);
+    ty = node->ty;
+    node = new_node(ND_DEREF, NULL, node);
+    node->ty = ty->ptr_to;
+    return node;
   }
 
   node = primary();
