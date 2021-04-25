@@ -637,11 +637,20 @@ Node *relational() {
 Node *add() {
   Node *node = mul();
   for (;;) {
-    if (consume("+"))
+    if (consume("+")) {
       node = new_node(ND_ADD, node, mul());
-    else if (consume("-"))
+    } else if (consume("-")) {
       node = new_node(ND_SUB, node, mul());
-    else
+    } else if (consume("[")) {
+      // Change `index of array` to dereferencing of a pointer calculation.
+      //
+      // a[i] -> *(a + i)
+      //
+      node = new_node(ND_DEREF, NULL,
+		      new_node(ND_ADD, node, mul()));
+      expect("]");
+      return node;
+    } else
       return node;
   }
 }
@@ -723,32 +732,6 @@ Node *primary() {
 	node->param = param;
 	consume(",");
       }
-
-    } else if (consume("[")) {
-      node->kind = ND_LVAR;
-
-      LVar *lvar = find_lvar(tok);
-      if (lvar) {
-	node->offset = lvar->offset;
-	node->ty = lvar->ty;
-      } else {
-	error_at(tok->str, "No declaration.");
-      }
-
-      if (node->ty && node->ty->kind == ARRAY) {
-	Type* ty = calloc(1, sizeof(Type));
-	ty->kind = PTR;
-	ty->ptr_to = node->ty;
-	node->ty = ty;
-      }
-      // Change `index of array` to dereferencing of a pointer calculation.
-      //
-      // a[i] -> *(a + i)
-      //
-      node = new_node(ND_DEREF, NULL,
-		      new_node(ND_ADD, node, unary()));
-      expect("]");
-      return node;
     } else {
       node->kind = ND_LVAR;
 
