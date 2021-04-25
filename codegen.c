@@ -245,12 +245,9 @@ void gen(Node *node) {
   printf("  pop rdi\n");
   printf("  pop rax\n");
 
-  Node* lvar_node;
-  Node* deref_node;
   switch (node->kind) {
   case ND_ADD:
-    if (node->lhs && node->lhs->ty && node->lhs->ty->kind == PTR &&
-	(!deref_node || deref_node->rhs != node->lhs)) {
+    if (node->lhs && node->lhs->ty && node->lhs->ty->kind == PTR){
 
       if (node->lhs->ty->ptr_to->kind == PTR)
 	printf("  imul rdi, 8\n");
@@ -269,8 +266,7 @@ void gen(Node *node) {
 	  printf("  imul rdi, 4\n");
       }
     }
-    if (node->rhs && node->rhs->ty && node->rhs->ty->kind == PTR &&
-	(!deref_node || deref_node->rhs != node->rhs)) {
+    if (node->rhs && node->rhs->ty && node->rhs->ty->kind == PTR) {
 
       if (node->rhs->ty->ptr_to->kind == PTR)
 	printf("  imul rax, 8\n");
@@ -292,8 +288,7 @@ void gen(Node *node) {
     printf("  add rax, rdi\n");
     break;
   case ND_SUB:
-    if (node->lhs && node->lhs->ty && (node->lhs->ty->kind == PTR) &&
-	(!deref_node || deref_node->rhs != node->lhs)) {
+    if (node->lhs && node->lhs->ty && node->lhs->ty->kind == PTR) {
 
       if (node->lhs->ty->ptr_to->kind == PTR)
 	printf("  imul rdi, 8\n");
