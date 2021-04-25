@@ -215,4 +215,28 @@ assert 3 'int main(){int a[10]; int b; int* p; p=a+1; *p=3; b=9; 1[a];}'
 assert 5 'int main(){int a[10]; int b; int* p; p=a+2; *p=5; b=9; 2[a];}'
 assert 7 'int main(){int a[10]; int b; int* p; p=a+9; *p=7; b=9; 9[a];}'
 
+assert 2 'int main(){int a[10]; int b; int* p; p=a;   *p=2; b=9; *a;}'
+assert 3 'int main(){int a[10]; int b; int* p; p=a+1; *(a+1)=3; b=9; *p;}'
+assert 5 'int main(){int a[10]; int b; int* p; p=a+2; *(a+2)=5; b=9; *p;}'
+assert 7 'int main(){int a[10]; int b; int* p; p=a+9; *(a+9)=7; b=9; *p;}'
+
+assert 3 'int main(){int a[10]; int b; int* p; p=a+1; *(1+a)=3; b=9; *p;}'
+assert 5 'int main(){int a[10]; int b; int* p; p=a+2; *(2+a)=5; b=9; *p;}'
+assert 7 'int main(){int a[10]; int b; int* p; p=a+9; *(9+a)=7; b=9; *p;}'
+
+assert 2 'int main(){int a[10]; int b; int* p; p=a;   a[0]=2; b=9; *p;}'
+assert 3 'int main(){int a[10]; int b; int* p; p=a+1; a[1]=3; b=9; *p;}'
+assert 5 'int main(){int a[10]; int b; int* p; p=a+2; a[2]=5; b=9; *p;}'
+assert 7 'int main(){int a[10]; int b; int* p; p=a+9; a[9]=7; b=9; *p;}'
+
+assert 2 'int main(){int a[10]; int b; int* p; p=a;   0[a]=2; b=9; *p;}'
+assert 3 'int main(){int a[10]; int b; int* p; p=a+1; 1[a]=3; b=9; *p;}'
+assert 5 'int main(){int a[10]; int b; int* p; p=a+2; 2[a]=5; b=9; *p;}'
+assert 7 'int main(){int a[10]; int b; int* p; p=a+9; 9[a]=7; b=9; *p;}'
+
+assert 2 'int main(){int a[10]; int b; a[0]=2; b=9; a[0];}'
+assert 3 'int main(){int a[10]; int b; a[1]=3; b=9; a[1];}'
+assert 5 'int main(){int a[10]; int b; a[2]=5; b=9; a[2];}'
+assert 7 'int main(){int a[10]; int b; a[9]=7; b=9; a[9];}'
+
 echo "OK;"
