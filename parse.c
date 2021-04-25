@@ -648,22 +648,6 @@ Node *add() {
       ty = node->ty;
       node = new_node(ND_SUB, node, mul());
       node->ty = ty;
-    } else if (consume("[")) {
-      // Change `index of array` to dereferencing of a pointer calculation.
-      //
-      // a[i] -> *(a + i)
-      //
-      ty = node->ty;
-      node = new_node(ND_ADD, node, mul());
-      node->ty = ty;
-      if (node->rhs->ty && node->rhs->ty->kind == PTR)
-	node->ty = node->rhs->ty;
-
-      ty = node->ty;
-      node = new_node(ND_DEREF, NULL, node);
-      node->ty = ty->ptr_to;
-
-      expect("]");
     } else
       return node;
   }
@@ -682,6 +666,22 @@ Node *mul() {
       ty = node->ty;
       node = new_node(ND_DIV, node, unary());
       node->ty = ty;
+    } else if (consume("[")) {
+      // Change `index of array` to dereferencing of a pointer calculation.
+      //
+      // a[i] -> *(a + i)
+      //
+      ty = node->ty;
+      node = new_node(ND_ADD, node, mul());
+      node->ty = ty;
+      if (node->rhs->ty && node->rhs->ty->kind == PTR)
+	node->ty = node->rhs->ty;
+
+      ty = node->ty;
+      node = new_node(ND_DEREF, NULL, node);
+      node->ty = ty->ptr_to;
+
+      expect("]");
     } else
       return node;
   }
