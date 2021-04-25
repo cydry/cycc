@@ -271,6 +271,28 @@ void gen(Node *node) {
 	  printf("  imul rdi, 4\n");
       }
     }
+    lvar_node  = find_lvar_node(node->rhs);
+    deref_node = find_deref_node(node->rhs);
+    if (lvar_node && lvar_node->ty && lvar_node->ty->kind == PTR &&
+	(!deref_node || deref_node->rhs != lvar_node)) {
+
+      if (lvar_node->ty->ptr_to->kind == PTR)
+	printf("  imul rax, 8\n");
+      if (lvar_node->ty->ptr_to->kind == INT)
+	printf("  imul rax, 4\n");
+
+      // Evaluating addition of pointer to array, the unit is determined by the element's size.
+      // Array's data structure is...
+      //
+      // PTR -> ARRAY -> (Element's type)
+      //
+      if (lvar_node->ty->ptr_to->kind == ARRAY) {
+	if (lvar_node->ty->ptr_to->ptr_to->kind == PTR) // elements of the array..
+	  printf("  imul rax, 8\n");
+	if (lvar_node->ty->ptr_to->ptr_to->kind == INT)
+	  printf("  imul rax, 4\n");
+      }
+    }
     printf("  add rax, rdi\n");
     break;
   case ND_SUB:
