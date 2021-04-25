@@ -658,11 +658,12 @@ Node *add() {
       node->ty = ty;
       if (node->rhs->ty && node->rhs->ty->kind == PTR)
 	node->ty = node->rhs->ty;
+
+      ty = node->ty;
       node = new_node(ND_DEREF, NULL, node);
-      node->ty = node->rhs->ty;
+      node->ty = ty->ptr_to;
 
       expect("]");
-      return node;
     } else
       return node;
   }
