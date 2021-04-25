@@ -69,6 +69,18 @@ int expect_number() {
   return val;
 }
 
+// If a next token is equel to expected one,　then returns True.
+// Otherwise, returns False value.
+// In contract to 'consume', this does not consume the token.
+// This is mainly for parsing function, global variable on top-level space.
+int inspect(char* op) {
+  if (token->kind != TK_RESERVED ||
+      strlen(op) != token->len  ||
+      memcmp(token->str, op, token->len))
+    return false;
+  return true;
+}
+
 bool at_eof() {
   return token->kind == TK_EOF;
 }
@@ -429,25 +441,33 @@ Node* size_of() {
 
 
 void program() {
+  Node* node;
+  Token *tok;
+
   int i = 0;
-  while (!at_eof())
-    code[i++] = func();
+  while (!at_eof()) {
+    // Return type.
+    // Only supports int and the pointer.
+    if (consume("int")) {
+      while(consume("*"))
+	;
+    } else {
+      error_at(token->str, "Not found a type on top-level space.");
+    }
+
+    tok = consume_ident();
+    if (inspect("(")) {
+      node = func(tok);
+    }
+    code[i++] = node;
+  }
   code[i] = NULL;
 }
 
-Node *func() {
+Node *func(Token* tok) {
   Node *node = NULL;
 
-  // Return type.
-  // Only supports int and the pointer.
-  if (consume("int")) {
-    while(consume("*"))
-      ;
-  } else {
-    error_at(token->str, "Not found a return type of function");
-  }
-
-  Token *tok = consume_ident();
+  // The tok is identifier.
   if (tok) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_FUNC;
