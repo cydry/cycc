@@ -381,5 +381,6 @@ int main() {
 
 assert_file 3 tests/test.c
 assert_ffail  tests/fail.c
+assert_file 3 tests/comment.c
 
 echo "OK;"
