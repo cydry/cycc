@@ -458,7 +458,7 @@ void program() {
     // Return type.
     // Only supports int and the pointer.
     if (consume("int")) {
-      Type* ty = calloc(1, sizeof(Type));
+      ty = calloc(1, sizeof(Type));
       ty->kind = INT;
       Type* ptr;
       while(consume("*")) {
@@ -508,6 +508,7 @@ void program() {
 	ty->ptr_to = lvar->ty;
 	lvar->ty = ty;
       }
+      node->ty = lvar->ty;
       node->offset = lvar->offset;
       expect(";");
     }
