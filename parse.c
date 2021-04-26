@@ -46,6 +46,17 @@ Token* consume_ident() {
   return cur;
 }
 
+// If a next token is literals,
+// then consume a token and returns True.
+// Otherwise, returns False value.
+Token* consume_literal() {
+  if (token->kind != TK_LITERAL)
+    return NULL;
+  Token* cur = token;
+  token = token->next;
+  return cur;
+}
+
 // If a next token is equel to expected one,
 // then consume a token and returns True.
 // Otherwise, reports error.
@@ -115,6 +126,18 @@ Token *tokenize(char *p) {
 
     if (isspace(*p)) {
       p++;
+      continue;
+    }
+
+    // literals
+    if (*p == '"') {
+      char* begin = p;
+      p++;
+      while (*p != '"') {
+	p++;
+      }
+      p++;
+      cur = new_token(TK_LITERAL, cur, begin, p - begin);
       continue;
     }
 
@@ -906,6 +929,39 @@ Node *primary() {
   if (consume("(")) {
     Node *node = expr();
     expect(")");
+    return node;
+  }
+
+  tok = consume_literal();
+  if (tok) {
+    Type* ty = calloc(1, sizeof(Type));
+    ty->kind = PTR;
+    ty->ptr_to = calloc(1, sizeof(Type));
+    ty->ptr_to->kind = ARRAY;
+    ty->ptr_to->array_size = tok->len;
+    ty->ptr_to->ptr_to = calloc(1, sizeof(Type));
+    ty->ptr_to->ptr_to->kind = CHAR;
+
+    Node* node = calloc(1, sizeof(Node));
+    node->kind = ND_LITER;
+
+    node->call = calloc(1, 64);
+    int uniq = unique_num();
+    int len = sprintf(node->call, ".LC%d", uniq);
+    node->call[len] = '\0';
+
+    LVar* lvar = calloc(1, sizeof(LVar));
+    lvar->next = literals;
+    lvar->name = node->call; // name
+    lvar->len  = len;        // length of name
+
+    lvar->lite = calloc(1, sizeof(tok->len)+1);
+    strncpy(lvar->lite, tok->str, tok->len); // literal string
+    lvar->lite[tok->len] = '\0';
+    lvar->offset = tok->len;                 // length of literal string
+    lvar->ty = ty;
+    literals = lvar;
+
     return node;
   }
 

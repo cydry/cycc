@@ -61,6 +61,22 @@ assert_stdout() {
 }
 
 
+assert 0   'int main() {char* a; a = "Hello,World!\n"; 0;}'
+assert 72  'int main() {char* a; a = "Hello,World!\n"; *a;}'
+assert 72  'int main() {char* a; a = "Hello,World!\n"; a[0];}'
+assert 101 'int main() {char* a; a = "Hello,World!\n"; a[1];}'
+assert 108 'int main() {char* a; a = "Hello,World!\n"; a[2];}'
+assert 108 'int main() {char* a; a = "Hello,World!\n"; a[3];}'
+assert 111 'int main() {char* a; a = "Hello,World!\n"; a[4];}'
+assert 44  'int main() {char* a; a = "Hello,World!\n"; a[5];}'
+assert 87  'int main() {char* a; a = "Hello,World!\n"; a[6];}'
+assert 111 'int main() {char* a; a = "Hello,World!\n"; a[7];}'
+assert 114 'int main() {char* a; a = "Hello,World!\n"; a[8];}'
+assert 108 'int main() {char* a; a = "Hello,World!\n"; a[9];}'
+assert 100 'int main() {char* a; a = "Hello,World!\n"; a[10];}'
+assert 33  'int main() {char* a; a = "Hello,World!\n"; a[11];}'
+exit 1
+
 assert 0 'int main(int a){0;}'
 assert 0 'int main(){0;}'
 assert 42 'int main(){42;}'
@@ -291,6 +307,7 @@ int main() {
     *(p+1) = 2;
     return a[0] + a[1];
 }'
+
 
 assert 2 'int a; int main(){a=2; a;}'
 assert 5 'int a; int main(){int b; a=2; b=3; a+b;}'

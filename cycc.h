@@ -33,6 +33,7 @@ typedef enum {
   ND_SIZE,   // sizeof operator.
   ND_GDECL,  // declaration of global var.
   ND_GVAR,   // global variable.
+  ND_LITER,  // string, literals
 } NodeKind;
 
 // A Vector for block, compound statement.
@@ -79,6 +80,7 @@ typedef enum {
   TK_RESERVED,
   TK_IDENT,
   TK_NUM,
+  TK_LITERAL,
   TK_EOF,
 } TokenKind;
 
@@ -110,6 +112,7 @@ struct LVar {
   int len;
   int offset; // Offset from stack base pointer
   Type* ty;   // Type of the data.
+  char* lite; // for literal
 };
 
 // Dictionary for Local variable.
@@ -117,6 +120,9 @@ LVar *locals;
 
 // Dictionary for Global variable.
 LVar *globals;
+
+// Dictionary for literals.
+LVar *literals;
 
 // Parse.
 Token *tokenize(char *p);
@@ -139,3 +145,5 @@ void genasm();
 void error(char *fmt, ...);
 
 Node* find_deref_node(Node* node);
+
+int unique_num();

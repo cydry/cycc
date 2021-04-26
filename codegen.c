@@ -164,6 +164,10 @@ void gen(Node *node) {
     printf("  mov rax, [rax]\n");
     printf("  push rax\n");
     return;
+  case ND_LITER:
+    printf("  lea rax, BYTE PTR %s[rip]\n", node->call);
+    printf("  push rax\n");
+    return;
   case ND_ASSIGN:
     if (node->lhs->kind == ND_DEREF)
       gen(node->lhs->rhs); // as rvalue
@@ -414,6 +418,11 @@ void genasm() {
   printf(".globl main\n");
 
   printf(".data\n");
+  for (LVar* var = literals; var; var = literals->next) {
+    printf("%s:\n", var->name);
+    printf("  .string %s\n", var->lite);
+  }
+
   Node* node;
   int text = 0;
   int i = 0;
