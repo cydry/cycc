@@ -484,13 +484,13 @@ void program() {
       strncpy(node->call, tok->str, tok->len);
       node->call[tok->len] = '\0';
 
-      LVar* lvar = calloc(1, sizeof(LVar));
-      lvar->next = globals;
-      lvar->name = tok->str;
-      lvar->len = tok->len;
-      lvar->offset = 8;
-      lvar->ty = ty;
-      globals = lvar;
+      LVar* gvar = calloc(1, sizeof(LVar));
+      gvar->next = globals;
+      gvar->name = tok->str;
+      gvar->len = tok->len;
+      gvar->offset = 8;
+      gvar->ty = ty;
+      globals = gvar;
 
       if (consume("[")) {
 	int elem = expect_number();
@@ -504,12 +504,12 @@ void program() {
 	ty = calloc(1, sizeof(Type));
 	ty->kind = ARRAY;
 	ty->array_size = elem;
-	lvar->offset = 8 * elem;
-	ty->ptr_to = lvar->ty;
-	lvar->ty = ty;
+	gvar->offset = 8 * elem;
+	ty->ptr_to = gvar->ty;
+	gvar->ty = ty;
       }
-      node->ty = lvar->ty;
-      node->offset = lvar->offset;
+      node->ty = gvar->ty;
+      node->offset = gvar->offset;
       expect(";");
     }
 
