@@ -288,7 +288,10 @@ void gen(Node *node) {
     return;
   case ND_GDECL:
     printf("%s:\n", node->call);
-    printf("  .zero %d\n", node->offset);
+    if (node->rhs)
+      printf("  .long %d\n", node->rhs->val);
+    else
+      printf("  .zero %d\n", node->offset);
     return;
   case ND_DECL:
     return;

@@ -516,7 +516,7 @@ void program() {
     if (inspect("(")) {
       node = func(tok);
 
-    } else if (inspect(";") || inspect("[")) {
+    } else if (inspect(";") || inspect("[") || inspect("=")) {
       // Definition of Global variable
 
       node = calloc(1, sizeof(Node));
@@ -559,6 +559,12 @@ void program() {
       }
       node->ty = gvar->ty;
       node->offset = gvar->offset;
+
+      // Initialization
+      if (consume("=")) {
+	node->rhs = new_node_num(expect_number());
+      }
+
       expect(";");
     }
 

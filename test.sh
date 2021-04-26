@@ -383,4 +383,5 @@ assert_file 3 tests/test.c
 assert_ffail  tests/fail.c
 assert_file 3 tests/comment.c
 
+assert 2 'int a = 2; int main() { return a; }'
 echo "OK;"
