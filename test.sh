@@ -326,4 +326,13 @@ assert 5 'char* a[10]; int main(){char b; char c; char d; a[0]=&b; a[1]=&c; b=2;
 assert 5 'char* a[10]; int main(){char b; char c; char d; b=2; c=3; a[0]=&b; a[1]=&c; d=9; *(a[0]) + *(a[1]);}'
 assert 5 'char* a[10]; int main(){char b; char c; char d; b=2; c=3; a[1]=&b; a[9]=&c; d=9; *(a[1]) + *(a[9]);}'
 
+assert 3 '
+int main() {
+  char x[3];
+  x[0] = -1;
+  x[1] = 2;
+  int y;
+  y = 4;
+  return x[0] + y;
+}'
 echo "OK;"
