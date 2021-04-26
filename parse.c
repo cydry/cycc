@@ -488,7 +488,13 @@ void program() {
       gvar->next = globals;
       gvar->name = tok->str;
       gvar->len = tok->len;
-      gvar->offset = 8;
+
+      if (ty->kind == INT)
+	gvar->offset = 4;
+      else if (ty->kind == PTR)
+	gvar->offset = 8;
+      else
+	error("Unsupported type at definition of global variable");
       gvar->ty = ty;
       globals = gvar;
 
@@ -504,7 +510,7 @@ void program() {
 	ty = calloc(1, sizeof(Type));
 	ty->kind = ARRAY;
 	ty->array_size = elem;
-	gvar->offset = 8 * elem;
+	gvar->offset *= elem;
 	ty->ptr_to = gvar->ty;
 	gvar->ty = ty;
       }

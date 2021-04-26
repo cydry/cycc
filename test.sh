@@ -302,5 +302,7 @@ assert 3 'int a[10]; int main(){a[0]=3; a[0];}'
 assert 5 'int a[10]; int main(){int b; a[1]=5; b=9; a[1];}'
 assert 5 'int a[10]; int main(){a[0]=2; a[1]=3; a[0] + a[1];}'
 assert 5 'int a[10]; int main(){a[1]=2; a[9]=3; a[1] + a[9];}'
+assert 5 'int* a[10]; int main(){int b; int c; a[0]=&b; a[1]=&c; b=2; c=3; *(a[0]) + *(a[1]);}'
+assert 5 'int* a[10]; int main(){int b; int c; a[1]=&b; a[9]=&c; b=2; c=3; *(a[1]) + *(a[9]);}'
 
 echo "OK;"

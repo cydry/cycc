@@ -93,9 +93,19 @@ void gen_lval(Node *node) {
   } else  if (node->kind == ND_GVAR) {
     if (node->ty->kind == INT) {
       printf("  lea rax, DWORD PTR %s[rip]\n", node->call);
-    } else if (node->ty->kind == PTR) {
-      printf("  lea rax, QWORD PTR %s[rip]\n", node->call);
 
+    } else if (node->ty->kind == PTR) {
+      if (node->ty->ptr_to->kind == ARRAY) {
+	if (node->ty->ptr_to->ptr_to->kind == INT) {
+	  printf("  lea rax, DWORD PTR %s[rip]\n", node->call);
+	} else if(node->ty->ptr_to->ptr_to->kind == PTR) {
+	  printf("  lea rax, QWORD PTR %s[rip]\n", node->call);
+	} else {
+	  error("Unsupported type of array at `gen_lval'");
+	}
+      } else {
+	  printf("  lea rax, QWORD PTR %s[rip]\n", node->call);
+      }
     } else if (node->ty->kind == ARRAY) {
       if (node->ty->ptr_to->kind == INT) {
 	printf("  lea rax, DWORD PTR %s[rip]\n", node->call);
