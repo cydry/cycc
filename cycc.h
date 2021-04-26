@@ -63,6 +63,7 @@ struct Vec {
 };
 
 typedef enum {
+  CHAR,
   INT,
   PTR,
   ARRAY,

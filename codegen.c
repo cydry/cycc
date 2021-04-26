@@ -51,7 +51,11 @@ void gen_deref(Node* node, int acc) {
 
   if (node->rhs) {
     // The type, be pointed to.
-    if (node->rhs->ty->ptr_to->kind == INT) {
+    if (node->rhs->ty->ptr_to->kind == CHAR) {
+      printf("  pop rax\n");
+      printf("  movzx rax, BYTE PTR[rax]\n");
+      printf("  push rax\n");
+    } else if (node->rhs->ty->ptr_to->kind == INT) {
       printf("  pop rax\n");
       printf("  mov eax, DWORD PTR[rax]\n");
       printf("  push rax\n");
@@ -61,7 +65,12 @@ void gen_deref(Node* node, int acc) {
       printf("  push rax\n");
 
     } else if (node->rhs->ty->ptr_to->kind == ARRAY) {  // Dereferencing an array,
-      if (node->rhs->ty->ptr_to->ptr_to->kind == INT) { // the unit is element's size.
+      if (node->rhs->ty->ptr_to->ptr_to->kind == CHAR) { // the unit is element's size.
+	printf("  pop rax\n");
+	printf("  movzx eax, BYTE PTR[rax]\n");
+	printf("  push rax\n");
+
+      } else if (node->rhs->ty->ptr_to->ptr_to->kind == INT) { // the unit is element's size.
 	printf("  pop rax\n");
 	printf("  mov eax, DWORD PTR[rax]\n");
 	printf("  push rax\n");
@@ -91,12 +100,17 @@ void gen_lval(Node *node) {
     printf("  push rax\n");
 
   } else  if (node->kind == ND_GVAR) {
-    if (node->ty->kind == INT) {
+    if (node->ty->kind == CHAR) {
+      printf("  lea rax, BYTE PTR %s[rip]\n", node->call);
+
+    } else if (node->ty->kind == INT) {
       printf("  lea rax, DWORD PTR %s[rip]\n", node->call);
 
     } else if (node->ty->kind == PTR) {
       if (node->ty->ptr_to->kind == ARRAY) {
-	if (node->ty->ptr_to->ptr_to->kind == INT) {
+	if (node->ty->ptr_to->ptr_to->kind == CHAR) {
+	  printf("  lea rax, BYTE PTR %s[rip]\n", node->call);
+	} else if (node->ty->ptr_to->ptr_to->kind == INT) {
 	  printf("  lea rax, DWORD PTR %s[rip]\n", node->call);
 	} else if(node->ty->ptr_to->ptr_to->kind == PTR) {
 	  printf("  lea rax, QWORD PTR %s[rip]\n", node->call);
@@ -107,7 +121,9 @@ void gen_lval(Node *node) {
 	  printf("  lea rax, QWORD PTR %s[rip]\n", node->call);
       }
     } else if (node->ty->kind == ARRAY) {
-      if (node->ty->ptr_to->kind == INT) {
+      if (node->ty->ptr_to->kind == CHAR) {
+	printf("  lea rax, BYTE PTR %s[rip]\n", node->call);
+      } else if (node->ty->ptr_to->kind == INT) {
 	printf("  lea rax, DWORD PTR %s[rip]\n", node->call);
       } else if(node->ty->ptr_to->kind == PTR) {
 	printf("  lea rax, QWORD PTR %s[rip]\n", node->call);
@@ -297,6 +313,8 @@ void gen(Node *node) {
 	printf("  imul rdi, 8\n");
       if (node->lhs->ty->ptr_to->kind == INT)
 	printf("  imul rdi, 4\n");
+      if (node->lhs->ty->ptr_to->kind == CHAR)
+	printf("  imul rdi, 1\n");
 
       // Evaluating addition of pointer to array, the unit is determined by the element's size.
       // Array's data structure is...
@@ -308,6 +326,8 @@ void gen(Node *node) {
 	  printf("  imul rdi, 8\n");
 	if (node->lhs->ty->ptr_to->ptr_to->kind == INT)
 	  printf("  imul rdi, 4\n");
+	if (node->lhs->ty->ptr_to->ptr_to->kind == CHAR)
+	  printf("  imul rdi, 1\n");
       }
     }
     if (node->rhs && node->rhs->ty && node->rhs->ty->kind == PTR) {
@@ -316,6 +336,8 @@ void gen(Node *node) {
 	printf("  imul rax, 8\n");
       if (node->rhs->ty->ptr_to->kind == INT)
 	printf("  imul rax, 4\n");
+      if (node->rhs->ty->ptr_to->kind == CHAR)
+	printf("  imul rax, 1\n");
 
       // Evaluating addition of pointer to array, the unit is determined by the element's size.
       // Array's data structure is...
@@ -327,6 +349,8 @@ void gen(Node *node) {
 	  printf("  imul rax, 8\n");
 	if (node->rhs->ty->ptr_to->ptr_to->kind == INT)
 	  printf("  imul rax, 4\n");
+	if (node->rhs->ty->ptr_to->ptr_to->kind == CHAR)
+	  printf("  imul rax, 1\n");
       }
     }
     printf("  add rax, rdi\n");
@@ -338,6 +362,8 @@ void gen(Node *node) {
 	printf("  imul rdi, 8\n");
       if (node->lhs->ty->ptr_to->kind == INT)
 	printf("  imul rdi, 4\n");
+      if (node->lhs->ty->ptr_to->kind == CHAR)
+	printf("  imul rdi, 1\n");
 
       // Evaluating substraction of pointer to array, same as addition of it.
       if (node->lhs->ty->ptr_to->kind == ARRAY) {
@@ -345,6 +371,8 @@ void gen(Node *node) {
 	  printf("  imul rdi, 8\n");
 	if (node->lhs->ty->ptr_to->ptr_to->kind == INT)
 	  printf("  imul rdi, 4\n");
+	if (node->lhs->ty->ptr_to->ptr_to->kind == CHAR)
+	  printf("  imul rdi, 1\n");
       }
     }
     printf("  sub rax, rdi\n");

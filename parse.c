@@ -131,6 +131,11 @@ Token *tokenize(char *p) {
       p += 3;
       continue;
     }
+    if (strncmp(p, "char", 4) == 0 && !is_alnum(p[4])) {
+      cur = new_token(TK_RESERVED, cur, p, 4);
+      p += 4;
+      continue;
+    }
     if ((*p == '[') || (*p == ']')) {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
@@ -280,9 +285,15 @@ LVar *find_gvar(Token *tok) {
 
 Node* decl_param() {
   Node* node;
-  if (consume("int")) {
+  if (inspect("int") || inspect("char")) {
     Type* ty = calloc(1, sizeof(Type));
-    ty->kind = INT;
+    if (consume("int"))
+      ty->kind = INT;
+    else if (consume("char"))
+      ty->kind = CHAR;
+    else
+      error("Unsupported type at decl_param");
+
     Type* ptr;
     while(consume("*")) {
       ptr = calloc(1, sizeof(Type));
@@ -361,12 +372,17 @@ int find_size(Node* node) {
 
   // Local Variable's size with the type
   if (node->kind == ND_LVAR) {
+    if (node->ty->kind == CHAR)
+      return 1;
+
     if (node->ty->kind == INT)
       return 4;
 
     // Array's size is the total bytes.
     if (node->ty->kind == PTR && node->ty->ptr_to->kind == ARRAY) {
       // array's structure is..  PTR -> ARRAY -> (Element's type)
+      if (node->ty->ptr_to->ptr_to->kind == CHAR)
+	return 1 * node->ty->ptr_to->array_size;
       if (node->ty->ptr_to->ptr_to->kind == INT)
 	return 4 * node->ty->ptr_to->array_size;
       if (node->ty->ptr_to->ptr_to->kind == PTR)
@@ -380,12 +396,16 @@ int find_size(Node* node) {
   // Evaluates size of dereferecing a variable.
   if(node->kind == ND_DEREF) {
     node = find_lvar_node(node);
+    if (node->ty->ptr_to->kind == CHAR)
+      return 1;
     if (node->ty->ptr_to->kind == INT)
       return 4;
     if (node->ty->ptr_to->kind == PTR)
       return 8;
 
     if (node->ty->ptr_to->kind == ARRAY) {
+      if (node->ty->ptr_to->ptr_to->kind == CHAR)
+	return 1;
       if (node->ty->ptr_to->ptr_to->kind == INT)
 	return 4;
       if (node->ty->ptr_to->ptr_to->kind == PTR)
@@ -457,9 +477,15 @@ void program() {
   while (!at_eof()) {
     // Return type.
     // Only supports int and the pointer.
-    if (consume("int")) {
+    if (inspect("int") || inspect("char")) {
       ty = calloc(1, sizeof(Type));
-      ty->kind = INT;
+      if (consume("int"))
+	ty->kind = INT;
+      else if (consume("char"))
+	ty->kind = CHAR;
+      else
+	error("Unsupported type at top-level definition");
+
       Type* ptr;
       while(consume("*")) {
 	ptr = calloc(1, sizeof(Type));
@@ -489,7 +515,9 @@ void program() {
       gvar->name = tok->str;
       gvar->len = tok->len;
 
-      if (ty->kind == INT)
+      if (ty->kind == CHAR)
+	gvar->offset = 1;
+      else if (ty->kind == INT)
 	gvar->offset = 4;
       else if (ty->kind == PTR)
 	gvar->offset = 8;
@@ -574,9 +602,15 @@ Node *stmt() {
   }
 
   // Declaration.
-  if (consume("int")) {
+  if (inspect("int") || inspect("char")) {
     Type* ty = calloc(1, sizeof(Type));
-    ty->kind = INT;
+    if (consume("int"))
+      ty->kind = INT;
+    else if (consume("char"))
+      ty->kind = CHAR;
+    else
+      error("Unsupported type at definition for local variables");
+
     Type* ptr;
     while(consume("*")) {
       ptr = calloc(1, sizeof(Type));
