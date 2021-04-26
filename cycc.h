@@ -137,6 +137,4 @@ void genasm();
 // Utilities.
 void error(char *fmt, ...);
 
-Node* find_lvar_node(Node* node);
-
 Node* find_deref_node(Node* node);

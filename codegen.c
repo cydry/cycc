@@ -49,24 +49,23 @@ void gen_deref(Node* node, int acc) {
     printf("  push rax\n");
   }
 
-  Node* lvar_node = find_lvar_node(node);
-  if (lvar_node->kind == ND_LVAR) {
+  if (node->rhs) {
     // The type, be pointed to.
-    if (lvar_node->ty->ptr_to->kind == INT) {
+    if (node->rhs->ty->ptr_to->kind == INT) {
       printf("  pop rax\n");
       printf("  mov eax, DWORD PTR[rax]\n");
       printf("  push rax\n");
-    } else if (lvar_node->ty->ptr_to->kind == PTR) {
+    } else if (node->rhs->ty->ptr_to->kind == PTR) {
       printf("  pop rax\n");
       printf("  mov rax, QWORD PTR[rax]\n");
       printf("  push rax\n");
 
-    } else if (lvar_node->ty->ptr_to->kind == ARRAY) {  // Dereferencing an array,
-      if (lvar_node->ty->ptr_to->ptr_to->kind == INT) { // the unit is element's size.
+    } else if (node->rhs->ty->ptr_to->kind == ARRAY) {  // Dereferencing an array,
+      if (node->rhs->ty->ptr_to->ptr_to->kind == INT) { // the unit is element's size.
 	printf("  pop rax\n");
 	printf("  mov eax, DWORD PTR[rax]\n");
 	printf("  push rax\n");
-      } else if (lvar_node->ty->ptr_to->ptr_to->kind == PTR) {
+      } else if (node->rhs->ty->ptr_to->ptr_to->kind == PTR) {
 	printf("  pop rax\n");
 	printf("  mov rax, QWORD PTR[rax]\n");
 	printf("  push rax\n");
