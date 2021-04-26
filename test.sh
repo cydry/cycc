@@ -61,8 +61,6 @@ assert_stdout() {
 }
 
 
-assert 3 'int a; int main(){int b; b=3; b;}'
-
 assert 0 'int main(int a){0;}'
 assert 0 'int main(){0;}'
 assert 42 'int main(){42;}'
@@ -294,5 +292,6 @@ int main() {
     return a[0] + a[1];
 }'
 
-
+assert 2 'int a; int main(){a=2; a;}'
+assert 5 'int a; int main(){int b; a=2; b=3; a+b;}'
 echo "OK;"

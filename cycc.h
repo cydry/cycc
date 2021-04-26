@@ -32,6 +32,7 @@ typedef enum {
   ND_DEREF,  // *, addressing, dereference.
   ND_SIZE,   // sizeof operator.
   ND_GDECL,  // declaration of global var.
+  ND_GVAR,   // global variable.
 } NodeKind;
 
 // A Vector for block, compound statement.

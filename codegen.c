@@ -83,12 +83,17 @@ void gen_deref(Node* node, int acc) {
 }
 
 void gen_lval(Node *node) {
-  if (node->kind != ND_LVAR)
+  if (node->kind != ND_LVAR && node->kind != ND_GVAR)
     error("Not lvalue of the assignment");
 
-  printf("  mov rax, rbp\n");
-  printf("  sub rax, %d\n", node->offset);
-  printf("  push rax\n");
+  if (node->kind == ND_LVAR) {
+    printf("  mov rax, rbp\n");
+    printf("  sub rax, %d\n", node->offset);
+    printf("  push rax\n");
+  } else  if (node->kind == ND_GVAR) {
+    printf("  lea rax, QWORD PTR %s[rip]\n", node->call);
+    printf("  push rax\n");
+  }
 }
 
 void gen(Node *node) {
@@ -104,6 +109,12 @@ void gen(Node *node) {
 	node->ty->ptr_to &&
 	node->ty->ptr_to->kind == ARRAY)
       return;
+    printf("  pop rax\n");
+    printf("  mov rax, [rax]\n");
+    printf("  push rax\n");
+    return;
+  case ND_GVAR:
+    gen_lval(node);
     printf("  pop rax\n");
     printf("  mov rax, [rax]\n");
     printf("  push rax\n");
@@ -228,7 +239,7 @@ void gen(Node *node) {
     return;
   case ND_GDECL:
     printf("%s:\n", node->call);
-    printf("   .byte %d\n", node->offset);
+    printf("  .zero %d\n", node->offset);
     return;
   case ND_DECL:
     return;
@@ -341,12 +352,20 @@ void gen(Node *node) {
   printf("  push rax\n");
 }
 
-void genasm(Node* node) {
+void genasm() {
   printf(".intel_syntax noprefix\n");
   printf(".globl main\n");
 
+  printf(".data\n");
+  Node* node;
+  int text = 0;
   int i = 0;
   while (code[i]) {
+    node = code[i];
+    if (node->kind == ND_FUNC && !text) {
+      printf(".text\n");
+      text = 1;
+    }
     gen(code[i++]);
   }
 }

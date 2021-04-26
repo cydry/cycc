@@ -269,6 +269,15 @@ LVar *find_lvar(Token *tok) {
   return NULL;
 }
 
+// Find global variable for 'offset(data size)' infomation with the name.
+// If not find the name, returns NULL.
+LVar *find_gvar(Token *tok) {
+  for (LVar *var = globals; var; var = var->next)
+    if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
+      return var;
+  return NULL;
+}
+
 Node* decl_param() {
   Node* node;
   if (consume("int")) {
@@ -829,14 +838,25 @@ Node *primary() {
 	consume(",");
       }
     } else {
-      node->kind = ND_LVAR;
 
       LVar *lvar = find_lvar(tok);
       if (lvar) {
+	node->kind = ND_LVAR;
 	node->offset = lvar->offset;
 	node->ty = lvar->ty;
       } else {
-	error_at(tok->str, "No declaration.");
+	LVar *gvar = find_gvar(tok);
+	if (gvar) {
+	  node->kind = ND_GVAR;
+
+	  node->call = calloc(1, sizeof(gvar->len)+1);
+	  strncpy(node->call, gvar->name, gvar->len);
+	  node->call[gvar->len] = '\0';
+
+	  node->ty = gvar->ty;
+	} else {
+	  error_at(tok->str, "No declaration.");
+	}
       }
     }
     return node;
