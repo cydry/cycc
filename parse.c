@@ -475,7 +475,7 @@ void program() {
     if (inspect("(")) {
       node = func(tok);
 
-    } else if (inspect(";")) {
+    } else if (inspect(";") || inspect("[")) {
       // Definition of Global variable
 
       node = calloc(1, sizeof(Node));

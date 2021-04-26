@@ -296,5 +296,11 @@ assert 2 'int a; int main(){a=2; a;}'
 assert 5 'int a; int main(){int b; a=2; b=3; a+b;}'
 assert 2 'int* a; int main(){a=2; a;}'
 assert 2 'int* a; int main(){int b; b=2; a=&b; *a;}'
+assert 2 'int a[10]; int main(){*a=2; *a;}'
+assert 3 'int a[10]; int main(){a[0]=3; *a;}'
+assert 3 'int a[10]; int main(){a[0]=3; a[0];}'
+assert 5 'int a[10]; int main(){int b; a[1]=5; b=9; a[1];}'
+assert 5 'int a[10]; int main(){a[0]=2; a[1]=3; a[0] + a[1];}'
+assert 5 'int a[10]; int main(){a[1]=2; a[9]=3; a[1] + a[9];}'
 
 echo "OK;"

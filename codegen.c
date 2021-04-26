@@ -130,6 +130,10 @@ void gen(Node *node) {
     return;
   case ND_GVAR:
     gen_lval(node);
+    if (node->ty->kind == PTR &&
+	node->ty->ptr_to &&
+	node->ty->ptr_to->kind == ARRAY)
+      return;
     printf("  pop rax\n");
     printf("  mov rax, [rax]\n");
     printf("  push rax\n");
