@@ -3,7 +3,7 @@ assert() {
   expected="$1"
   input="$2"
 
-  ./main "$input" > tmp.s
+  ./main -e "$input" > tmp.s
   cc -o tmp tmp.s
   ./tmp
   actual="$?"
@@ -20,7 +20,7 @@ assert_with() {
   expected="$1"
   input="$2"
 
-  ./main "$input" > tmp.s
+  ./main -e "$input" > tmp.s
   cc -c foo.c
   cc -o tmp tmp.s foo.o
   ./tmp
@@ -36,7 +36,7 @@ assert_with() {
 
 assert_fail() {
   input=$1
-  ./main "$input" > tmp.s
+  ./main -e "$input" > tmp.s
   if [ $? -ne 1 ]; then
       echo "$input should cause an error."
       exit 1
@@ -47,7 +47,7 @@ assert_stdout() {
   expected="$1"
   input="$2"
 
-  ./main "$input" > tmp.s
+  ./main -e "$input" > tmp.s
   cc -c foo.c
   cc -o tmp tmp.s foo.o
   actual=`./tmp`
@@ -56,6 +56,23 @@ assert_stdout() {
     echo "$input => $actual"
   else
     echo "$input => $expected expected, but got $actual"
+    exit 1
+  fi
+}
+
+assert_file() {
+  expected="$1"
+  file="$2"
+
+  ./main "$file" > tmp.s
+  cc -o tmp tmp.s
+  ./tmp
+  actual="$?"
+
+  if [ "$actual" = "$expected" ]; then
+    echo "$file => $actual"
+  else
+    echo "$file => $expected expected, but got $actual"
     exit 1
   fi
 }
@@ -75,7 +92,7 @@ assert 114 'int main() {char* a; a = "Hello,World!\n"; a[8];}'
 assert 108 'int main() {char* a; a = "Hello,World!\n"; a[9];}'
 assert 100 'int main() {char* a; a = "Hello,World!\n"; a[10];}'
 assert 33  'int main() {char* a; a = "Hello,World!\n"; a[11];}'
-exit 1
+
 
 assert 0 'int main(int a){0;}'
 assert 0 'int main(){0;}'
@@ -352,4 +369,7 @@ int main() {
   y = 4;
   return x[0] + y;
 }'
+
+assert_file 3 test/test.c
+
 echo "OK;"

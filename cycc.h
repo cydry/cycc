@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 // Kinds of node for Abstract Syntax Tree.
 typedef enum {
@@ -147,3 +148,5 @@ void error(char *fmt, ...);
 Node* find_deref_node(Node* node);
 
 int unique_num();
+
+char* read_file(char* path);
