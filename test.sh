@@ -294,4 +294,7 @@ int main() {
 
 assert 2 'int a; int main(){a=2; a;}'
 assert 5 'int a; int main(){int b; a=2; b=3; a+b;}'
+assert 2 'int* a; int main(){a=2; a;}'
+assert 2 'int* a; int main(){int b; b=2; a=&b; *a;}'
+
 echo "OK;"
