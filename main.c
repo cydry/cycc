@@ -10,7 +10,8 @@ int main(int argc, char **argv) {
     user_input = argv[2];
     token = tokenize(argv[2]);
   } else {
-    user_input = read_file(argv[1]);
+    filename = argv[1];
+    user_input = read_file(filename);
     token = tokenize(user_input);
   }
 

@@ -100,6 +100,7 @@ Token *token;
 
 // Input program.
 char *user_input;
+char *filename;
 
 // AST of the code.
 Node* code[100];

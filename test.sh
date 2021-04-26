@@ -43,6 +43,15 @@ assert_fail() {
   fi
 }
 
+assert_ffail() {
+  file=$1
+  ./main "$file"
+  if [ $? -ne 1 ]; then
+      echo "$input should cause an error."
+      exit 1
+  fi
+}
+
 assert_stdout() {
   expected="$1"
   input="$2"
@@ -370,6 +379,7 @@ int main() {
   return x[0] + y;
 }'
 
-assert_file 3 test/test.c
+assert_file 3 tests/test.c
+assert_ffail  tests/fail.c
 
 echo "OK;"
