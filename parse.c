@@ -298,6 +298,16 @@ LVar *find_gvar(Token *tok) {
   return NULL;
 }
 
+// Find literals for initializer by the name.
+// If not find the name, returns NULL.
+LVar *find_initials(char* name) {
+  int len = strlen(name);
+  for (LVar *var = initials; var; var = var->next)
+    if (var->len == len && !memcmp(name, var->name, var->len))
+      return var;
+  return NULL;
+}
+
 Node* decl_param() {
   Node* node;
   if (inspect("int") || inspect("char")) {
@@ -562,7 +572,40 @@ void program() {
 
       // Initialization
       if (consume("=")) {
-	node->rhs = new_node_num(expect_number());
+	Token* initok = consume_literal();
+	if (initok) {
+	  Type* ty = calloc(1, sizeof(Type));
+	  ty->kind = PTR;
+	  ty->ptr_to = calloc(1, sizeof(Type));
+	  ty->ptr_to->kind = ARRAY;
+	  ty->ptr_to->array_size = initok->len;
+	  ty->ptr_to->ptr_to = calloc(1, sizeof(Type));
+	  ty->ptr_to->ptr_to->kind = CHAR;
+
+	  Node* ininode = calloc(1, sizeof(Node));
+	  ininode->kind = ND_LITER;
+
+	  ininode->call = calloc(1, 64);
+	  int uniq = unique_num();
+	  int len = sprintf(ininode->call, "IC%d", uniq); // initializer's `name'
+	  ininode->call[len] = '\0';
+
+	  LVar* lvar = calloc(1, sizeof(LVar));
+	  lvar->next = initials;
+	  lvar->name = ininode->call; // name
+	  lvar->len  = len;        // length of name
+
+	  lvar->lite = calloc(1, sizeof(initok->len)+1);
+	  strncpy(lvar->lite, initok->str, initok->len); // literal string
+	  lvar->lite[initok->len] = '\0';
+	  lvar->offset = initok->len;                 // length of literal string
+	  lvar->ty = ty;
+	  initials = lvar;
+
+	  node->rhs = ininode;
+	} else {
+	  node->rhs = new_node_num(expect_number());
+	}
       }
 
       expect(";");

@@ -126,6 +126,9 @@ LVar *globals;
 // Dictionary for literals.
 LVar *literals;
 
+// Dictionary for literals for initializer.
+LVar *initials;
+
 // Parse.
 Token *tokenize(char *p);
 void program();
@@ -153,3 +156,5 @@ Node* find_deref_node(Node* node);
 int unique_num();
 
 char* read_file(char* path);
+
+LVar *find_initials(char* name);

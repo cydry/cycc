@@ -288,10 +288,28 @@ void gen(Node *node) {
     return;
   case ND_GDECL:
     printf("%s:\n", node->call);
-    if (node->rhs)
-      printf("  .long %d\n", node->rhs->val);
-    else
+    if (node->rhs) {
+      if (node->rhs->kind == ND_NUM) {
+	printf("  .long %d\n", node->rhs->val);
+
+      } else if (node->rhs->kind == ND_LITER) {
+	LVar* ivar = find_initials(node->rhs->call);
+	if (ivar) {
+	  char* p = ivar->lite;
+	  p++;
+	  while(*p != '"') {
+	    printf("  .byte 0x%x\n", *p);
+	    p++;
+	  }
+	} else {
+	  error("Not found a literal with initializer.");
+	}
+      } else {
+	error("Unsupported type with initializer.");
+      }
+    } else {
       printf("  .zero %d\n", node->offset);
+    }
     return;
   case ND_DECL:
     return;
