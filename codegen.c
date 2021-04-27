@@ -307,7 +307,7 @@ void gen(Node *node) {
       } else if (node->rhs->kind == ND_ADDR) {
 	printf("  .quad %s\n", node->rhs->rhs->call);
       } else if (node->rhs->kind == ND_ADD) {
-	printf("  .quad %s \+ %d\n", node->rhs->lhs->call, node->rhs->rhs->val);
+	printf("  .quad %s + %d\n", node->rhs->lhs->call, node->rhs->rhs->val);
       } else {
 	error("Unsupported type with initializer.");
       }
