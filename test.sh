@@ -383,6 +383,7 @@ assert_file 3 tests/test.c
 assert_ffail  tests/fail.c
 assert_file 3 tests/comment.c
 
+
 assert 2 'int a = 2; int main() { return a; }'
 assert 102 'char b[6] = "foobar"; int main() { b[0]; }'
 assert 98  'char b[6] = "foobar"; int main() { b[3]; }'
@@ -401,5 +402,15 @@ assert 98  "char x[3] = {'b', 'a', 'r'};  int main() { return x[0]; }"
 assert 114 "char x[3] = {'b', 'a', 'r'};  int main() { return x[2]; }"
 assert 98  "char x[]  = {'b', 'a', 'r'};  int main() { return x[0]; }"
 assert 114 "char x[]  = {'b', 'a', 'r'};  int main() { return x[2]; }"
+
+assert 3 "int x[5] = {1, 2, 3, 0, 0}; int main() { return x[2];}"
+assert 0 "int x[5] = {1, 2, 3, 0, 0}; int main() { return x[3];}"
+
+assert 3 "int x[5] = {1, 2, 3}; int main() { return x[2];}"
+assert 0 "int x[5] = {1, 2, 3}; int main() { return x[3];}"
+
+assert 98 "char x[5] = {'b', 'a', 'r'};  int main() { return x[0]; }"
+assert 0  "char x[5] = {'b', 'a', 'r'};  int main() { return x[3]; }"
+
 
 echo "OK;"

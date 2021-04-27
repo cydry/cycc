@@ -34,19 +34,25 @@ int vec_len(Vec* elem) {
 }
 
 // For initialize with block having numbers.
-void init_block_vec(Vec* elem) {
+int init_block_vec(Vec* elem, int acc) {
   if (!elem)
-    return;
-  init_block_vec(elem->next);
+    return 0;
+  acc = init_block_vec(elem->next, acc);
+  acc++;
+
   printf("  .long %d\n", elem->node->val);
+  return acc;
 }
 
 // For initialize with block having chars.
-void init_block_vec_char(Vec* elem) {
+int init_block_vec_char(Vec* elem, int acc) {
   if (!elem)
-    return;
-  init_block_vec_char(elem->next);
+    return 0;
+  acc = init_block_vec_char(elem->next, acc);
+  acc++;
+
   printf("  .byte %s\n", elem->node->call);
+  return acc;
 }
 
 void gen_deref(Node* node, int acc) {
@@ -325,12 +331,26 @@ void gen(Node *node) {
       } else if (node->rhs->kind == ND_ADD) {
 	printf("  .quad %s + %d\n", node->rhs->lhs->call, node->rhs->rhs->val);
       } else if (node->rhs->kind == ND_PARAM) {
-	  if (node->rhs->param->node->kind == ND_NUM)
-	    init_block_vec(node->rhs->param);
-	  else if (node->rhs->param->node->kind == ND_CHAR)
-	    init_block_vec_char(node->rhs->param);
-	  else
-	    error("Unsupported type with block initializer.");
+	int acc = 0;
+	if (node->rhs->param->node->kind == ND_NUM)
+	  acc = init_block_vec(node->rhs->param, 0);
+	else if (node->rhs->param->node->kind == ND_CHAR)
+	  acc = init_block_vec_char(node->rhs->param, 0);
+	else
+	  error("Unsupported type with block initializer.");
+	if (node->ty->kind == ARRAY) {
+	  acc = node->ty->array_size - acc;
+	  for (; acc > 0; acc--) {
+	    if (node->ty->ptr_to->kind == INT)
+	      printf("  .long 0\n");
+	    else if (node->ty->ptr_to->kind == CHAR)
+	      printf("  .byte 0\n");
+	    else if (node->ty->ptr_to->kind == PTR)
+	      printf("  .quad 0\n");
+	    else
+	      error("Unsupported type with block initializer, remaining elements with zero.");
+	  }
+	}
       } else {
 	error("Unsupported type with initializer.");
       }
