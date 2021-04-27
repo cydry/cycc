@@ -777,10 +777,23 @@ Node *stmt() {
 	ininode->kind = ND_LVAR;
 	ininode->offset = lvar->offset;
 	ininode->ty = lvar->ty;
-      } else {
-	error("Not found, definition for local variable.");
       }
-      node->rhs = new_node(ND_ASSIGN, ininode, assign());
+
+      if (consume("{")) {
+	Node* paranode = calloc(1, sizeof(Node));
+	paranode->kind = ND_PARAM;                // in block's parameter, not function's.
+	while(!consume("}")) {
+	  Vec* elem = calloc(1, sizeof(Vec));
+	  elem->node = primary();
+	  elem->next = paranode->param;
+	  paranode->param = elem;
+	  consume(",");
+	}
+	node->rhs = new_node(ND_ASSIGN, ininode, paranode);
+
+      } else {
+	node->rhs = new_node(ND_ASSIGN, ininode, assign());
+      }
     }
     expect(";");
     return node;

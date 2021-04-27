@@ -161,7 +161,6 @@ void gen_lval(Node *node) {
 
 void gen(Node *node) {
   int uniq; // Make a label to have a unique label.
-
   switch (node->kind) {
   case ND_NUM:
     printf("  push %d\n", node->val);
@@ -360,8 +359,24 @@ void gen(Node *node) {
     }
     return;
   case ND_DECL:
-    if (node->rhs)
-      gen(node->rhs);
+    if (node->rhs) {
+      if (node->rhs->rhs && node->rhs->rhs->kind == ND_PARAM) {
+	for (Vec* elem = node->rhs->rhs->param; elem; elem = elem->next) {
+	  gen(elem->node);
+	}
+	gen_lval(node->rhs->lhs);
+	for (Vec* elem = node->rhs->rhs->param; elem; elem = elem->next) {
+	  printf("  pop rax\n");
+	  printf("  pop rdi\n");
+	  printf("  mov [rax], rdi\n");
+	  printf("  add rax, 4\n"); // INT on top of Stack.
+	  printf("  push rax\n");
+	}
+	printf("  pop rax\n"); // Drop address on top of stack.
+      } else {
+	gen(node->rhs);
+      }
+    }
     return;
   case ND_ADDR:
     gen_lval(node->rhs);
