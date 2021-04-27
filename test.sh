@@ -391,9 +391,15 @@ assert 98  'char b[]  = "foobar"; int main() { b[3]; }'
 
 assert 2 'int a = 2; int* b = &a; int main() { return *b; }'
 assert 98 'char b[] = "foobar"; char* d = b + 3; int main() { return *d; }'
+
 assert 0  'int x[3] = {0, 1, 2};  int main() { return x[0]; }'
 assert 2  'int x[3] = {0, 1, 2};  int main() { return x[2]; }'
 assert 0  'int x[] = {0, 1, 2};  int main() { return x[0]; }'
 assert 2  'int x[] = {0, 1, 2};  int main() { return x[2]; }'
+
+assert 98  "char x[3] = {'b', 'a', 'r'};  int main() { return x[0]; }"
+assert 114 "char x[3] = {'b', 'a', 'r'};  int main() { return x[2]; }"
+assert 98  "char x[]  = {'b', 'a', 'r'};  int main() { return x[0]; }"
+assert 114 "char x[]  = {'b', 'a', 'r'};  int main() { return x[2]; }"
 
 echo "OK;"

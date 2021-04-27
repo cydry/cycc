@@ -34,6 +34,17 @@ Token* consume_literal() {
   return cur;
 }
 
+// If a next token is char ( 1 charactor ),
+// then consume a token and returns True.
+// Otherwise, returns False value.
+Token* consume_char() {
+  if (token->kind != TK_CHAR)
+    return NULL;
+  Token* cur = token;
+  token = token->next;
+  return cur;
+}
+
 // If a next token is equel to expected one,
 // then consume a token and returns True.
 // Otherwise, reports error.
@@ -130,6 +141,16 @@ Token *tokenize(char *p) {
       }
       p++;
       cur = new_token(TK_LITERAL, cur, begin, p - begin);
+      continue;
+    }
+    // 1 charactor
+    if (*p == '\'') {
+      char* begin = p;
+      p = p + 2;
+      if (*p != '\'')
+	error("Invalid char literal");
+      p++;
+      cur = new_token(TK_CHAR, cur, begin, p - begin);
       continue;
     }
 
@@ -1038,6 +1059,20 @@ Node *primary() {
     lvar->offset = tok->len;                 // length of literal string
     lvar->ty = ty;
     literals = lvar;
+
+    return node;
+  }
+
+  tok = consume_char();
+  if (tok) {
+    Type* ty = calloc(1, sizeof(Type));
+    ty->kind = CHAR;
+
+    Node* node = calloc(1, sizeof(Node));
+    node->kind = ND_CHAR;
+    node->call = calloc(1, sizeof(tok->len)+1);
+    strncpy(node->call, tok->str, tok->len); // literal string
+    node->call[tok->len] = '\0';
 
     return node;
   }

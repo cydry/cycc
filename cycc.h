@@ -35,6 +35,7 @@ typedef enum {
   ND_GDECL,  // declaration of global var.
   ND_GVAR,   // global variable.
   ND_LITER,  // string, literals
+  ND_CHAR,   // characters
 } NodeKind;
 
 // A Vector for block, compound statement.
@@ -83,6 +84,7 @@ typedef enum {
   TK_IDENT,
   TK_NUM,
   TK_LITERAL,
+  TK_CHAR,
   TK_EOF,
 } TokenKind;
 

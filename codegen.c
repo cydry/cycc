@@ -41,6 +41,14 @@ void init_block_vec(Vec* elem) {
   printf("  .long %d\n", elem->node->val);
 }
 
+// For initialize with block having chars.
+void init_block_vec_char(Vec* elem) {
+  if (!elem)
+    return;
+  init_block_vec_char(elem->next);
+  printf("  .byte %s\n", elem->node->call);
+}
+
 void gen_deref(Node* node, int acc) {
   // Counts the number of dereferencing, using accumrator parameter.
   if (node->rhs->kind == ND_DEREF) {
@@ -319,6 +327,8 @@ void gen(Node *node) {
       } else if (node->rhs->kind == ND_PARAM) {
 	  if (node->rhs->param->node->kind == ND_NUM)
 	    init_block_vec(node->rhs->param);
+	  else if (node->rhs->param->node->kind == ND_CHAR)
+	    init_block_vec_char(node->rhs->param);
 	  else
 	    error("Unsupported type with block initializer.");
       } else {
