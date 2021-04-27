@@ -752,12 +752,19 @@ Node *stmt() {
     locals = lvar;
 
     if (consume("[")) {
-      int elem = expect_number();
-      expect("]");
-
-      while (consume("[")) {
-	elem *= expect_number();
+      int elem;
+      if (consume("]")) {
+	while (consume("[")) {
+	  expect("]");
+	}
+	elem = 0;
+      } else {
+	elem = expect_number();
 	expect("]");
+	while (consume("[")) {
+	  elem *= expect_number();
+	  expect("]");
+	}
       }
 
       ty = calloc(1, sizeof(Type));
@@ -771,24 +778,31 @@ Node *stmt() {
     // Initialization, local variables
     if (consume("=")) {
       Node* ininode = calloc(1, sizeof(Node));
-      ininode->kind = ND_LVAR;
-      LVar *lvar = find_lvar(tok);
-      if (lvar) {
+      LVar *ilvar = find_lvar(tok);
+      if (ilvar) {
 	ininode->kind = ND_LVAR;
-	ininode->offset = lvar->offset;
-	ininode->ty = lvar->ty;
+	ininode->offset = ilvar->offset;
+	ininode->ty = ilvar->ty;
       }
 
       if (consume("{")) {
 	Node* paranode = calloc(1, sizeof(Node));
 	paranode->kind = ND_PARAM;                // in block's parameter, not function's.
 	while(!consume("}")) {
-	  Vec* elem = calloc(1, sizeof(Vec));
-	  elem->node = primary();
-	  elem->next = paranode->param;
-	  paranode->param = elem;
+	  Vec* belem = calloc(1, sizeof(Vec));
+	  belem->node = primary();
+	  belem->next = paranode->param;
+	  paranode->param = belem;
 	  consume(",");
 	}
+
+	// set length of elements in blocks to local variables.
+	if (ilvar->ty->array_size == 0) {
+	  int len = vec_len(paranode->param);
+	  ilvar->offset = ilvar->offset + (len * 8); // without number of elements. `x[]'
+	  ininode->offset = ilvar->offset;
+	}
+
 	node->rhs = new_node(ND_ASSIGN, ininode, paranode);
 
       } else {

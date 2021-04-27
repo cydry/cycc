@@ -161,3 +161,5 @@ int unique_num();
 char* read_file(char* path);
 
 LVar *find_initials(char* name);
+
+int vec_len(Vec* elem);
