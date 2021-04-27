@@ -617,6 +617,19 @@ void program() {
 
 	  node->rhs = ininode;
 	} else {
+	  if (consume("{")) {
+	    Node* ininode = calloc(1, sizeof(Node));
+	    ininode->kind = ND_PARAM;                // in block's parameter, not function's.
+	    while(!consume("}")) {
+	      Vec* elem = calloc(1, sizeof(Vec));
+	      elem->node = primary();
+	      elem->next = ininode->param;
+	      ininode->param = elem;
+	      consume(",");
+	    }
+	    node->rhs = ininode;
+
+	  } else {
 	    Node* ininode = add();
 	    if (ininode->kind == ND_NUM) {
 	      node->rhs = ininode;
@@ -627,6 +640,7 @@ void program() {
 	    } else {
 	      error("Unsupported initializtion at a global variable");
 	    }
+	  }
 	}
       }
 
