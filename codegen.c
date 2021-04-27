@@ -323,6 +323,7 @@ void gen(Node *node) {
 	    printf("  .byte 0x%x\n", *p);
 	    p++;
 	  }
+	  printf("  .byte '\\0'\n", *p);
 	} else {
 	  error("Not found a literal with initializer.");
 	}
