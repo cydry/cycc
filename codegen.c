@@ -360,6 +360,8 @@ void gen(Node *node) {
     }
     return;
   case ND_DECL:
+    if (node->rhs)
+      gen(node->rhs);
     return;
   case ND_ADDR:
     gen_lval(node->rhs);

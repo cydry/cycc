@@ -767,6 +767,21 @@ Node *stmt() {
       ty->ptr_to = lvar->ty;
       lvar->ty = ty;
     }
+
+    // Initialization, local variables
+    if (consume("=")) {
+      Node* ininode = calloc(1, sizeof(Node));
+      ininode->kind = ND_LVAR;
+      LVar *lvar = find_lvar(tok);
+      if (lvar) {
+	ininode->kind = ND_LVAR;
+	ininode->offset = lvar->offset;
+	ininode->ty = lvar->ty;
+      } else {
+	error("Not found, definition for local variable.");
+      }
+      node->rhs = new_node(ND_ASSIGN, ininode, assign());
+    }
     expect(";");
     return node;
   }
