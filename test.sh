@@ -386,5 +386,7 @@ assert_file 3 tests/comment.c
 assert 2 'int a = 2; int main() { return a; }'
 assert 102 'char b[6] = "foobar"; int main() { b[0]; }'
 assert 98  'char b[6] = "foobar"; int main() { b[3]; }'
+assert 102 'char b[]  = "foobar"; int main() { b[0]; }'
+assert 98  'char b[]  = "foobar"; int main() { b[3]; }'
 
 echo "OK;"

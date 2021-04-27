@@ -552,20 +552,33 @@ void program() {
       globals = gvar;
 
       if (consume("[")) {
-	int elem = expect_number();
-	expect("]");
-
-	while (consume("[")) {
-	  elem *= expect_number();
+	if (inspect("]")) { // syntax for only initializer
 	  expect("]");
-	}
+	  while (consume("["))
+	    expect("]");
 
-	ty = calloc(1, sizeof(Type));
-	ty->kind = ARRAY;
-	ty->array_size = elem;
-	gvar->offset *= elem;
-	ty->ptr_to = gvar->ty;
-	gvar->ty = ty;
+	  ty = calloc(1, sizeof(Type));
+	  ty->kind = ARRAY;
+	  ty->array_size = 0; //  syntax for only initializer
+	  ty->ptr_to = gvar->ty;
+	  gvar->ty = ty;
+
+	} else {
+	  int elem = expect_number();
+	  expect("]");
+
+	  while (consume("[")) {
+	    elem *= expect_number();
+	    expect("]");
+	  }
+
+	  ty = calloc(1, sizeof(Type));
+	  ty->kind = ARRAY;
+	  ty->array_size = elem;
+	  gvar->offset *= elem;
+	  ty->ptr_to = gvar->ty;
+	  gvar->ty = ty;
+	}
       }
       node->ty = gvar->ty;
       node->offset = gvar->offset;
