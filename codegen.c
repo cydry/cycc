@@ -369,7 +369,16 @@ void gen(Node *node) {
 	  printf("  pop rax\n");
 	  printf("  pop rdi\n");
 	  printf("  mov [rax], rdi\n");
-	  printf("  add rax, 4\n"); // INT on top of Stack.
+	  if (node->rhs->lhs->ty->kind == ARRAY) {
+	    if (node->rhs->lhs->ty->ptr_to->kind == INT)
+	      printf("  add rax, 4\n");
+	    else if (node->rhs->lhs->ty->ptr_to->kind == PTR)
+	      printf("  add rax, 8\n");
+	    else if (node->rhs->lhs->ty->ptr_to->kind == CHAR)
+	      printf("  add rax, 1\n");
+	    else
+	      error("Unsupported type at block initialization of local variable.");
+	  }
 	  printf("  push rax\n");
 	}
 	printf("  pop rax\n"); // Drop address on top of stack.
