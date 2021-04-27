@@ -389,27 +389,6 @@ Node* find_lvar_node(Node* node) {
     return ret;
 }
 
-// Find a node of dereference node having local variables
-// in a partial tree.
-// This is a helper function for pointer addition and substraction
-// IN codegen.c .
-Node* find_deref_node(Node* node) {
-  if (!node)
-    return NULL;
-
-  Node* ret;
-  ret = find_lvar_node(node->lhs);
-  if (ret)
-    return ret;
-
-  if (node->kind == ND_DEREF)
-    return node;
-
-  ret = find_lvar_node(node->rhs);
-  if (ret)
-    return ret;
-}
-
 // At Evaluating a sizeof, find size of the node.
 int find_size(Node* node) {
   // Supports only Integer(32bit), about number.
