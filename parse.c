@@ -617,13 +617,16 @@ void program() {
 
 	  node->rhs = ininode;
 	} else {
-	    Node* ininode = unary();
-	    if (ininode->kind == ND_NUM)
+	    Node* ininode = add();
+	    if (ininode->kind == ND_NUM) {
 	      node->rhs = ininode;
-	    else if (ininode->kind == ND_ADDR)
+	    } else if (ininode->kind == ND_ADDR) {
 	      node->rhs = ininode;
-	    else
+	    } else if (ininode->kind == ND_ADD) {// addition of address and constants, on global variables
+	      node->rhs = ininode;
+	    } else {
 	      error("Unsupported initializtion at a global variable");
+	    }
 	}
       }
 
