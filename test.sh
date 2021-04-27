@@ -428,4 +428,6 @@ assert 3 "int main() { char x[] = {1, 2, 3}; return x[2]; }"
 assert 1 "int main() { int  x[] = {1, 2, 3}; return x[0]; }"
 assert 3 "int main() { int  x[] = {1, 2, 3}; return x[2]; }"
 
+assert 5 "int foo(){return 5;} int main() {int x[] = { 1, 2, foo() }; return x[2]; }"
+
 echo "OK;"
