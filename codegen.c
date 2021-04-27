@@ -304,6 +304,8 @@ void gen(Node *node) {
 	} else {
 	  error("Not found a literal with initializer.");
 	}
+      } else if (node->rhs->kind == ND_ADDR) {
+	printf("  .quad %s\n", node->rhs->rhs->call);
       } else {
 	error("Unsupported type with initializer.");
       }

@@ -389,4 +389,6 @@ assert 98  'char b[6] = "foobar"; int main() { b[3]; }'
 assert 102 'char b[]  = "foobar"; int main() { b[0]; }'
 assert 98  'char b[]  = "foobar"; int main() { b[3]; }'
 
+assert 2 'int a = 2; int* b = &a; int main() { return *b; }'
+
 echo "OK;"

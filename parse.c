@@ -617,7 +617,15 @@ void program() {
 
 	  node->rhs = ininode;
 	} else {
-	  node->rhs = new_node_num(expect_number());
+	  if (consume("&")) {
+	    Node* ininode = primary();
+	    ty = ininode->ty;
+	    ininode = new_node(ND_ADDR, NULL, ininode);
+	    ininode->ty = ty;
+	    node->rhs = ininode;
+	  } else {
+	    node->rhs = new_node_num(expect_number());
+	  }
 	}
       }
 
