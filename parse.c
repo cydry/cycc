@@ -217,6 +217,15 @@ Token *tokenize(char *p) {
       continue;
     }
 
+
+    // postfix
+    if (strncmp(p, "++", 2) == 0 ||
+	strncmp(p, "--", 2) == 0) {
+      cur = new_token(TK_RESERVED, cur, p, 2);
+      p += 2;
+      continue;
+    }
+
     // equality
     if (strncmp(p, "==", 2) == 0 ||
 	strncmp(p, "!=", 2) == 0) {
@@ -950,7 +959,7 @@ Node *unary() {
   if (consume("sizeof"))
     return new_node(ND_SIZE, NULL, size_of());
   if (consume("+")) {
-      node = primary();
+      node = postfix();
       if (node->ty && node->ty->kind == ARRAY) {
 	Type* ty = calloc(1, sizeof(Type));
 	ty->kind = PTR;
@@ -960,7 +969,7 @@ Node *unary() {
       return node;
   }
   if (consume("-")) {
-    node = primary();
+    node = postfix();
     if (node->ty && node->ty->kind == ARRAY) {
       Type* ty = calloc(1, sizeof(Type));
       ty->kind = PTR;
@@ -973,7 +982,7 @@ Node *unary() {
     return node;
   }
   if (consume("&")) {
-    node = primary();
+    node = postfix();
     ty = node->ty;
     node = new_node(ND_ADDR, NULL, node);
     node->ty = ty;
@@ -993,13 +1002,22 @@ Node *unary() {
     return node;
   }
 
-  node = primary();
+  node = postfix();
   if (node->ty && node->ty->kind == ARRAY) {
     Type* ty = calloc(1, sizeof(Type));
     ty->kind = PTR;
     ty->ptr_to = node->ty;
     node->ty = ty;
   }
+  return node;
+}
+
+Node *postfix() {
+  Node* node = primary();
+  if (consume("++"))
+    return new_node(ND_POST, node, new_node(ND_ASSIGN, node, new_node(ND_ADD, node, new_node_num(1))));
+  if (consume("--"))
+    return new_node(ND_POST, node, new_node(ND_ASSIGN, node, new_node(ND_SUB, node, new_node_num(1))));
   return node;
 }
 

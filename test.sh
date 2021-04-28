@@ -430,4 +430,11 @@ assert 3 "int main() { int  x[] = {1, 2, 3}; return x[2]; }"
 
 assert 5 "int foo(){return 5;} int main() {int x[] = { 1, 2, foo() }; return x[2]; }"
 
+assert 3 "int main(){ int a = 2; a++; return a; }"
+assert 2 "int main(){ int a = 2; int b; b = a++; return b; }"
+assert 3 "int main(){ int a = 2; int b; b = a++; return a; }"
+
+assert 1 "int main(){ int a = 2; a--; return a; }"
+assert 2 "int main(){ int a = 2; int b; b = a--; return b; }"
+assert 1 "int main(){ int a = 2; int b; b = a--; return a; }"
 echo "OK;"
