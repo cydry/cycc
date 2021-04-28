@@ -488,6 +488,7 @@ Node* size_of() {
   consume("(");
   if (consume("int")) {
     size = 4;
+
     if (consume("*")) {
       while(consume("*"))
 	;
@@ -502,6 +503,26 @@ Node* size_of() {
   return new_node_num(size);
 }
 
+// Parse type declarator.
+Type* consume_type() {
+  Type* ty = calloc(1, sizeof(Type));
+  if (consume("int"))
+    ty->kind = INT;
+  else if (consume("char"))
+    ty->kind = CHAR;
+  else
+    return NULL;
+
+  Type* ptr;
+  while(consume("*")) {
+    ptr = calloc(1, sizeof(Type));
+    ptr->kind = PTR;
+    ptr->ptr_to = ty;
+    ty = ptr;
+  }
+  return ty;
+}
+
 
 void program() {
   Node* node;
@@ -510,24 +531,8 @@ void program() {
   int i = 0;
   while (!at_eof()) {
     // Return type.
-    // Only supports int and the pointer.
-    if (inspect("int") || inspect("char")) {
-      ty = calloc(1, sizeof(Type));
-      if (consume("int"))
-	ty->kind = INT;
-      else if (consume("char"))
-	ty->kind = CHAR;
-      else
-	error("Unsupported type at top-level definition");
-
-      Type* ptr;
-      while(consume("*")) {
-	ptr = calloc(1, sizeof(Type));
-	ptr->kind = PTR;
-	ptr->ptr_to = ty;
-	ty = ptr;
-      }
-    } else {
+    ty = consume_type();
+    if (!ty) {
       error_at(token->str, "Not found a type on top-level space.");
     }
 
