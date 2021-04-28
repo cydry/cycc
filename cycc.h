@@ -156,8 +156,6 @@ void error(char *fmt, ...);
 
 void error_at(char *loc, char *fmt, ...);
 
-Node* find_deref_node(Node* node);
-
 int unique_num();
 
 char* read_file(char* path);
