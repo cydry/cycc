@@ -558,6 +558,15 @@ void program() {
     tok = consume_ident();
 
     if (ty->kind == STRUCT) {
+      if (consume("{")) {
+	while (!consume("}")) {
+	  Type* memb = consume_type();
+	  memb->ptr_to = ty;
+	  ty = memb;
+	  consume_ident(); // only consume a member's name
+	  consume(";");
+	}
+      }
       consume(";");
       continue;
     }
