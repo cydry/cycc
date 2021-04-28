@@ -341,12 +341,8 @@ LVar *find_initials(char* name) {
 Node* decl_param() {
   Node* node;
   if (inspect("int") || inspect("char")) {
-    Type* ty = calloc(1, sizeof(Type));
-    if (consume("int"))
-      ty->kind = INT;
-    else if (consume("char"))
-      ty->kind = CHAR;
-    else
+    Type* ty = consume_type();
+    if (!ty)
       error("Unsupported type at decl_param");
 
     Type* ptr;
@@ -356,7 +352,6 @@ Node* decl_param() {
       ptr->ptr_to = ty;
       ty = ptr;
     }
-
 
     Token* tok = consume_ident();
     if (tok) {
@@ -523,6 +518,21 @@ Type* consume_type() {
   return ty;
 }
 
+// Converts type to the size.
+int type_size(Type* ty) {
+  if (ty->kind == CHAR)
+    return 1;
+  else if (ty->kind == INT)
+    return 4;
+  else if (ty->kind == PTR)
+    return 8;
+  else if (ty->kind == ARRAY)
+    return ty->array_size * type_size(ty->ptr_to);
+  else
+    error("Unsupported type at type_size");
+  return 0; // unreachable.
+}
+
 
 void program() {
   Node* node;
@@ -554,14 +564,7 @@ void program() {
       gvar->name = tok->str;
       gvar->len = tok->len;
 
-      if (ty->kind == CHAR)
-	gvar->offset = 1;
-      else if (ty->kind == INT)
-	gvar->offset = 4;
-      else if (ty->kind == PTR)
-	gvar->offset = 8;
-      else
-	error("Unsupported type at definition of global variable");
+      gvar->offset = type_size(ty);
       gvar->ty = ty;
       globals = gvar;
 
