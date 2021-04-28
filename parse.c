@@ -717,21 +717,9 @@ Node *stmt() {
 
   // Declaration.
   if (inspect("int") || inspect("char")) {
-    Type* ty = calloc(1, sizeof(Type));
-    if (consume("int"))
-      ty->kind = INT;
-    else if (consume("char"))
-      ty->kind = CHAR;
-    else
-      error("Unsupported type at definition for local variables");
-
-    Type* ptr;
-    while(consume("*")) {
-      ptr = calloc(1, sizeof(Type));
-      ptr->kind = PTR;
-      ptr->ptr_to = ty;
-      ty = ptr;
-    }
+    Type* ty = consume_type();
+    if (!ty)
+      error("Failed parsing a type at definition for local variables");
 
     node = calloc(1, sizeof(Node));
     node->kind = ND_DECL;
