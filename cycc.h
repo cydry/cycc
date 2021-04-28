@@ -140,6 +140,8 @@ typedef struct Tag Tag;
 struct Tag {
   Tag *next;
   Type* ty;
+  char* name;
+  Tag* memb;
 };
 
 // Dictionary for tags of data structure, struct.

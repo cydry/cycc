@@ -512,7 +512,17 @@ Type* consume_type() {
     ty->kind = CHAR;
   } else if (consume("struct")) {
     ty->kind = STRUCT;
-    consume_ident(); // only consume tag.
+
+    Tag* tag = calloc(1, sizeof(Tag));
+    tag->ty = ty;
+    tag->next = structs;
+
+    Token* tok = consume_ident();
+    tag->name = calloc(1, sizeof(tok->len)+1);
+    strncpy(tag->name, tok->str, tok->len);
+    tag->name[tok->len] = '\0';
+
+    structs = tag;
   } else {
     return NULL;
   }
@@ -559,11 +569,24 @@ void program() {
 
     if (ty->kind == STRUCT) {
       if (consume("{")) {
+	Tag* st = structs;
 	while (!consume("}")) {
-	  Type* memb = consume_type();
-	  memb->ptr_to = ty;
-	  ty = memb;
-	  consume_ident(); // only consume a member's name
+
+	  // Member's type
+	  Type* memb_ty = consume_type();
+	  Tag* memb_tag = calloc(1, sizeof(Tag));
+	  memb_tag->ty = memb_ty;
+
+	  // Member's tag name
+	  Token* memb_tok = consume_ident();
+	  memb_tag->name = calloc(1, sizeof(memb_tok->len)+1);
+	  strncpy(memb_tag->name, memb_tok->str, memb_tok->len);
+	  memb_tag->name[memb_tok->len] = '\0';
+
+	  // Updates struct's dictionary.
+	  memb_tag->next = st->memb;
+	  st->memb = memb_tag;
+
 	  consume(";");
 	}
       }
