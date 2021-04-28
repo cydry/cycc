@@ -133,6 +133,17 @@ LVar *literals;
 // Dictionary for literals for initializer.
 LVar *initials;
 
+typedef struct Tag Tag;
+
+// Tag for user defined type.
+struct Tag {
+  Tag *next;
+  Type* ty;
+};
+
+// Dictionary for tags of data structure, struct.
+Tag *structs;
+
 // Parse.
 Token *tokenize(char *p);
 void program();
