@@ -437,4 +437,6 @@ assert 3 "int main(){ int a = 2; int b; b = a++; return a; }"
 assert 1 "int main(){ int a = 2; a--; return a; }"
 assert 2 "int main(){ int a = 2; int b; b = a--; return b; }"
 assert 1 "int main(){ int a = 2; int b; b = a--; return a; }"
+
+assert 2 "struct x; int main(){return 2;}"
 echo "OK;"

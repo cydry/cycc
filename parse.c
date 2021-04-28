@@ -176,6 +176,11 @@ Token *tokenize(char *p) {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
+    if (strncmp(p, "struct", 6) == 0 && !is_alnum(p[6])) {
+      cur = new_token(TK_RESERVED, cur, p, 6);
+      p += 6;
+      continue;
+    }
 
 
     // Return statemment
@@ -501,12 +506,16 @@ Node* size_of() {
 // Parse type declarator.
 Type* consume_type() {
   Type* ty = calloc(1, sizeof(Type));
-  if (consume("int"))
+  if (consume("int")) {
     ty->kind = INT;
-  else if (consume("char"))
+  } else if (consume("char")) {
     ty->kind = CHAR;
-  else
+  } else if (consume("struct")) {
+    ty->kind = STRUCT;
+    consume_ident(); // only consume tag.
+  } else {
     return NULL;
+  }
 
   Type* ptr;
   while(consume("*")) {
@@ -547,6 +556,12 @@ void program() {
     }
 
     tok = consume_ident();
+
+    if (ty->kind == STRUCT) {
+      consume(";");
+      continue;
+    }
+
     if (inspect("(")) {
       node = func(tok);
 
