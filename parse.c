@@ -500,14 +500,9 @@ int find_size(Node* node) {
 Node* size_of() {
   int size = 0;
   consume("(");
-  if (consume("int")) {
-    size = 4;
-
-    if (consume("*")) {
-      while(consume("*"))
-	;
-      size = 8;
-    }
+  Type* ty = consume_type();
+  if (ty) {
+    size = type_size(ty);
     consume(")");
     return new_node_num(size);
   }

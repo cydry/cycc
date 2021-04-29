@@ -443,4 +443,7 @@ assert 2 "struct x; int main(){return 2;}"
 assert 0 "struct x { int a; }; int main() { return 0; }"
 assert 0 "struct x { int a; char* b; }; int main() { return 0; }"
 
+assert 4  "struct x { int a; }; int main() { return sizeof(struct x); }"
+assert 12 "struct x { int a; char* b; }; int main() { return sizeof(struct x); }"
+
 echo "OK;"
