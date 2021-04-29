@@ -419,7 +419,7 @@ int find_size(Node* node) {
     return 4;
 
   // Local Variable's size with the type
-  if (node->kind == ND_LVAR) {
+  if (node->kind == ND_LVAR || node->kind == ND_GVAR) {
     if (node->ty->kind == CHAR)
       return 1;
 
@@ -719,6 +719,7 @@ void program() {
 	      ininode->param = elem;
 	      consume(",");
 	    }
+	    node->ty->array_size = vec_len(ininode->param);
 	    node->rhs = ininode;
 
 	  } else {

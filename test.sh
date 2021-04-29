@@ -334,6 +334,7 @@ int main() {
     return a[0] + a[1];
 }'
 
+assert 12 "struct x { int a; char* b; }; int main() { struct x c; return sizeof(struct x); }"
 
 assert 2 'int a; int main(){a=2; a;}'
 assert 5 'int a; int main(){int b; a=2; b=3; a+b;}'
@@ -447,5 +448,8 @@ assert 4  "struct x { int a; }; int main() { return sizeof(struct x); }"
 assert 12 "struct x { int a; char* b; }; int main() { return sizeof(struct x); }"
 assert 12 "struct x { int a; char* b; }; struct x c; int main() { return sizeof(struct x); }"
 assert 12 "struct x { int a; char* b; }; int main() { struct x c; return sizeof(struct x); }"
+
+assert 12  'int x[3] = {0, 1, 2};  int main() { return sizeof(x); }'
+assert 12  'int x[] = {0, 1, 2};   int main() { return sizeof(x); }'
 
 echo "OK;"
