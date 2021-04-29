@@ -183,3 +183,6 @@ int vec_len(Vec* elem);
 Type* consume_type();
 
 int type_size(Type* ty);
+
+int ceil_bound8(int size);
+

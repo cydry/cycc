@@ -359,18 +359,8 @@ Tag *find_struct(char* name, int len) {
 
 Node* decl_param() {
   Node* node;
-  if (inspect("int") || inspect("char")) {
-    Type* ty = consume_type();
-    if (!ty)
-      error("Unsupported type at decl_param");
-
-    Type* ptr;
-    while(consume("*")) {
-      ptr = calloc(1, sizeof(Type));
-      ptr->kind = PTR;
-      ptr->ptr_to = ty;
-      ty = ptr;
-    }
+  Type* ty = consume_type();
+  if (ty) {
 
     Token* tok = consume_ident();
     if (tok) {
@@ -378,7 +368,7 @@ Node* decl_param() {
       lvar->next = locals;
       lvar->name = tok->str;
       lvar->len = tok->len;
-      lvar->offset = locals ? locals->offset + 8 : 0 + 8;
+      lvar->offset = locals ? locals->offset + ceil_bound8(type_size(ty)) : 0 + ceil_bound8(type_size(ty));
       lvar->ty = ty;
       locals = lvar;
 

@@ -452,4 +452,6 @@ assert 12 "struct x { int a; char* b; }; int main() { struct x c; return sizeof(
 assert 12  'int x[3] = {0, 1, 2};  int main() { return sizeof(x); }'
 assert 12  'int x[] = {0, 1, 2};   int main() { return sizeof(x); }'
 
+assert 2 "struct x { int a; char* b; }; int foo(struct x *c) {2;} int main() {struct x d; return foo(&d); }"
+
 echo "OK;"
