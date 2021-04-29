@@ -531,15 +531,6 @@ Type* consume_type() {
     ty->tag = tok->str;
     ty->tag_len = tok->len;
 
-    Tag* tag = calloc(1, sizeof(Tag));
-    tag->ty = ty;
-    tag->name = calloc(1, sizeof(tok->len)+1);
-    strncpy(tag->name, tok->str, tok->len);
-    tag->name[tok->len] = '\0';
-
-    tag->next = structs;
-    structs = tag;
-
   } else {
     return NULL;
   }
@@ -597,7 +588,15 @@ void program() {
 
     if (ty->kind == STRUCT) {
       if (consume("{")) {
-	Tag* st = structs;
+	Tag* st = calloc(1, sizeof(Tag));
+	st->ty = ty;
+	st->name = calloc(1, sizeof(ty->tag_len)+1);
+	strncpy(st->name, ty->tag, ty->tag_len);
+	st->name[ty->tag_len] = '\0';
+
+	st->next = structs;
+	structs = st;
+
 	while (!consume("}")) {
 
 	  // Member's type
