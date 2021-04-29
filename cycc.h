@@ -79,6 +79,8 @@ struct Type {
   TypeKind kind;
   Type* ptr_to;
   int array_size;
+  char* tag;       // tag name of struct
+  int tag_len;     // length of the tag name
 };
 
 typedef enum {

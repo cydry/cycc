@@ -343,6 +343,20 @@ LVar *find_initials(char* name) {
   return NULL;
 }
 
+// Find struct for size of user defined type, by the name.
+// If not find the name, returns NULL.
+//
+// args:
+//      tag: tag's name
+//      len: tag's length
+//
+Tag *find_struct(char* name, int len) {
+  for (Tag *tag = structs; tag; tag = tag->next)
+    if (!memcmp(name, tag->name, len))
+      return tag;
+  return NULL;
+}
+
 Node* decl_param() {
   Node* node;
   if (inspect("int") || inspect("char")) {
@@ -513,16 +527,19 @@ Type* consume_type() {
   } else if (consume("struct")) {
     ty->kind = STRUCT;
 
+    Token* tok = consume_ident();
+    ty->tag = tok->str;
+    ty->tag_len = tok->len;
+
     Tag* tag = calloc(1, sizeof(Tag));
     tag->ty = ty;
-    tag->next = structs;
-
-    Token* tok = consume_ident();
     tag->name = calloc(1, sizeof(tok->len)+1);
     strncpy(tag->name, tok->str, tok->len);
     tag->name[tok->len] = '\0';
 
+    tag->next = structs;
     structs = tag;
+
   } else {
     return NULL;
   }
@@ -547,11 +564,22 @@ int type_size(Type* ty) {
     return 8;
   else if (ty->kind == ARRAY)
     return ty->array_size * type_size(ty->ptr_to);
-  else
+
+  else if (ty->kind == STRUCT) {
+    Tag* st_mem = find_struct(ty->tag, ty->tag_len);
+    st_mem = st_mem->memb;
+
+    int size = 0;
+    while (st_mem) {
+      size += type_size(st_mem->ty);
+      st_mem = st_mem->next;
+    }
+    return size;
+
+  } else
     error("Unsupported type at type_size");
   return 0; // unreachable.
 }
-
 
 void program() {
   Node* node;
