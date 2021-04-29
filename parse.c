@@ -567,6 +567,12 @@ int type_size(Type* ty) {
   return 0; // unreachable.
 }
 
+int ceil_bound8(int size) {
+  if (size % 8 == 0)
+    return size;
+  return (size / 8 * 8) + 8;
+}
+
 void program() {
   Node* node;
   Token *tok;
@@ -578,8 +584,6 @@ void program() {
     if (!ty) {
       error_at(token->str, "Not found a type on top-level space.");
     }
-
-    tok = consume_ident();
 
     if (ty->kind == STRUCT) {
       if (consume("{")) {
@@ -612,9 +616,11 @@ void program() {
 	  consume(";");
 	}
       }
-      consume(";");
-      continue;
+      if (consume(";"))
+	continue;
     }
+
+    tok = consume_ident();
 
     if (inspect("(")) {
       node = func(tok);
@@ -788,11 +794,8 @@ Node *stmt() {
   }
 
   // Declaration.
-  if (inspect("int") || inspect("char")) {
-    Type* ty = consume_type();
-    if (!ty)
-      error("Failed parsing a type at definition for local variables");
-
+  Type* ty = consume_type();
+  if (ty) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_DECL;
     Token* tok = consume_ident();
@@ -800,7 +803,7 @@ Node *stmt() {
     lvar->next = locals;
     lvar->name = tok->str;
     lvar->len = tok->len;
-    lvar->offset = locals ? locals->offset + 8 : 0 + 8;
+    lvar->offset = locals ? locals->offset + ceil_bound8(type_size(ty)) : 0 + ceil_bound8(type_size(ty));
     lvar->ty = ty;
     locals = lvar;
 
@@ -823,8 +826,8 @@ Node *stmt() {
       ty = calloc(1, sizeof(Type));
       ty->kind = ARRAY;
       ty->array_size = elem;
-      lvar->offset = (lvar->offset - 8) + (elem * 8);
       ty->ptr_to = lvar->ty;
+      lvar->offset = (lvar->offset - ceil_bound8(type_size(ty))) + ceil_bound8((elem * type_size(ty)));
       lvar->ty = ty;
     }
 
