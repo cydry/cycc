@@ -273,6 +273,12 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    // Struct member access expression
+    if (*p == '.') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
     // Referencing.
     if (*p == '&') {
       cur = new_token(TK_RESERVED, cur, p++, 1);
@@ -561,6 +567,39 @@ int ceil_bound8(int size) {
   if (size % 8 == 0)
     return size;
   return (size / 8 * 8) + 8;
+}
+
+
+// Returns offset of a member of struct, by the member's name.
+// args:
+//      memb: struct's members
+//      tok : member's tag name
+//      flag: For offset calculation. should be set 0, in use.
+//
+int memb_off(Tag* memb, Token* tok, int flag) {
+  if (!memb)
+    return 0;
+
+  int acc = 0;
+  if (!strncmp(memb->name, tok->str, tok->len))
+    acc = memb_off(memb->next, tok, 1);
+  else
+    acc = memb_off(memb->next, tok, flag);
+
+  if (flag)
+    acc = acc + type_size(memb->ty);
+  return acc;
+}
+
+// Returns type of a member of struct, by the member's name.
+Type* memb_type(Tag* memb, Token* tok) {
+  if (!memb)
+    return NULL;
+
+  if (!strncmp(memb->name, tok->str, tok->len))
+    return memb->ty;
+
+  return memb_type(memb->next, tok);
 }
 
 void program() {
@@ -1077,6 +1116,33 @@ Node *postfix() {
     return new_node(ND_POST, node, new_node(ND_ASSIGN, node, new_node(ND_ADD, node, new_node_num(1))));
   if (consume("--"))
     return new_node(ND_POST, node, new_node(ND_ASSIGN, node, new_node(ND_SUB, node, new_node_num(1))));
+  if (consume(".")) {
+    Token* tok = consume_ident();
+    Tag* st = find_struct(node->ty->tag, node->ty->tag_len);
+    int offset = memb_off(st->memb, tok, 0);
+    fprintf(stdout, "#offset:%d\n", offset);
+
+    Type* ty = calloc(1, sizeof(Type));
+    ty->kind = PTR;
+    ty->ptr_to = node->ty;
+    node->ty = ty;
+
+    ty = node->ty;
+    node = new_node(ND_ADD, node, new_node_num(offset));
+    node->ty = ty;
+    if (node->rhs->ty && node->rhs->ty->kind == PTR)
+      node->ty = node->rhs->ty;
+
+    Type* mem_ty = memb_type(st->memb, tok);
+    Node* mem_node = new_node(ND_LVAR, NULL, NULL); // For member's size at derefrencing the value.
+    mem_node->ty = mem_ty;
+
+    ty = node->ty;
+    node = new_node(ND_MEMB, node, mem_node);
+    node->ty = ty->ptr_to;
+
+    return node;
+  }
   return node;
 }
 

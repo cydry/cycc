@@ -453,5 +453,23 @@ assert 12  'int x[3] = {0, 1, 2};  int main() { return sizeof(x); }'
 assert 12  'int x[] = {0, 1, 2};   int main() { return sizeof(x); }'
 
 assert 2 "struct x { int a; char* b; }; int foo(struct x *c) {2;} int main() {struct x d; return foo(&d); }"
+assert 2 "struct x { int a; char* b; }; int main() {struct x d; d.a=2; return d.a; }"
+assert 2 "struct x { char* b; int a; }; int main() {struct x d; d.a=2; d.b=3; return d.a; }"
+assert 5 "struct x { int a; int b; char* c; }; int main() {struct x d; d.a=2; d.b=3; d.c=5; return d.c; }"
+
+assert 3 "struct x { int a; char* b; int c; }; int main() {struct x d; d.a=2; d.b=3; d.c=5; return d.b; }"
+assert 3 "struct x { int a; int c; char* b; }; int main() {struct x d; d.a=2; d.b=3; d.c=5; return d.b; }"
+
+assert 2 "struct x { int a; int b; int c; }; int main() {struct x d; d.a=2; d.b=3; d.c=5; return d.a; }"
+assert 3 "struct x { int a; int b; int c; }; int main() {struct x d; d.a=2; d.b=3; d.c=5; return d.b; }"
+assert 5 "struct x { int a; int b; int c; }; int main() {struct x d; d.a=2; d.b=3; d.c=5; return d.c; }"
+
+assert 2 "struct x { int a; char* b; int c; }; int main() {struct x d; d.a=2; d.c=3; d.b=5; return d.a; }"
+assert 3 "struct x { int a; char* b; int c; }; int main() {struct x d; d.a=2; d.c=3; d.b=5; return d.c; }"
+assert 5 "struct x { int a; char* b; int c; }; int main() {struct x d; d.a=2; d.c=3; d.b=5; return d.b; }"
+
+assert 2 "struct x { int a; int c; char* b; }; int main() {struct x d; d.a=2; d.c=3; d.b=5; return d.a; }"
+assert 3 "struct x { int a; int c; char* b; }; int main() {struct x d; d.a=2; d.c=3; d.b=5; return d.c; }"
+assert 5 "struct x { int a; int c; char* b; }; int main() {struct x d; d.a=2; d.c=3; d.b=5; return d.b; }"
 
 echo "OK;"

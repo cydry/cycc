@@ -37,6 +37,7 @@ typedef enum {
   ND_GVAR,   // global variable.
   ND_LITER,  // string, literals
   ND_CHAR,   // characters
+  ND_MEMB,   // '.' accessing member of struct.
 } NodeKind;
 
 // A Vector for block, compound statement.

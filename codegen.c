@@ -192,13 +192,33 @@ void gen(Node *node) {
   case ND_ASSIGN:
     if (node->lhs->kind == ND_DEREF)
       gen(node->lhs->rhs); // as rvalue
+    else if (node->lhs->kind == ND_MEMB)
+      gen(node->lhs->lhs); // as rvalue
     else
       gen_lval(node->lhs);
     gen(node->rhs);
 
     printf("  pop rdi\n");
     printf("  pop rax\n");
-    printf("  mov [rax], rdi\n");
+
+    if (node->lhs && node->lhs->kind == ND_MEMB) {
+      switch (type_size(node->lhs->rhs->ty)) {
+      case 1:
+	printf("  mov BYTE PTR  [rax], dil\n");
+	break;
+      case 4:
+	printf("  mov DWORD PTR [rax], edi\n");
+	break;
+      case 8:
+	printf("  mov QWORD PTR [rax], rdi\n");
+	break;
+      default:
+	printf("  mov [rax], rdi\n");
+	break;
+      }
+    } else {
+	printf("  mov [rax], rdi\n"); // default
+    }
     printf("  push rdi\n");
     return;
   case ND_RETURN:
@@ -400,6 +420,30 @@ void gen(Node *node) {
     gen(node->lhs);
     gen(node->rhs);
     printf("  pop rax\n");
+    return;
+  case ND_MEMB:
+    gen(node->lhs);
+    if (node->rhs) {
+      switch (type_size(node->rhs->ty)) {
+      case 1:
+	printf("  pop rax\n");
+	printf("  movzx rax, BYTE PTR[rax]\n");
+	printf("  push rax\n");
+	break;
+      case 4:
+	printf("  pop rax\n");
+	printf("  mov eax, DWORD PTR[rax]\n");
+	printf("  push rax\n");
+	break;
+      case 8:
+	printf("  pop rax\n");
+	printf("  mov rax, QWORD PTR[rax]\n");
+	printf("  push rax\n");
+	break;
+      }
+    } else {
+      error("Failed at member accessing.\n");
+    }
     return;
   }
 
