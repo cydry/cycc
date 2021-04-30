@@ -230,6 +230,11 @@ Token *tokenize(char *p) {
       p += 2;
       continue;
     }
+    if (strncmp(p, "->", 2) == 0) {
+      cur = new_token(TK_RESERVED, cur, p, 2);
+      p += 2;
+      continue;
+    }
 
     // equality
     if (strncmp(p, "==", 2) == 0 ||
@@ -1126,6 +1131,36 @@ Node *postfix() {
     ty->kind = PTR;
     ty->ptr_to = node->ty;
     node->ty = ty;
+
+    ty = node->ty;
+    node = new_node(ND_ADD, node, new_node_num(offset));
+    node->ty = ty;
+    if (node->rhs->ty && node->rhs->ty->kind == PTR)
+      node->ty = node->rhs->ty;
+
+    Type* mem_ty = memb_type(st->memb, tok);
+    Node* mem_node = new_node(ND_LVAR, NULL, NULL); // For member's size at derefrencing the value.
+    mem_node->ty = mem_ty;
+
+    ty = node->ty;
+    node = new_node(ND_MEMB, node, mem_node);
+    node->ty = ty->ptr_to;
+
+    return node;
+  }
+  if (consume("->")) {
+    Token* tok = consume_ident();
+    Tag* st = find_struct(node->ty->tag, node->ty->tag_len);
+    int offset = memb_off(st->memb, tok, 0);
+
+    Type* ty = calloc(1, sizeof(Type));
+    ty->kind = PTR;
+    ty->ptr_to = node->ty;
+    node->ty = ty;
+
+    ty = node->ty;
+    node = new_node(ND_DEREF, NULL, node);
+    node->ty = ty->ptr_to;
 
     ty = node->ty;
     node = new_node(ND_ADD, node, new_node_num(offset));

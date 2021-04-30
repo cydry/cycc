@@ -472,4 +472,24 @@ assert 2 "struct x { int a; int c; char* b; }; int main() {struct x d; d.a=2; d.
 assert 3 "struct x { int a; int c; char* b; }; int main() {struct x d; d.a=2; d.c=3; d.b=5; return d.c; }"
 assert 5 "struct x { int a; int c; char* b; }; int main() {struct x d; d.a=2; d.c=3; d.b=5; return d.b; }"
 
+assert 2 "struct x { int a; char* b; }; int main() {struct x c; struct x* d; d=&c; c.a=2; return d->a; }"
+assert 2 "struct x { int a; char* b; }; int main() {struct x c; struct x* d; d=&c; c.b=2; return d->b; }"
+
+assert 2 "struct x { char* b; int a; }; int main() {struct x d; struct x* p; p=&d; d.a=2; d.b=3; return p->a; }"
+assert 5 "struct x { int a; int b; char* c; }; int main() {struct x d; struct x* p; d.a=2; d.b=3; d.c=5; p=&d; return p->c; }"
+
+assert 3 "struct x { int a; char* b; int c; }; int main() {struct x d; struct x* p; p=&d; d.a=2; d.b=3; d.c=5; return p->b; }"
+assert 3 "struct x { int a; int c; char* b; }; int main() {struct x d; struct x* p; p=&d; d.a=2; d.b=3; d.c=5; return p->b; }"
+
+assert 2 "struct x { int a; int b; int c; }; int main() {struct x d; struct x* p; d.a=2; d.b=3; d.c=5; p=&d; return p->a; }"
+assert 3 "struct x { int a; int b; int c; }; int main() {struct x d; struct x* p; d.a=2; d.b=3; d.c=5; p=&d; return p->b; }"
+assert 5 "struct x { int a; int b; int c; }; int main() {struct x d; struct x* p; d.a=2; d.b=3; d.c=5; p=&d; return p->c; }"
+
+assert 2 "struct x { int a; char* b; int c; }; int main() {struct x d; struct x* p; d.a=2; d.c=3; d.b=5; p=&d; return p->a; }"
+assert 5 "struct x { int a; char* b; int c; }; int main() {struct x d; struct x* p; d.a=2; d.c=3; d.b=5; p=&d; return p->b; }"
+assert 3 "struct x { int a; char* b; int c; }; int main() {struct x d; struct x* p; d.a=2; d.c=3; d.b=5; p=&d; return p->c; }"
+
+assert 2 "struct x { int a; int c; char* b; }; int main() {struct x d; struct x* p; p=&d; d.a=2; d.c=3; d.b=5; return p->a; }"
+assert 5 "struct x { int a; int c; char* b; }; int main() {struct x d; struct x* p; p=&d; d.a=2; d.c=3; d.b=5; return p->b; }"
+assert 3 "struct x { int a; int c; char* b; }; int main() {struct x d; struct x* p; p=&d; d.a=2; d.c=3; d.b=5; return p->c; }"
 echo "OK;"
