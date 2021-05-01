@@ -1,8 +1,9 @@
 #!/bin/bash
 source test_util.sh
 
-assertf tests/switch.c
+assertf_spec $1
 
+assertf tests/switch.c
 
 assert 0   'int main() {char* a; a = "Hello,World!\n"; 0;}'
 assert 72  'int main() {char* a; a = "Hello,World!\n"; *a;}'

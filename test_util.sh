@@ -100,3 +100,18 @@ assertf() {
     exit 1
   fi
 }
+
+# args:
+#      $1:  specify a file path to be tested.
+assertf_spec() {
+  specify=$1
+  if [ -n "$specify" ]; then
+    if [ -e $specify ]; then
+      assertf $specify
+    else
+      echo "Not exists the file: $specify"
+      exit 1
+    fi
+    exit 0
+  fi
+}

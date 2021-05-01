@@ -11,7 +11,7 @@ main: $(OBJS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 test: main
-	./test.sh
+	./test.sh ${ARGS}
 
 clean:
 	rm -f main *.o tmp*
