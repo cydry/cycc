@@ -1,6 +1,8 @@
 #!/bin/bash
 source test_util.sh
 
+assertf tests/test.c
+
 assert 0   'int main() {char* a; a = "Hello,World!\n"; 0;}'
 assert 72  'int main() {char* a; a = "Hello,World!\n"; *a;}'
 assert 72  'int main() {char* a; a = "Hello,World!\n"; a[0];}'
@@ -294,7 +296,6 @@ int main() {
   return x[0] + y;
 }'
 
-assert_file 3 tests/test.c
 assert_ffail  tests/fail.c
 assert_file 3 tests/comment.c
 

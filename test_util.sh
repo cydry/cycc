@@ -84,3 +84,19 @@ assert_file() {
     exit 1
   fi
 }
+
+assertf() {
+  file="$1"
+
+  ./main "$file" > tmp.s
+  cc -o tmp tmp.s foo.o
+  out=`./tmp`
+  actual="$?"
+
+  if [ "$actual" = "0" ]; then
+    echo "$file OK"
+  else
+    echo "$out"
+    exit 1
+  fi
+}
