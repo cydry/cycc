@@ -406,4 +406,163 @@ assert 3 "struct x { int a; char* b; int c; }; int main() {struct x d; struct x*
 assert 2 "struct x { int a; int c; char* b; }; int main() {struct x d; struct x* p; p=&d; d.a=2; d.c=3; d.b=5; return p->a; }"
 assert 5 "struct x { int a; int c; char* b; }; int main() {struct x d; struct x* p; p=&d; d.a=2; d.c=3; d.b=5; return p->b; }"
 assert 3 "struct x { int a; int c; char* b; }; int main() {struct x d; struct x* p; p=&d; d.a=2; d.c=3; d.b=5; return p->c; }"
+
+assert 3 '
+int foo(int a) {
+  if (a<5) {
+    a = 3;
+  } else {
+    a = 7;
+  }
+  return a;
+}
+
+int main() {
+  return foo(2);
+}
+'
+assert 7 '
+int foo(int a) {
+  if (a<5) {
+    a = 3;
+  } else {
+    a = 7;
+  }
+  return a;
+}
+
+int main() {
+  return foo(9);
+}
+'
+
+assert 3 '
+int foo(int a) {
+  int b = 0;
+  if (a<5) {
+    b = 3;
+  } else if (a>5) {
+    b = 7;
+  } else {
+    b = 5;
+  }
+  return b;
+}
+
+int main() {
+  return foo(2);
+}
+'
+assert 5 '
+int foo(int a) {
+  int b = 0;
+  if (a<5) {
+    b = 3;
+  } else if (a>5) {
+    b = 7;
+  } else {
+    b = 5;
+  }
+  return b;
+}
+
+int main() {
+  return foo(5);
+}
+'
+assert 7 '
+int foo(int a) {
+  int b = 0;
+  if (a<5) {
+    b = 3;
+  } else if (a>5) {
+    b = 7;
+  } else {
+    b = 5;
+  }
+  return b;
+}
+
+int main() {
+  return foo(6);
+}
+'
+
+assert 3 '
+int foo(int a) {
+  int b = 0;
+  if (a<5) {
+    b = 3;
+  } else if (a==5) {
+    b = 5;
+  } else if (a==6) {
+    b = 6;
+  } else {
+    b = 7;
+  }
+  return b;
+}
+
+int main() {
+  return foo(2);
+}
+'
+assert 5 '
+int foo(int a) {
+  int b = 0;
+  if (a<5) {
+    b = 3;
+  } else if (a==5) {
+    b = 5;
+  } else if (a==6) {
+    b = 6;
+  } else {
+    b = 7;
+  }
+  return b;
+}
+
+int main() {
+  return foo(5);
+}
+'
+assert 6 '
+int foo(int a) {
+  int b = 0;
+  if (a<5) {
+    b = 3;
+  } else if (a==5) {
+    b = 5;
+  } else if (a==6) {
+    b = 6;
+  } else {
+    b = 7;
+  }
+  return b;
+}
+
+int main() {
+  return foo(6);
+}
+'
+assert 7 '
+int foo(int a) {
+  int b = 0;
+  if (a<5) {
+    b = 3;
+  } else if (a==5) {
+    b = 5;
+  } else if (a==6) {
+    b = 6;
+  } else {
+    b = 7;
+  }
+  return b;
+}
+
+int main() {
+  return foo(9);
+}
+'
+
 echo "OK;"

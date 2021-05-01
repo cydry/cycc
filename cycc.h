@@ -21,8 +21,7 @@ typedef enum {
   ND_LVAR,   // local variable.
   ND_NUM, // number
   ND_RETURN, // return statement
-  ND_IF,     // control flow, if
-  ND_ELSE,   // control flow, if-else
+  ND_IF,     // control flow, if, else, else-if
   ND_WHILE,  // control flow, while
   ND_FOR,    // control flow, for
   ND_BLOCK,  // {}, compound statement.

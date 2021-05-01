@@ -229,23 +229,15 @@ void gen(Node *node) {
     printf("  ret\n");
     return;
   case ND_IF:
+    uniq = unique_num();
     gen(node->lhs);
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
-    if (node->rhs->kind == ND_ELSE)
-      return gen(node->rhs);
-    uniq = unique_num();
-    printf("  je .Lend%d\n", uniq);
+    printf("  je .Lelse%d\n", uniq);
     gen(node->rhs);
-    printf(".Lend%d:\n", uniq);
-    return;
-  case ND_ELSE:
-    uniq = unique_num();
-    printf("  je  .Lelse%d\n", uniq);
-    gen(node->lhs);
     printf("  jmp .Lend%d\n", uniq);
     printf(".Lelse%d:\n", uniq);
-    gen(node->rhs);
+    gen_vec_rev(node->block);
     printf(".Lend%d:\n", uniq);
     return;
   case ND_WHILE:

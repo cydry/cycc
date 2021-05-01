@@ -914,8 +914,10 @@ Node *stmt() {
     node->rhs = stmt();
 
     if (consume("else")) {
-      Node* tmp = calloc(1, sizeof(Node));
-      tmp->kind = ND_ELSE;
+      Vec* elist = calloc(1, sizeof(Vec));
+      elist->node = stmt();
+      elist->next = node->block;
+      node->block = elist;
     }
     return node;
   }
