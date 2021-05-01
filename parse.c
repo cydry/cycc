@@ -201,6 +201,12 @@ Token *tokenize(char *p) {
       p += 4;
       continue;
     }
+    // Control switch
+    if (strncmp(p, "switch", 6) == 0 && !is_alnum(p[6])) {
+      cur = new_token(TK_RESERVED, cur, p, 6);
+      p += 6;
+      continue;
+    }
     // Control flow, for, while
     if (strncmp(p, "for", 3) == 0 && !is_alnum(p[3])) {
       cur = new_token(TK_RESERVED, cur, p, 3);
@@ -921,6 +927,19 @@ Node *stmt() {
     }
     return node;
   }
+  // Control flow switch.
+  if (consume("switch")) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_SWITCH;
+    expect("(");
+    node->lhs = expr();
+    expect(")");
+
+    expect("{");
+    expect("}");
+    return node;
+  }
+
   // Control flow, for, while.
   if (consume("for")) {
     node = calloc(1, sizeof(Node));

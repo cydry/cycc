@@ -240,6 +240,8 @@ void gen(Node *node) {
     gen_vec_rev(node->block);
     printf(".Lend%d:\n", uniq);
     return;
+  case ND_SWITCH:
+    return;
   case ND_WHILE:
     uniq = unique_num();
     printf(".Lbegin%d:\n", uniq);
