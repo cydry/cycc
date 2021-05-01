@@ -62,6 +62,23 @@ int switcher3(int x) {
   return y;
 }
 
+int switcher4(int x) {
+  int y = 0;
+  switch (x) {
+  case 3:
+    y = 2;
+  case 5:
+    y = 3;
+  case 7:
+    y = 5;
+  case 11:
+    y = 7;
+  default:
+    y = 11;
+  }
+  return y;
+}
+
 int main() {
   int got;
 
@@ -97,6 +114,9 @@ int main() {
 
   got = switcher3(7);
   assert(5, got);
+
+  got = switcher3(13);
+  assert(11, got);
 
   return 0;
 }

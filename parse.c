@@ -161,6 +161,12 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    // default in switch.
+    if (strncmp(p, "default", 7) == 0 && !is_alnum(p[7])) {
+      cur = new_token(TK_RESERVED, cur, p, 7);
+      p += 7;
+      continue;
+    }
     // break in switch.
     if (strncmp(p, "break", 5) == 0 && !is_alnum(p[5])) {
       cur = new_token(TK_RESERVED, cur, p, 5);
@@ -966,6 +972,12 @@ Node *stmt() {
     expect(":");
     node->rhs = stmt();
 
+    Vec* defalist = NULL;
+    if (inspect("default")) {
+      defalist = calloc(1, sizeof(Vec));
+      defalist->node = stmt();
+    }
+
     if (inspect("break")) {
       Vec* brklist = calloc(1, sizeof(Vec));
       brklist->node = stmt();
@@ -979,6 +991,11 @@ Node *stmt() {
       calist->next = node->block;
       node->block = calist;
     }
+
+    if (defalist) {
+      defalist->next = node->block;
+      node->block = defalist;
+    }
     return node;
   }
 
@@ -986,6 +1003,14 @@ Node *stmt() {
     node = calloc(1, sizeof(Node));
     node->kind = ND_BRK;
     consume(";");
+    return node;
+  }
+
+  if (consume("default")) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_DEFAU;
+    consume(":");
+    node->lhs = stmt();
     return node;
   }
 

@@ -279,6 +279,10 @@ void gen(Node *node) {
     return;
   case ND_BRK:
     return; // Nop, Flag. 'break' node is handled by ND_CASE.
+  case ND_DEFAU:
+    printf("#ND_DEFAU\n");
+    gen(node->lhs);
+    return;
   case ND_WHILE:
     uniq = unique_num();
     printf(".Lbegin%d:\n", uniq);
