@@ -23,6 +23,7 @@ typedef enum {
   ND_RETURN, // return statement
   ND_IF,     // control flow, if, else, else-if
   ND_SWITCH, // control flow, switch
+  ND_CASE,   // control flow, case
   ND_WHILE,  // control flow, while
   ND_FOR,    // control flow, for
   ND_BLOCK,  // {}, compound statement.

@@ -241,6 +241,26 @@ void gen(Node *node) {
     printf(".Lend%d:\n", uniq);
     return;
   case ND_SWITCH:
+    gen(node->lhs);
+    printf("#SWITCH-COND-VALUE^\n");
+    gen(node->rhs);
+    return;
+  case ND_CASE:
+    uniq = unique_num();
+    printf("#CASE-BEGIN %d\n", uniq);
+    gen(node->lhs);
+    printf("  pop rdi\n");
+    printf("  pop rax  #SWITCH-VALUE\n");
+    printf("  push rax #SWITCH-VALUE-REUSE\n");
+    printf("  cmp rax, rdi\n");
+    printf("  je .Lcase%d\n", uniq);
+    printf("  jmp .Lend%d\n", uniq);
+    printf(".Lcase%d:\n", uniq);
+    gen(node->rhs);
+    printf("  pop rax #DISCARD-STMT-VALUE\n");
+    printf(".Lend%d:\n", uniq);
+    gen_vec_rev(node->block);
+    printf("#CASE-END %d\n", uniq);
     return;
   case ND_WHILE:
     uniq = unique_num();
