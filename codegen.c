@@ -33,6 +33,19 @@ int vec_len(Vec* elem) {
   return acc;
 }
 
+int has_vec_break(Vec* elem) {
+  if (!elem)
+    return 0;
+
+  if (!elem->next) {
+    if (elem->node->kind == ND_BRK)
+      return 1;
+    return 0;
+  }
+
+  return has_vec_break(elem->next);
+}
+
 // For initialize with block having numbers.
 int init_block_vec(Vec* elem, int acc) {
   if (!elem)
@@ -254,14 +267,18 @@ void gen(Node *node) {
     printf("  push rax #SWITCH-VALUE-REUSE\n");
     printf("  cmp rax, rdi\n");
     printf("  je .Lcase%d\n", uniq);
-    printf("  jmp .Lend%d\n", uniq);
+    printf("  jmp .Lcaend%d\n", uniq);
     printf(".Lcase%d:\n", uniq);
     gen(node->rhs);
     printf("  pop rax #DISCARD-STMT-VALUE\n");
-    printf(".Lend%d:\n", uniq);
+    if (has_vec_break(node->block))
+	printf("  jmp .Lend%d #JMP-TO-END\n", uniq);
+    printf(".Lcaend%d:\n", uniq);
     gen_vec_rev(node->block);
-    printf("#CASE-END %d\n", uniq);
+    printf(".Lend%d: #CASE-END\n", uniq);
     return;
+  case ND_BRK:
+    return; // Nop, Flag. 'break' node is handled by ND_CASE.
   case ND_WHILE:
     uniq = unique_num();
     printf(".Lbegin%d:\n", uniq);

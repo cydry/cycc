@@ -24,6 +24,7 @@ typedef enum {
   ND_IF,     // control flow, if, else, else-if
   ND_SWITCH, // control flow, switch
   ND_CASE,   // control flow, case
+  ND_BRK,    // control flow, break
   ND_WHILE,  // control flow, while
   ND_FOR,    // control flow, for
   ND_BLOCK,  // {}, compound statement.

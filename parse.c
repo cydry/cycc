@@ -161,6 +161,13 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    // break in switch.
+    if (strncmp(p, "break", 5) == 0 && !is_alnum(p[5])) {
+      cur = new_token(TK_RESERVED, cur, p, 5);
+      p += 5;
+      continue;
+    }
+
     // Type
     if (strncmp(p, "int", 3) == 0 && !is_alnum(p[3])) {
       cur = new_token(TK_RESERVED, cur, p, 3);
@@ -959,11 +966,26 @@ Node *stmt() {
     expect(":");
     node->rhs = stmt();
 
+    if (inspect("break")) {
+      Vec* brklist = calloc(1, sizeof(Vec));
+      brklist->node = stmt();
+      brklist->next = node->block;
+      node->block = brklist;
+    }
+
     if (inspect("case")) {
       Vec* calist = calloc(1, sizeof(Vec));
       calist->node = stmt();
+      calist->next = node->block;
       node->block = calist;
     }
+    return node;
+  }
+
+  if (consume("break")) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_BRK;
+    consume(";");
     return node;
   }
 
