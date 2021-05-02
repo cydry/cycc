@@ -865,9 +865,16 @@ Node *bitwise_or() {
 }
 
 Node *bitwise_xor() {
-  Node *node = equality();
+  Node *node = bitwise_and();
   if (consume("^"))
-    node = new_node(ND_BITXOR, node, equality());
+    node = new_node(ND_BITXOR, node, bitwise_and());
+  return node;
+}
+
+Node *bitwise_and() {
+  Node* node = equality();
+  if (consume("&"))
+    node = new_node(ND_BITAND, node, equality());
   return node;
 }
 

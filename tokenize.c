@@ -198,6 +198,11 @@ Token *tokenize(char *p) {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
+    // Referencing. Bitwise AND.
+    if (*p == '&') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
 
     // equality
     if (strncmp(p, "==", 2) == 0 ||
@@ -248,12 +253,6 @@ Token *tokenize(char *p) {
 
     // Struct member access expression
     if (*p == '.') {
-      cur = new_token(TK_RESERVED, cur, p++, 1);
-      continue;
-    }
-
-    // Referencing.
-    if (*p == '&') {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }

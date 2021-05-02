@@ -627,6 +627,9 @@ void gen(Node *node) {
   case ND_BITXOR:
     printf("  xor rax, rdi\n");
     break;
+  case ND_BITAND:
+    printf("  and eax, edi\n");
+    break;
   }
 
   printf("  push rax\n");

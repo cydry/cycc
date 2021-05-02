@@ -8,6 +8,11 @@ int bitwise_xor(int a, int b) {
     return ok;
 }
 
+int bitwise_and(int a, int b) {
+    int ok = a & b;
+    return ok;
+}
+
 int main() {
   int got = 0;
 
@@ -66,6 +71,35 @@ int main() {
 
   got = bitwise_xor(7, 1);
   assert(6, got);
+
+
+
+  got = bitwise_and(-1, 1);
+  assert(1, got);
+
+  got = bitwise_and(1, 1);
+  assert(1, got);
+
+  got = bitwise_and(2, 1);
+  assert(0, got);
+
+  got = bitwise_and(3, 1);
+  assert(1, got);
+
+  got = bitwise_and(3, 4);
+  assert(0, got);
+
+  got = bitwise_and(6, 4);
+  assert(4, got);
+
+  got = bitwise_and(7, 4);
+  assert(4, got);
+
+  got = bitwise_and(7, 6);
+  assert(6, got);
+
+  got = bitwise_and(7, 7);
+  assert(7, got);
 
   return 0;
 }

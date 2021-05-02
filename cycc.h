@@ -12,6 +12,7 @@ typedef enum {
   ND_AND,  // &&
   ND_BITOR,// |
   ND_BITXOR,// ^
+  ND_BITAND,// &
   ND_POST, // ++, --
   ND_EQL, // ==
   ND_NEQ, // !=
@@ -172,6 +173,7 @@ Node *assign();
 Node *logical();
 Node *bitwise_or();
 Node *bitwise_xor();
+Node *bitwise_and();
 Node *equality();
 Node *relational();
 Node *add();
