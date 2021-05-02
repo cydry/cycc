@@ -193,6 +193,11 @@ Token *tokenize(char *p) {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
+    // bitwise xor
+    if (*p == '^') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
 
     // equality
     if (strncmp(p, "==", 2) == 0 ||

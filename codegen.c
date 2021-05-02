@@ -624,6 +624,9 @@ void gen(Node *node) {
   case ND_BITOR:
     printf("  or rax, rdi\n");
     break;
+  case ND_BITXOR:
+    printf("  xor rax, rdi\n");
+    break;
   }
 
   printf("  push rax\n");
