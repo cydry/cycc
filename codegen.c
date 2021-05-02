@@ -605,7 +605,7 @@ void genasm() {
   printf(".globl main\n");
 
   printf(".data\n");
-  for (LVar* var = literals; var; var = literals->next) {
+  for (LVar* var = literals; var; var = var->next) {
     printf("%s:\n", var->name);
     printf("  .string %s\n", var->lite);
   }
