@@ -138,6 +138,15 @@ Tag *find_struct(char* name, int len) {
   return NULL;
 }
 
+// Find enum to replace token to iota by the token.
+// If not find the token, returns NULL.
+Tag *find_enum(Token *tok) {
+  for (Tag *tag = enums; tag; tag = tag->next)
+    if (!memcmp(tok->str, tag->name, tok->len))
+      return tag;
+  return NULL;
+}
+
 Node* decl_param() {
   Node* node;
   Type* ty = consume_type();
@@ -297,6 +306,13 @@ Type* consume_type() {
     ty->tag = tok->str;
     ty->tag_len = tok->len;
 
+  } else if (consume("enum")) {
+    ty->kind = ENUM;
+
+    Token* tok = consume_ident();
+    ty->tag = tok->str;
+    ty->tag_len = tok->len;
+
   } else {
     return NULL;
   }
@@ -332,8 +348,10 @@ int type_size(Type* ty) {
       st_mem = st_mem->next;
     }
     return size;
-
-  } else
+  }
+  else if (ty->kind == ENUM)
+    return 8;
+  else
     error("Unsupported type at type_size");
   return 0; // unreachable.
 }
@@ -427,6 +445,40 @@ void program() {
       if (consume(";"))
 	continue;
     }
+
+    if (ty->kind == ENUM) {
+      Tag* enu = calloc(1, sizeof(Tag));
+      enu->ty = ty;
+      enu->name = calloc(1, sizeof(ty->tag_len)+1);
+      strncpy(enu->name, ty->tag, ty->tag_len);
+      enu->name[ty->tag_len] = '\0';
+
+      if (consume("{")) {
+	int i = 0;
+	while (!consume("}")) {
+	  Tag*   idx_tag = calloc(1, sizeof(Tag));
+	  Token* iota_tok = consume_ident();
+	  idx_tag->name = calloc(1, sizeof(iota_tok->len)+1);
+	  strncpy(idx_tag->name, iota_tok->str, iota_tok->len);
+	  idx_tag->name[iota_tok->len] = '\0';
+	  idx_tag->memb = enu;
+
+	  // have an index.
+	  idx_tag->iota = i;
+	  i++;
+
+	  idx_tag->next = enums;
+	  enums = idx_tag;
+
+	  consume(",");
+	}
+      } else {
+	error("No declaration in `enum` enumeration.");
+      }
+      consume(";");
+      continue;
+    }
+
 
     tok = consume_ident();
 
@@ -1039,7 +1091,12 @@ Node *primary() {
 
 	  node->ty = gvar->ty;
 	} else {
-	  error_at(tok->str, "No declaration.");
+	  Tag* enu = find_enum(tok);
+	  if (enu) {
+	    node = new_node_num(enu->iota);
+	  } else {
+	    error_at(tok->str, "No declaration.");
+	  }
 	}
       }
     }

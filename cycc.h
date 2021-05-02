@@ -77,6 +77,7 @@ typedef enum {
   PTR,
   ARRAY,
   STRUCT,
+  ENUM,
 } TypeKind;
 
 struct Type {
@@ -148,10 +149,14 @@ struct Tag {
   Type* ty;
   char* name;
   Tag* memb;
+  int  iota; // enum use.
 };
 
 // Dictionary for tags of data structure, struct.
 Tag *structs;
+
+// Dictionary for tags of data structure, enum.
+Tag *enums;
 
 // Parse.
 Token *tokenize(char *p);

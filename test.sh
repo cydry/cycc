@@ -5,6 +5,7 @@ assertf_spec $1
 
 assertf tests/switch.c
 assertf tests/ident.c
+assertf tests/enum.c
 
 assert 0   'int main() {char* a; a = "Hello,World!\n"; 0;}'
 assert 72  'int main() {char* a; a = "Hello,World!\n"; *a;}'
