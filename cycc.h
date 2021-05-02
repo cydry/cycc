@@ -8,6 +8,7 @@
 
 // Kinds of node for Abstract Syntax Tree.
 typedef enum {
+  ND_AND,  // &&
   ND_POST, // ++, --
   ND_EQL, // ==
   ND_NEQ, // !=
@@ -165,6 +166,7 @@ Node *func();
 Node *stmt();
 Node *expr();
 Node *assign();
+Node *logical();
 Node *equality();
 Node *relational();
 Node *add();

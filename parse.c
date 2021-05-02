@@ -842,9 +842,16 @@ Node *expr() {
 }
 
 Node *assign() {
-  Node *node = equality();
+  Node *node = logical();
   if (consume("="))
     node = new_node(ND_ASSIGN, node, assign());
+  return node;
+}
+
+Node *logical() {
+  Node *node = equality();
+  if (consume("&&"))
+    node = new_node(ND_AND, node, equality());
   return node;
 }
 
