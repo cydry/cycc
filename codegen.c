@@ -621,6 +621,9 @@ void gen(Node *node) {
     printf("  mov rax, 1\n");
     printf(".Lend%d:\n", uniq);
     break;
+  case ND_BITOR:
+    printf("  or rax, rdi\n");
+    break;
   }
 
   printf("  push rax\n");

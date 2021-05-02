@@ -849,11 +849,18 @@ Node *assign() {
 }
 
 Node *logical() {
-  Node *node = equality();
+  Node *node = bitwise();
   if (consume("&&"))
-    node = new_node(ND_AND, node, equality());
+    node = new_node(ND_AND, node, bitwise());
   if (consume("||"))
-    node = new_node(ND_OR, node, equality());
+    node = new_node(ND_OR, node, bitwise());
+  return node;
+}
+
+Node *bitwise() {
+  Node *node = equality();
+  if (consume("|"))
+    node = new_node(ND_BITOR, node, equality());
   return node;
 }
 

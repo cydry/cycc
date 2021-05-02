@@ -188,6 +188,12 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    // bitwise or
+    if (*p == '|') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
     // equality
     if (strncmp(p, "==", 2) == 0 ||
 	strncmp(p, "!=", 2) == 0) {
