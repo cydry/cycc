@@ -852,6 +852,8 @@ Node *logical() {
   Node *node = equality();
   if (consume("&&"))
     node = new_node(ND_AND, node, equality());
+  if (consume("||"))
+    node = new_node(ND_OR, node, equality());
   return node;
 }
 

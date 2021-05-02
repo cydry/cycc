@@ -608,6 +608,19 @@ void gen(Node *node) {
     printf("  mov rax, 0\n", uniq);
     printf(".Lend%d:\n", uniq);
     break;
+  case ND_OR:
+    uniq = unique_num();
+    printf("  cmp rdi, 0\n");
+    printf("  jne .Lante%d\n", uniq);
+    printf("  cmp rax, 0\n");
+    printf("  jne .Ldesc%d\n", uniq);
+    printf("  mov rax, 0\n", uniq);
+    printf("  jmp .Lend%d\n", uniq);
+    printf(".Lante%d:\n", uniq);
+    printf(".Ldesc%d:\n", uniq);
+    printf("  mov rax, 1\n");
+    printf(".Lend%d:\n", uniq);
+    break;
   }
 
   printf("  push rax\n");
