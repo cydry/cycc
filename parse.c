@@ -240,7 +240,7 @@ Token *tokenize(char *p) {
     // Identifier
     if (isalpha(*p)) {
       char* begin = p;
-      while (isalnum(*p))
+      while (is_alnum(*p))
 	p++;
       cur = new_token(TK_IDENT, cur, begin, p - begin);
       continue;
