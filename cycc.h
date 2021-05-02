@@ -190,3 +190,4 @@ int type_size(Type* ty);
 
 int ceil_bound8(int size);
 
+Vec* vec_last(Vec* elem);

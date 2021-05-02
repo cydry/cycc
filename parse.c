@@ -957,11 +957,19 @@ Node *stmt() {
     expect("(");
     node->lhs = expr();
     expect(")");
-    expect("{");
 
-    if (inspect("case"))
-      node->rhs = stmt();
-    expect("}");
+    expect("{");
+    while(!consume("}")) {
+      Vec* elem = calloc(1, sizeof(Vec));
+      elem->node = stmt();
+      elem->next = NULL;
+
+      Vec* last = vec_last(node->block);
+      if (last)
+	last->next = elem;
+      else
+	node->block = elem;
+    }
     return node;
   }
 
@@ -971,31 +979,6 @@ Node *stmt() {
     node->lhs = expr();
     expect(":");
     node->rhs = stmt();
-
-    Vec* defalist = NULL;
-    if (inspect("default")) {
-      defalist = calloc(1, sizeof(Vec));
-      defalist->node = stmt();
-    }
-
-    if (inspect("break")) {
-      Vec* brklist = calloc(1, sizeof(Vec));
-      brklist->node = stmt();
-      brklist->next = node->block;
-      node->block = brklist;
-    }
-
-    if (inspect("case")) {
-      Vec* calist = calloc(1, sizeof(Vec));
-      calist->node = stmt();
-      calist->next = node->block;
-      node->block = calist;
-    }
-
-    if (defalist) {
-      defalist->next = node->block;
-      node->block = defalist;
-    }
     return node;
   }
 
