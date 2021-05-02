@@ -20,8 +20,8 @@ assert_with() {
   input="$2"
 
   ./main -e "$input" > tmp.s
-  cc -c foo.c
-  cc -o tmp tmp.s foo.o
+  cc -c helper.c
+  cc -o tmp tmp.s helper.o
   ./tmp
   actual="$?"
 
@@ -56,8 +56,8 @@ assert_stdout() {
   input="$2"
 
   ./main -e "$input" > tmp.s
-  cc -c foo.c
-  cc -o tmp tmp.s foo.o
+  cc -c helper.c
+  cc -o tmp tmp.s helper.o
   actual=`./tmp`
 
   if [ "$actual" = "$expected" ]; then
@@ -89,7 +89,7 @@ assertf() {
   file="$1"
 
   ./main "$file" > tmp.s
-  cc -o tmp tmp.s foo.o
+  cc -o tmp tmp.s helper.o
   out=`./tmp`
   actual="$?"
 
