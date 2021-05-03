@@ -957,6 +957,10 @@ Node *mul() {
       ty = node->ty;
       node = new_node(ND_DIV, node, unary());
       node->ty = ty;
+    } else if (consume("%")) {
+      ty = node->ty;
+      node = new_node(ND_REM, node, unary());
+      node->ty = ty;
     } else
       return node;
   }

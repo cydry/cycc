@@ -597,6 +597,11 @@ void gen(Node *node) {
     printf("  cqo\n");
     printf("  idiv rdi\n");
     break;
+  case ND_REM:
+    printf("  cqo\n");
+    printf("  idiv rdi\n");
+    printf("  mov rax, rdx\n");
+    break;
   case ND_EQL:
     printf("  cmp rax, rdi\n");
     printf("  sete al\n");

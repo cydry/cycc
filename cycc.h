@@ -24,6 +24,7 @@ typedef enum {
   ND_SUB, // -
   ND_MUL, // *
   ND_DIV, // /
+  ND_REM, // /
   ND_ASSIGN, // =
   ND_LVAR,   // local variable.
   ND_NUM, // number
