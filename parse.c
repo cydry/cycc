@@ -773,7 +773,7 @@ Node *stmt() {
   if (consume("case")) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_CASE;
-    node->lhs = expr();
+    node->lhs = primary();
     expect(":");
     node->rhs = stmt();
     return node;
@@ -842,9 +842,22 @@ Node *expr() {
 }
 
 Node *assign() {
-  Node *node = logical_or();
+  Node *node = cond();
   if (consume("="))
     node = new_node(ND_ASSIGN, node, assign());
+  return node;
+}
+
+Node *cond() {
+  Node *node = logical_or();
+  for (;;) {
+    if (consume("?"))
+      node = new_node(ND_COND, node, logical_or());
+    else if (consume(":"))
+      node = new_node(ND_CONDOR, node, cond());
+    else
+      return node;
+  }
   return node;
 }
 

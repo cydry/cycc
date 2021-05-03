@@ -8,6 +8,8 @@
 
 // Kinds of node for Abstract Syntax Tree.
 typedef enum {
+  ND_CONDOR, // :
+  ND_COND,   // ?
   ND_OR,   // ||
   ND_AND,  // &&
   ND_BITOR,// |
@@ -170,6 +172,7 @@ Node *func();
 Node *stmt();
 Node *expr();
 Node *assign();
+Node *cond();
 Node *logical_or();
 Node *logical_and();
 Node *bitwise_or();

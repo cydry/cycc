@@ -239,6 +239,7 @@ Token *tokenize(char *p) {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
+    // Case statement. Conditional branch (OR).
     if (*p == ':') {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
@@ -253,6 +254,12 @@ Token *tokenize(char *p) {
 
     // Struct member access expression
     if (*p == '.') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
+    // Conditional branch.
+    if (*p == '?') {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }

@@ -488,6 +488,20 @@ void gen(Node *node) {
       error("Failed at member accessing.\n");
     }
     return;
+  case ND_CONDOR:
+    if (!node->lhs || node->lhs->kind != ND_COND)
+      error("Should have conditional node.");
+    uniq = unique_num();
+    gen(node->lhs->lhs);
+    printf("  pop rax\n");
+    printf("  cmp rax, 0\n");
+    printf("  jne .Lok%d\n", uniq);
+    gen(node->rhs);
+    printf("  jmp .Lend%d\n", uniq);
+    printf(".Lok%d:\n", uniq);
+    gen(node->lhs->rhs);
+    printf(".Lend%d:\n", uniq);
+    return;
   }
 
   gen(node->lhs);
