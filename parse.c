@@ -842,18 +842,23 @@ Node *expr() {
 }
 
 Node *assign() {
-  Node *node = logical();
+  Node *node = logical_or();
   if (consume("="))
     node = new_node(ND_ASSIGN, node, assign());
   return node;
 }
 
-Node *logical() {
+Node *logical_or() {
+  Node *node = logical_and();
+  if (consume("||"))
+    node = new_node(ND_OR, node, logical_and());
+  return node;
+}
+
+Node *logical_and() {
   Node *node = bitwise_or();
   if (consume("&&"))
     node = new_node(ND_AND, node, bitwise_or());
-  if (consume("||"))
-    node = new_node(ND_OR, node, bitwise_or());
   return node;
 }
 
