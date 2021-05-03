@@ -60,13 +60,32 @@ Token *tokenize(char *p) {
       continue;
     }
     // 1 charactor
-    if (*p == '\'') {
+    if (*p == 39) {     // single quot '\''
       char* begin = p;
+
       p = p + 2;
-      if (*p != '\'')
-	error("Invalid char literal");
+      while (*p != 39) {
+	if (*p == 92)   // escape sequence '\\'
+	  p++;
+	p++;
+      }
       p++;
+
       cur = new_token(TK_CHAR, cur, begin, p - begin);
+      if (cur->len == 3) {
+	cur->val = cur->str[1];
+      } else if (cur->len == 4) {
+	if (strncmp(begin+1, "\0", 2) == 0)
+	  cur->val = 0;
+	if (strncmp(begin+1, "\t", 2) == 0)
+	  cur->val = 9;
+	if (strncmp(begin+1, "\n", 2) == 0)
+	  cur->val = 10;
+	if (strncmp(begin+1, "\r", 2) == 0)
+	  cur->val = 13;
+      } else {
+	error("Invalid char literal");
+      }
       continue;
     }
 

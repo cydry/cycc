@@ -1224,7 +1224,7 @@ Node *primary() {
     node->call = calloc(1, sizeof(tok->len)+1);
     strncpy(node->call, tok->str, tok->len); // literal string
     node->call[tok->len] = '\0';
-
+    node->val = tok->val;
     return node;
   }
 

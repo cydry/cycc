@@ -60,7 +60,7 @@ int init_block_vec_char(Vec* elem, int acc) {
   acc = init_block_vec_char(elem->next, acc);
   acc++;
 
-  printf("  .byte %s\n", elem->node->call);
+  printf("  .byte %d\n", elem->node->val);
   return acc;
 }
 
@@ -176,6 +176,7 @@ void gen(Node *node) {
 
   switch (node->kind) {
   case ND_NUM:
+  case ND_CHAR:
     printf("  push %d\n", node->val);
     return;
   case ND_LVAR:

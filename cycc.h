@@ -111,7 +111,7 @@ typedef struct Token Token;
 struct Token {
   TokenKind kind;
   Token *next;
-  int val;        // If kind is TK_NUM、then it's value.
+  int val;        // If kind is TK_NUM、TK_CHAR, then it's value.
   char *str;      // A string of the token
   int len;        // Length of the token.
 };
