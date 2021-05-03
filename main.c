@@ -12,6 +12,7 @@ int main(int argc, char **argv) {
   } else {
     filename = argv[1];
     user_input = read_file(filename);
+    user_input = preproc(user_input);
     token = tokenize(user_input);
   }
 

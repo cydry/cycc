@@ -24,3 +24,28 @@ char* read_file(char* path) {
   fclose(fp);
   return buf;
 }
+
+// Preprocessor (Stub)
+// NOTE: Replace control-line to SPACE (32|Dec), ONLY.
+// args:
+//      p: user input, provided by read_file.
+//
+char* preproc(char* p) {
+  char* startp = p;
+  int ctr_line = 0;
+
+  if (*p == '#')
+      ctr_line = 1;
+
+  while (*p) {
+    if ((*p == '#') && (*(p-1) == '\n'))
+      ctr_line = 1;
+    if (*p == '\n')
+      ctr_line = 0;
+    if (ctr_line)
+      *p = 32;
+
+    p++;
+  }
+  return startp;
+}

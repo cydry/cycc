@@ -165,8 +165,13 @@ Tag *structs;
 // Dictionary for tags of data structure, enum.
 Tag *enums;
 
-// Parse.
+// Preprocess
+char* preproc(char *p);
+
+// Tokenize
 Token *tokenize(char *p);
+
+// Parse.
 void program();
 Node *func();
 Node *stmt();
