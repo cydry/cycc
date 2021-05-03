@@ -1014,6 +1014,14 @@ Node *unary() {
     return node;
   }
 
+  if (consume("!")) {
+    node = unary();
+    ty = node->ty;
+    node = new_node(ND_NEGA, NULL, node);
+    node->ty = ty;
+    return node;
+  }
+
   node = postfix();
   if (node->ty && node->ty->kind == ARRAY) {
     Type* ty = calloc(1, sizeof(Type));

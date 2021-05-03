@@ -43,6 +43,7 @@ typedef enum {
   ND_ADDR,   // &, addressing, reference.
   ND_DEREF,  // *, addressing, dereference.
   ND_SIZE,   // sizeof operator.
+  ND_NEGA,   // !, negation operator.
   ND_GDECL,  // declaration of global var.
   ND_GVAR,   // global variable.
   ND_LITER,  // string, literals

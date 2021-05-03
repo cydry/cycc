@@ -459,6 +459,14 @@ void gen(Node *node) {
   case ND_SIZE:
     gen(node->rhs);
     return;
+  case ND_NEGA:
+    gen(node->rhs);
+    printf("  pop rax\n");
+    printf("  cmp rax, 0\n");
+    printf("  sete al\n");
+    printf("  movzx eax, al\n");
+    printf("  push rax\n");
+    return;
   case ND_POST:
     gen(node->lhs);
     gen(node->rhs);
