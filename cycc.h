@@ -167,6 +167,9 @@ Tag *structs;
 // Dictionary for tags of data structure, enum.
 Tag *enums;
 
+// Dictionary for tags of type defined..
+Tag *typedefs;
+
 // Preprocess
 char* preproc(char *p);
 

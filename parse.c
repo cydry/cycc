@@ -147,6 +147,15 @@ Tag *find_enum(Token *tok) {
   return NULL;
 }
 
+// Find type defined by typedef.
+// If not find the token, returns NULL.
+Type *find_typedef(Token *tok) {
+  for (Tag *tag = typedefs; tag; tag = tag->next)
+    if (!memcmp(tok->str, tag->name, tok->len))
+      return tag->ty;
+  return NULL;
+}
+
 Node* decl_param() {
   Node* node;
   Type* ty = consume_type();
@@ -314,7 +323,12 @@ Type* consume_type() {
     ty->tag_len = tok->len;
 
   } else {
-    return NULL;
+    Token* tok = token;
+    ty = find_typedef(tok);
+    if (ty)
+      consume_ident();
+    else
+      return NULL;
   }
 
   Type* ptr;
@@ -405,6 +419,23 @@ void program() {
   Type* ty;
   int i = 0;
   while (!at_eof()) {
+    if (consume("typedef")) {
+      Type* ty = consume_type();
+      Token* tok = consume_ident();
+
+      Tag* def = calloc(1, sizeof(Tag));
+      def->ty = ty;
+      def->name = calloc(1, sizeof(tok->len)+1);
+      strncpy(def->name, tok->str, tok->len);
+      def->name[tok->len] = '\0';
+
+      def->next = typedefs;
+      typedefs = def;
+
+      consume(";");
+      continue;
+    }
+
     // Return type.
     ty = consume_type();
     if (!ty) {
