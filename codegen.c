@@ -91,9 +91,11 @@ void gen_deref(Node* node, int acc) {
       printf("  mov eax, DWORD PTR[rax]\n");
       printf("  push rax\n");
     } else if (node->rhs->ty->ptr_to->kind == PTR) {
-      printf("  pop rax\n");
-      printf("  mov rax, QWORD PTR[rax]\n");
-      printf("  push rax\n");
+      if (node->rhs->ty->ptr_to->ptr_to->kind != STRUCT) {
+	printf("  pop rax\n");
+	printf("  mov rax, QWORD PTR[rax]\n");
+	printf("  push rax\n");
+      }
 
     } else if (node->rhs->ty->ptr_to->kind == ARRAY) {  // Dereferencing an array,
       if (node->rhs->ty->ptr_to->ptr_to->kind == CHAR) { // the unit is element's size.
@@ -184,6 +186,10 @@ void gen(Node *node) {
     if (node->ty->kind == PTR &&
 	node->ty->ptr_to &&
 	node->ty->ptr_to->kind == ARRAY)
+      return;
+    if (node->ty->kind == PTR &&
+	node->ty->ptr_to &&
+	node->ty->ptr_to->kind == STRUCT)
       return;
     printf("  pop rax\n");
     printf("  mov rax, [rax]\n");
