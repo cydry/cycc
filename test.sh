@@ -10,6 +10,9 @@ assertf tests/literals.c
 assertf tests/bitwise.c
 assertf tests/logicals.c
 assertf tests/conditional.c
+assertf tests/preproc.c
+assertf tests/negate.c
+assertf tests/chars.c
 
 assert 0   'int main() {char* a; a = "Hello,World!\n"; 0;}'
 assert 72  'int main() {char* a; a = "Hello,World!\n"; *a;}'
