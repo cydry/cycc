@@ -133,7 +133,7 @@ LVar *find_initials(char* name) {
 //
 Tag *find_struct(char* name, int len) {
   for (Tag *tag = structs; tag; tag = tag->next)
-    if (!memcmp(name, tag->name, tag->len))
+    if (tag->len == len && !memcmp(name, tag->name, tag->len))
       return tag;
   return NULL;
 }
@@ -142,7 +142,7 @@ Tag *find_struct(char* name, int len) {
 // If not find the token, returns NULL.
 Tag *find_enum(Token *tok) {
   for (Tag *tag = enums; tag; tag = tag->next)
-    if (!memcmp(tok->str, tag->name, tok->len))
+    if (tag->len == tok->len && !memcmp(tok->str, tag->name, tag->len))
       return tag;
   return NULL;
 }
@@ -151,7 +151,7 @@ Tag *find_enum(Token *tok) {
 // If not find the token, returns NULL.
 Type *find_typedef(Token *tok) {
   for (Tag *tag = typedefs; tag; tag = tag->next)
-    if (!memcmp(tok->str, tag->name, tok->len))
+    if (tag->len == tok->len && !memcmp(tok->str, tag->name, tag->len))
       return tag->ty;
   return NULL;
 }
@@ -236,6 +236,7 @@ void decl_enum(Type* ty) {
       strncpy(idx_tag->name, iota_tok->str, iota_tok->len);
       idx_tag->name[iota_tok->len] = '\0';
       idx_tag->memb = enu;
+      idx_tag->len = iota_tok->len;
 
       // have an index.
       idx_tag->iota = i;
@@ -518,6 +519,7 @@ void program() {
       def->name = calloc(1, sizeof(tok->len)+1);
       strncpy(def->name, tok->str, tok->len);
       def->name[tok->len] = '\0';
+      def->len = tok->len;
 
       def->next = typedefs;
       typedefs = def;
