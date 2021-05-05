@@ -372,6 +372,9 @@ Type* consume_type() {
     ty->kind = INT;
   } else if (consume("char")) {
     ty->kind = CHAR;
+  } else if (consume("void")) {
+    ty->kind = VOID;
+
   } else if (consume("struct")) {
     ty->kind = STRUCT;
 
@@ -438,6 +441,8 @@ int type_size(Type* ty) {
   }
   else if (ty->kind == ENUM)
     return 8;
+  else if (ty->kind == VOID)
+    return 0;
   else
     error("Unsupported type at type_size");
   return 0; // unreachable.

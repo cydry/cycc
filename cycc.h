@@ -87,6 +87,7 @@ typedef enum {
   ARRAY,
   STRUCT,
   ENUM,
+  VOID,
 } TypeKind;
 
 struct Type {
