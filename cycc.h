@@ -171,6 +171,11 @@ Tag *enums;
 // Dictionary for tags of type defined..
 Tag *typedefs;
 
+// Dictionary for tags of function prototype, external.
+Tag *funcs;
+
+
+
 // Preprocess
 char* preproc(char *p);
 

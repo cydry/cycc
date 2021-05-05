@@ -157,7 +157,9 @@ Type *find_typedef(Token *tok) {
 }
 
 Node* decl_param() {
-  Node* node;
+  Node* node = calloc(1, sizeof(Node));
+  node->kind = ND_LVAR;
+
   Type* ty = consume_type();
   if (ty) {
 
@@ -171,11 +173,12 @@ Node* decl_param() {
       lvar->ty = ty;
       locals = lvar;
 
-      node = calloc(1, sizeof(Node));
-      node->kind = ND_LVAR;
       node->offset = lvar->offset;
-      node->ty = ty;
+    } else {
+      // No name for declaration, valid for only prototype.
     }
+    node->ty = ty;
+
   } else {
     error_at(token->str, "No type for declaration.");
   }
@@ -541,6 +544,8 @@ void program() {
 
     if (inspect("(")) {
       node = func(tok);
+      if (!node) // The func is prototype.
+	continue;
 
     } else if (inspect(";") || inspect("[") || inspect("=")) {
       // Definition of Global variable
@@ -685,6 +690,27 @@ Node *func(Token* tok) {
   } else {
     error("Not found identifier of function");
   }
+
+  if (consume(";")) {
+    // register node -> funcs
+    Tag* func = calloc(1, sizeof(Tag));
+    func->name = node->call;
+    func->ty = NULL;
+
+    Tag* param_tag;
+    for (Vec* param = node->param; param; param = param->next) {
+      param_tag = calloc(1, sizeof(Tag));
+      param_tag->ty = param->node->lhs->ty;
+
+      param_tag->next = func->memb;
+      func->memb = param_tag;
+    }
+
+    func->next = funcs;
+    funcs = func;
+ return NULL;
+  }
+
   node->rhs = stmt();
   node->locals = locals ? locals->offset : 0; // total of offsets for locals.
 

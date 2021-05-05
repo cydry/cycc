@@ -16,6 +16,7 @@ assertf tests/chars.c
 assertf tests/arith.c
 assertf tests/types.c
 assertf tests/struct.c
+assertf tests/prototype.c
 
 assert 0   'int main() {char* a; a = "Hello,World!\n"; 0;}'
 assert 72  'int main() {char* a; a = "Hello,World!\n"; *a;}'
