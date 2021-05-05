@@ -165,7 +165,7 @@ struct Tag {
 // Dictionary for tags of data structure, struct.
 Tag *structs;
 
-// Dictionary for tags of data structure, enum.
+// Dictionary for tags of constants, enum.
 Tag *enums;
 
 // Dictionary for tags of type defined..
