@@ -158,6 +158,7 @@ struct Tag {
   Tag *next;
   Type* ty;
   char* name;
+  int len;
   Tag* memb;
   int  iota; // enum use.
 };

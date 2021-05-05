@@ -133,7 +133,7 @@ LVar *find_initials(char* name) {
 //
 Tag *find_struct(char* name, int len) {
   for (Tag *tag = structs; tag; tag = tag->next)
-    if (!memcmp(name, tag->name, len))
+    if (!memcmp(name, tag->name, tag->len))
       return tag;
   return NULL;
 }
@@ -193,7 +193,7 @@ void decl_struct(Type* ty) {
     st->name = calloc(1, sizeof(ty->tag_len)+1);
     strncpy(st->name, ty->tag, ty->tag_len);
     st->name[ty->tag_len] = '\0';
-
+    st->len = ty->tag_len;
     st->next = structs;
     structs = st;
 
@@ -1147,44 +1147,44 @@ Node *postfix() {
       node->ty = node->rhs->ty;
 
     Type* mem_ty = memb_type(st->memb, tok);
-    Node* mem_node = new_node(ND_LVAR, NULL, NULL); // For member's size at derefrencing the value.
-    mem_node->ty = mem_ty;
-
-    ty = node->ty;
-    node = new_node(ND_MEMB, node, mem_node);
-    node->ty = ty->ptr_to;
+    node = new_node(ND_MEMB, node, NULL);
+    node->ty = mem_ty;
 
     return node;
   }
-  if (consume("->")) {
-    Token* tok = consume_ident();
-    Tag* st = find_struct(node->ty->tag, node->ty->tag_len);
-    int offset = memb_off(st->memb, tok, 0);
+  if (inspect("->")) {
+    for (;;) {
+      if (consume("->")) {
+	Token* tok = consume_ident();
+	Tag* st;
+	if (node->ty->kind == PTR && node->ty->ptr_to->kind == STRUCT)
+	  st = find_struct(node->ty->ptr_to->tag, node->ty->ptr_to->tag_len);
+	else
+	  st = find_struct(node->ty->tag, node->ty->tag_len);
+	int offset = memb_off(st->memb, tok, 0);
 
-    Type* ty = calloc(1, sizeof(Type));
-    ty->kind = PTR;
-    ty->ptr_to = node->ty;
-    node->ty = ty;
+	Type* ty = calloc(1, sizeof(Type));
+	ty->kind = PTR;
+	ty->ptr_to = node->ty;
+	node->ty = ty;
 
-    ty = node->ty;
-    node = new_node(ND_DEREF, NULL, node);
-    node->ty = ty->ptr_to;
+	ty = node->ty;
+	node = new_node(ND_DEREF, NULL, node);
+	node->ty = ty->ptr_to;
 
-    ty = node->ty;
-    node = new_node(ND_ADD, node, new_node_num(offset));
-    node->ty = ty;
-    if (node->rhs->ty && node->rhs->ty->kind == PTR)
-      node->ty = node->rhs->ty;
+	ty = node->ty;
+	node = new_node(ND_ADD, node, new_node_num(offset));
+	node->ty = ty;
+	if (node->rhs->ty && node->rhs->ty->kind == PTR)
+	  node->ty = node->rhs->ty;
 
-    Type* mem_ty = memb_type(st->memb, tok);
-    Node* mem_node = new_node(ND_LVAR, NULL, NULL); // For member's size at derefrencing the value.
-    mem_node->ty = mem_ty;
+	Type* mem_ty = memb_type(st->memb, tok);
+	node = new_node(ND_MEMB, node, NULL);
+	node->ty = mem_ty;
 
-    ty = node->ty;
-    node = new_node(ND_MEMB, node, mem_node);
-    node->ty = ty->ptr_to;
-
-    return node;
+      } else
+	return node;
+    }
   }
   if (consume("[")) {
     // Change `index of array` to dereferencing of a pointer calculation.
