@@ -911,11 +911,15 @@ Node *stmt() {
   if (consume("return")) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_RETURN;
-    node->lhs = expr();
-  } else {
-    node = expr();
+    if (consume(";"))
+      return node;
+    else
+      node->lhs = expr();
+    expect(";");
+    return node;
   }
 
+  node = expr();
   expect(";");
   return node;
 }
