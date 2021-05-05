@@ -182,6 +182,70 @@ Node* decl_param() {
   return node;
 }
 
+// Parsing struct declaration.
+void decl_struct(Type* ty) {
+  if (consume("{")) {
+    Tag* st = calloc(1, sizeof(Tag));
+    st->ty = ty;
+    st->name = calloc(1, sizeof(ty->tag_len)+1);
+    strncpy(st->name, ty->tag, ty->tag_len);
+    st->name[ty->tag_len] = '\0';
+
+    st->next = structs;
+    structs = st;
+
+    while (!consume("}")) {
+
+      // Member's type
+      Type* memb_ty = consume_type();
+      Tag* memb_tag = calloc(1, sizeof(Tag));
+      memb_tag->ty = memb_ty;
+
+      // Member's tag name
+      Token* memb_tok = consume_ident();
+      memb_tag->name = calloc(1, sizeof(memb_tok->len)+1);
+      strncpy(memb_tag->name, memb_tok->str, memb_tok->len);
+      memb_tag->name[memb_tok->len] = '\0';
+
+      // Updates struct's dictionary.
+      memb_tag->next = st->memb;
+      st->memb = memb_tag;
+
+      consume(";");
+    }
+  }
+}
+
+// Parsing enum declaration.
+void decl_enum(Type* ty) {
+  Tag* enu = calloc(1, sizeof(Tag));
+  enu->ty = ty;
+  enu->name = calloc(1, sizeof(ty->tag_len)+1);
+  strncpy(enu->name, ty->tag, ty->tag_len);
+  enu->name[ty->tag_len] = '\0';
+
+  if (consume("{")) {
+    int i = 0;
+    while (!consume("}")) {
+      Tag*   idx_tag = calloc(1, sizeof(Tag));
+      Token* iota_tok = consume_ident();
+      idx_tag->name = calloc(1, sizeof(iota_tok->len)+1);
+      strncpy(idx_tag->name, iota_tok->str, iota_tok->len);
+      idx_tag->name[iota_tok->len] = '\0';
+      idx_tag->memb = enu;
+
+      // have an index.
+      idx_tag->iota = i;
+      i++;
+
+      idx_tag->next = enums;
+      enums = idx_tag;
+
+      consume(",");
+    }
+  }
+}
+
 // Find a node of local variables in a partial tree.
 // For using at evaluating a sizeof dereference.
 Node* find_lvar_node(Node* node) {
@@ -311,16 +375,25 @@ Type* consume_type() {
   } else if (consume("struct")) {
     ty->kind = STRUCT;
 
-    Token* tok = consume_ident();
-    ty->tag = tok->str;
-    ty->tag_len = tok->len;
+    if (inspect("{")) {
+      ty->tag = "";     // No tag name, Anonymous.
+      ty->tag_len = 0;
+    } else {
+      Token* tok = consume_ident();
+      ty->tag = tok->str;
+      ty->tag_len = tok->len;
+    }
 
   } else if (consume("enum")) {
     ty->kind = ENUM;
-
-    Token* tok = consume_ident();
-    ty->tag = tok->str;
-    ty->tag_len = tok->len;
+    if (inspect("{")) {
+      ty->tag = "";     // No tag name, Anonymous.
+      ty->tag_len = 0;
+    } else {
+      Token* tok = consume_ident();
+      ty->tag = tok->str;
+      ty->tag_len = tok->len;
+    }
 
   } else {
     Token* tok = token;
@@ -420,9 +493,18 @@ void program() {
   int i = 0;
   while (!at_eof()) {
     if (consume("typedef")) {
-      Type* ty = consume_type();
-      Token* tok = consume_ident();
+      ty = consume_type();
+      if (!ty) {
+	error_at(token->str, "Not found a type on top-level space.");
+      }
 
+      if (ty->kind == STRUCT) {
+	decl_struct(ty);
+      } else if (ty->kind == ENUM) {
+	decl_enum(ty);
+      }
+
+      Token* tok = consume_ident(); // typedef's tag name
       Tag* def = calloc(1, sizeof(Tag));
       def->ty = ty;
       def->name = calloc(1, sizeof(tok->len)+1);
@@ -432,83 +514,22 @@ void program() {
       def->next = typedefs;
       typedefs = def;
 
-      consume(";");
+      expect(";");
       continue;
     }
 
-    // Return type.
     ty = consume_type();
     if (!ty) {
       error_at(token->str, "Not found a type on top-level space.");
     }
 
     if (ty->kind == STRUCT) {
-      if (consume("{")) {
-	Tag* st = calloc(1, sizeof(Tag));
-	st->ty = ty;
-	st->name = calloc(1, sizeof(ty->tag_len)+1);
-	strncpy(st->name, ty->tag, ty->tag_len);
-	st->name[ty->tag_len] = '\0';
-
-	st->next = structs;
-	structs = st;
-
-	while (!consume("}")) {
-
-	  // Member's type
-	  Type* memb_ty = consume_type();
-	  Tag* memb_tag = calloc(1, sizeof(Tag));
-	  memb_tag->ty = memb_ty;
-
-	  // Member's tag name
-	  Token* memb_tok = consume_ident();
-	  memb_tag->name = calloc(1, sizeof(memb_tok->len)+1);
-	  strncpy(memb_tag->name, memb_tok->str, memb_tok->len);
-	  memb_tag->name[memb_tok->len] = '\0';
-
-	  // Updates struct's dictionary.
-	  memb_tag->next = st->memb;
-	  st->memb = memb_tag;
-
-	  consume(";");
-	}
-      }
-      if (consume(";"))
-	continue;
+      decl_struct(ty);
+    } else if (ty->kind == ENUM) {
+      decl_enum(ty);
     }
-
-    if (ty->kind == ENUM) {
-      Tag* enu = calloc(1, sizeof(Tag));
-      enu->ty = ty;
-      enu->name = calloc(1, sizeof(ty->tag_len)+1);
-      strncpy(enu->name, ty->tag, ty->tag_len);
-      enu->name[ty->tag_len] = '\0';
-
-      if (consume("{")) {
-	int i = 0;
-	while (!consume("}")) {
-	  Tag*   idx_tag = calloc(1, sizeof(Tag));
-	  Token* iota_tok = consume_ident();
-	  idx_tag->name = calloc(1, sizeof(iota_tok->len)+1);
-	  strncpy(idx_tag->name, iota_tok->str, iota_tok->len);
-	  idx_tag->name[iota_tok->len] = '\0';
-	  idx_tag->memb = enu;
-
-	  // have an index.
-	  idx_tag->iota = i;
-	  i++;
-
-	  idx_tag->next = enums;
-	  enums = idx_tag;
-
-	  consume(",");
-	}
-      } else {
-	error("No declaration in `enum` enumeration.");
-      }
-      consume(";");
+    if (consume(";"))
       continue;
-    }
 
 
     tok = consume_ident();
