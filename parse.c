@@ -886,17 +886,30 @@ Node *stmt() {
 
     Node* tmp = calloc(1, sizeof(Node));
     expect("(");
-    tmp->lhs = expr();
-    expect(";");
-    tmp->rhs = expr();
-    expect(";");
+    if (consume(";")) {     // Clause 1
+      tmp->lhs = NULL;
+    } else {
+      tmp->lhs = expr();
+      expect(";");
+    }
+
+    if (consume(";")) {     // Clause 2
+      tmp->rhs = new_node_num(1);
+    } else {
+      tmp->rhs = expr();
+      expect(";");
+    }
     node->lhs = tmp;
 
     tmp = calloc(1, sizeof(Node));
-    tmp->lhs = expr();
-    expect(")");
-    tmp->rhs = stmt();
+    if (consume(")")) {     // Clause 3
+      tmp->lhs = NULL;
+    } else {
+      tmp->lhs = expr();
+      expect(")");
+    }
 
+    tmp->rhs = stmt();      // Loop Body
     node->rhs = tmp;
     return node;
   }

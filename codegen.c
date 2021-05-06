@@ -315,14 +315,16 @@ void gen(Node *node) {
     return;
   case ND_FOR:
     uniq = unique_num();
-    gen(node->lhs->lhs);
+    if (node->lhs->lhs)     // Clause-1
+      gen(node->lhs->lhs);
     printf(".Lbegin%d:\n", uniq);
-    gen(node->lhs->rhs);
+    gen(node->lhs->rhs);    // Clause-2
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
     printf("  je  .Lend%d\n", uniq);
-    gen(node->rhs->rhs);
-    gen(node->rhs->lhs);
+    gen(node->rhs->rhs);    // Loop-Body
+    if (node->rhs->lhs)     // Clause-3
+      gen(node->rhs->lhs);
     printf("  jmp .Lbegin%d\n", uniq);
     printf(".Lend%d:\n", uniq);
     return;
