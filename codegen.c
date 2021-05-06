@@ -10,6 +10,25 @@ int unique_num() {
   return unique_number++;
 }
 
+
+// Uniqueness for Jump statements in a block, use in loop-body.
+int block_uniq_number  = 0;
+int block_uniq_current = 0;
+
+// Issue an unique number for jump stmt.
+int block_uniq_num() {
+  int u = block_uniq_number;
+  block_uniq_current = u;
+
+  block_uniq_number++;
+  return u;
+}
+
+// Query current number of jump stmt.
+int block_uniq_has() {
+  return block_uniq_current;
+}
+
 // Generates each node of Vecs by reverse order.
 void gen_vec_rev(Vec* elem) {
   if (!elem)
@@ -172,7 +191,7 @@ void gen_lval(Node *node) {
 
 void gen(Node *node) {
   int uniq; // Make a label to have a unique label.
-  int  sw_uniq;           // Have a label to end in ND_SWITCH.
+  int  sw_uniq;           // Have a label to end in ND_SWITCH, ND_CONTIN.
   Vec* sw_default = NULL; // Have a temprarily node to end in ND_SWITCH.
   Vec* sw_elem = NULL;    // Have a temprarily node to be handled in ND_SWITCH.
 
@@ -309,9 +328,19 @@ void gen(Node *node) {
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
     printf("  je  .Lend%d\n", uniq);
-    gen(node->rhs);
+    sw_uniq = block_uniq_num();
+    if (node->rhs->kind == ND_BLOCK) {
+      for (sw_elem = node->rhs->block; sw_elem; sw_elem = sw_elem->next)
+	gen(sw_elem->node);
+    } else {
+      gen(node->rhs);
+    }
+    printf(".Lcontin%d:\n", sw_uniq);
     printf("  jmp .Lbegin%d\n", uniq);
     printf(".Lend%d:\n", uniq);
+    return;
+  case ND_CONTIN:
+    printf("  jmp .Lcontin%d\n", block_uniq_has());
     return;
   case ND_FOR:
     uniq = unique_num();

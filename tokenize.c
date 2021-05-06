@@ -90,6 +90,13 @@ Token *tokenize(char *p) {
     }
 
 
+    // Jump statement.
+    if (strncmp(p, "continue", 8) == 0 && !is_alnum(p[8])) {
+      cur = new_token(TK_RESERVED, cur, p, 8);
+      p += 8;
+      continue;
+    }
+
     // Size of the type.
     if (strncmp(p, "typedef", 7) == 0 && !is_alnum(p[7])) {
       cur = new_token(TK_RESERVED, cur, p, 7);

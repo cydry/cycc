@@ -36,6 +36,7 @@ typedef enum {
   ND_DEFAU,  // control flow, default
   ND_WHILE,  // control flow, while
   ND_FOR,    // control flow, for
+  ND_CONTIN, // control flow, continue
   ND_BLOCK,  // {}, compound statement.
   ND_CALL,   // function call
   ND_FUNC,   // function

@@ -956,6 +956,13 @@ Node *stmt() {
     return node;
   }
 
+  if (consume("continue")) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_CONTIN;
+    expect(";");
+    return node;
+  }
+
   node = expr();
   expect(";");
   return node;
