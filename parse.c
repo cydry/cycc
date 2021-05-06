@@ -185,9 +185,7 @@ Node* decl_param() {
   return node;
 }
 
-Node* decl_lvar(Type* ty) {
-  Token* tok = consume_ident();
-
+Node* decl_lvar(Type* ty, Token* tok) {
   Node* node = calloc(1, sizeof(Node));
   node->kind = ND_DECL;
 
@@ -819,7 +817,8 @@ Node *stmt() {
   // Declaration.
   Type* ty = consume_type();
   if (ty) {
-    node = decl_lvar(ty);
+    Token* decl_tok = consume_ident();
+    node = decl_lvar(ty, decl_tok);
     return node;
   }
 
@@ -892,13 +891,22 @@ Node *stmt() {
     node = calloc(1, sizeof(Node));
     node->kind = ND_FOR;
 
+    Type* bty;              // For a loop scope variable
+    Token* for_tok = NULL;
+
     Node* tmp = calloc(1, sizeof(Node));
     expect("(");
     if (consume(";")) {     // Clause 1
       tmp->lhs = NULL;
     } else {
-      tmp->lhs = expr();
-      expect(";");
+      bty = consume_type();
+      if (bty) {            // With initialization of block scope variable.
+	for_tok = consume_ident();
+	tmp->lhs = decl_lvar(bty, for_tok);
+      } else {
+	tmp->lhs = expr();
+	expect(";");
+      }
     }
 
     if (consume(";")) {     // Clause 2
@@ -919,6 +927,12 @@ Node *stmt() {
 
     tmp->rhs = stmt();      // Loop Body
     node->rhs = tmp;
+
+    if (for_tok) {
+      LVar* lvar = find_lvar(for_tok);
+      lvar->name = "";      // Disable to use the block variable, but reserve space for it.
+      lvar->len  = 0;
+    }
     return node;
   }
   if (consume("while")) {
