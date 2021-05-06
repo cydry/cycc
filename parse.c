@@ -185,6 +185,83 @@ Node* decl_param() {
   return node;
 }
 
+Node* decl_lvar(Type* ty) {
+  Token* tok = consume_ident();
+
+  Node* node = calloc(1, sizeof(Node));
+  node->kind = ND_DECL;
+
+  LVar* lvar = calloc(1, sizeof(LVar));
+  lvar->next = locals;
+  lvar->name = tok->str;
+  lvar->len = tok->len;
+  lvar->offset = locals ? locals->offset + ceil_bound8(type_size(ty)) : 0 + ceil_bound8(type_size(ty));
+  lvar->ty = ty;
+  locals = lvar;
+
+  if (consume("[")) {
+    int elem;
+    if (consume("]")) {
+      while (consume("[")) {
+	expect("]");
+      }
+      elem = 0;
+    } else {
+      elem = expect_number();
+      expect("]");
+      while (consume("[")) {
+	elem *= expect_number();
+	expect("]");
+      }
+    }
+
+    ty = calloc(1, sizeof(Type));
+    ty->kind = ARRAY;
+    ty->array_size = elem;
+    ty->ptr_to = lvar->ty;
+    lvar->offset = (lvar->offset - ceil_bound8(type_size(ty))) + ceil_bound8((elem * type_size(ty)));
+    lvar->ty = ty;
+  }
+
+  // Initialization, local variables
+  if (consume("=")) {
+    Node* ininode = calloc(1, sizeof(Node));
+    LVar *ilvar = find_lvar(tok);
+    if (ilvar) {
+      ininode->kind = ND_LVAR;
+      ininode->offset = ilvar->offset;
+      ininode->ty = ilvar->ty;
+    }
+
+    if (consume("{")) {
+      Node* paranode = calloc(1, sizeof(Node));
+      paranode->kind = ND_PARAM;                // in block's parameter, not function's.
+      while(!consume("}")) {
+	Vec* belem = calloc(1, sizeof(Vec));
+	belem->node = primary();
+	belem->next = paranode->param;
+	paranode->param = belem;
+	consume(",");
+      }
+
+      // set length of elements in blocks to local variables.
+      if (ilvar->ty->array_size == 0) {
+	int len = vec_len(paranode->param);
+	ilvar->offset = ilvar->offset + (len * 8); // without number of elements. `x[]'
+	ininode->offset = ilvar->offset;
+      }
+
+      node->rhs = new_node(ND_ASSIGN, ininode, paranode);
+
+    } else {
+      node->rhs = new_node(ND_ASSIGN, ininode, assign());
+    }
+  }
+  expect(";");
+  return node;
+}
+
+
 // Parsing struct declaration.
 void decl_struct(Type* ty) {
   if (consume("{")) {
@@ -742,76 +819,7 @@ Node *stmt() {
   // Declaration.
   Type* ty = consume_type();
   if (ty) {
-    node = calloc(1, sizeof(Node));
-    node->kind = ND_DECL;
-    Token* tok = consume_ident();
-    LVar* lvar = calloc(1, sizeof(LVar));
-    lvar->next = locals;
-    lvar->name = tok->str;
-    lvar->len = tok->len;
-    lvar->offset = locals ? locals->offset + ceil_bound8(type_size(ty)) : 0 + ceil_bound8(type_size(ty));
-    lvar->ty = ty;
-    locals = lvar;
-
-    if (consume("[")) {
-      int elem;
-      if (consume("]")) {
-	while (consume("[")) {
-	  expect("]");
-	}
-	elem = 0;
-      } else {
-	elem = expect_number();
-	expect("]");
-	while (consume("[")) {
-	  elem *= expect_number();
-	  expect("]");
-	}
-      }
-
-      ty = calloc(1, sizeof(Type));
-      ty->kind = ARRAY;
-      ty->array_size = elem;
-      ty->ptr_to = lvar->ty;
-      lvar->offset = (lvar->offset - ceil_bound8(type_size(ty))) + ceil_bound8((elem * type_size(ty)));
-      lvar->ty = ty;
-    }
-
-    // Initialization, local variables
-    if (consume("=")) {
-      Node* ininode = calloc(1, sizeof(Node));
-      LVar *ilvar = find_lvar(tok);
-      if (ilvar) {
-	ininode->kind = ND_LVAR;
-	ininode->offset = ilvar->offset;
-	ininode->ty = ilvar->ty;
-      }
-
-      if (consume("{")) {
-	Node* paranode = calloc(1, sizeof(Node));
-	paranode->kind = ND_PARAM;                // in block's parameter, not function's.
-	while(!consume("}")) {
-	  Vec* belem = calloc(1, sizeof(Vec));
-	  belem->node = primary();
-	  belem->next = paranode->param;
-	  paranode->param = belem;
-	  consume(",");
-	}
-
-	// set length of elements in blocks to local variables.
-	if (ilvar->ty->array_size == 0) {
-	  int len = vec_len(paranode->param);
-	  ilvar->offset = ilvar->offset + (len * 8); // without number of elements. `x[]'
-	  ininode->offset = ilvar->offset;
-	}
-
-	node->rhs = new_node(ND_ASSIGN, ininode, paranode);
-
-      } else {
-	node->rhs = new_node(ND_ASSIGN, ininode, assign());
-      }
-    }
-    expect(";");
+    node = decl_lvar(ty);
     return node;
   }
 
