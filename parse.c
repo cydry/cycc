@@ -969,6 +969,10 @@ Node *assign() {
   Node *node = cond();
   if (consume("="))
     node = new_node(ND_ASSIGN, node, assign());
+  if (consume("+="))
+    node = new_node(ND_ASSIGN, node, new_node(ND_ADD, node, add()));
+  if (consume("-="))
+    node = new_node(ND_ASSIGN, node, new_node(ND_SUB, node, add()));
   return node;
 }
 
