@@ -987,37 +987,52 @@ Node *cond() {
 
 Node *logical_or() {
   Node *node = logical_and();
-  if (consume("||"))
-    node = new_node(ND_OR, node, logical_and());
-  return node;
+  for (;;) {
+    if (consume("||"))
+      node = new_node(ND_OR, node, logical_and());
+    else
+      return node;
+  }
 }
 
 Node *logical_and() {
   Node *node = bitwise_or();
-  if (consume("&&"))
-    node = new_node(ND_AND, node, bitwise_or());
-  return node;
+  for (;;) {
+    if (consume("&&"))
+      node = new_node(ND_AND, node, bitwise_or());
+    else
+      return node;
+  }
 }
 
 Node *bitwise_or() {
   Node *node = bitwise_xor();
-  if (consume("|"))
-    node = new_node(ND_BITOR, node, bitwise_xor());
-  return node;
+  for (;;) {
+    if (consume("|"))
+      node = new_node(ND_BITOR, node, bitwise_xor());
+    else
+      return node;
+  }
 }
 
 Node *bitwise_xor() {
   Node *node = bitwise_and();
-  if (consume("^"))
-    node = new_node(ND_BITXOR, node, bitwise_and());
-  return node;
+  for (;;) {
+    if (consume("^"))
+      node = new_node(ND_BITXOR, node, bitwise_and());
+    else
+      return node;
+  }
 }
 
 Node *bitwise_and() {
   Node* node = equality();
-  if (consume("&"))
-    node = new_node(ND_BITAND, node, equality());
-  return node;
+  for (;;) {
+    if (consume("&"))
+      node = new_node(ND_BITAND, node, equality());
+    else
+      return node;
+  }
 }
 
 Node *equality() {
