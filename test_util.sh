@@ -2,7 +2,7 @@ assert() {
   expected="$1"
   input="$2"
 
-  ./main -e "$input" > tmp.s
+  ./cycc -e "$input" > tmp.s
   cc -o tmp tmp.s
   ./tmp
   actual="$?"
@@ -19,7 +19,7 @@ assert_with() {
   expected="$1"
   input="$2"
 
-  ./main -e "$input" > tmp.s
+  ./cycc -e "$input" > tmp.s
   cc -c helper.c
   cc -o tmp tmp.s helper.o
   ./tmp
@@ -35,7 +35,7 @@ assert_with() {
 
 assert_fail() {
   input=$1
-  ./main -e "$input" > tmp.s
+  ./cycc -e "$input" > tmp.s
   if [ $? -ne 1 ]; then
       echo "$input should cause an error."
       exit 1
@@ -44,7 +44,7 @@ assert_fail() {
 
 assert_ffail() {
   file=$1
-  ./main "$file"
+  ./cycc "$file"
   if [ $? -ne 1 ]; then
       echo "$input should cause an error."
       exit 1
@@ -55,7 +55,7 @@ assert_stdout() {
   expected="$1"
   input="$2"
 
-  ./main -e "$input" > tmp.s
+  ./cycc -e "$input" > tmp.s
   cc -c helper.c
   cc -o tmp tmp.s helper.o
   actual=`./tmp`
@@ -72,7 +72,7 @@ assert_file() {
   expected="$1"
   file="$2"
 
-  ./main "$file" > tmp.s
+  ./cycc "$file" > tmp.s
   cc -o tmp tmp.s
   ./tmp
   actual="$?"
@@ -88,7 +88,7 @@ assert_file() {
 assertf() {
   file="$1"
 
-  ./main "$file" > tmp.s
+  ./cycc "$file" > tmp.s
   cc -o tmp tmp.s helper.o
   out=`./tmp`
   actual="$?"
