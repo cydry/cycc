@@ -83,6 +83,17 @@ int init_block_vec_char(Vec* elem, int acc) {
   return acc;
 }
 
+// For initializing with block having literals.
+int init_block_vec_liter(Vec* elem, int acc) {
+  if (!elem)
+    return 0;
+  acc = init_block_vec_liter(elem->next, acc);
+  acc++;
+
+  printf("  .quad %s\n", elem->node->call);
+  return acc;
+}
+
 void gen_deref(Node* node, int acc) {
   // Counts the number of dereferencing, using accumrator parameter.
   if (node->rhs->kind == ND_DEREF) {
@@ -441,6 +452,8 @@ void gen(Node *node) {
 	  acc = init_block_vec(node->rhs->param, 0);
 	else if (node->rhs->param->node->kind == ND_CHAR)
 	  acc = init_block_vec_char(node->rhs->param, 0);
+	else if (node->rhs->param->node->kind == ND_LITER)
+	  acc = init_block_vec_liter(node->rhs->param, 0);
 	else
 	  error("Unsupported type with block initializer.");
 	if (node->ty->kind == ARRAY) {

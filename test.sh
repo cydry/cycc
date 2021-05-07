@@ -579,4 +579,11 @@ int main() {
 '
 
 assert 98 "int main() {char a = 'b'; return a;}"
+
+assert_stdout "rdi" '
+char* arg_to_reg[6] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+int main() {
+  printf("%s\n", arg_to_reg[0]);
+  return 0;
+}'
 echo "OK;"
