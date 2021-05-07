@@ -265,7 +265,7 @@ void decl_struct(Type* ty) {
   if (consume("{")) {
     Tag* st = calloc(1, sizeof(Tag));
     st->ty = ty;
-    st->name = calloc(1, sizeof(ty->tag_len)+1);
+    st->name = calloc(1, (ty->tag_len)+1);
     strncpy(st->name, ty->tag, ty->tag_len);
     st->name[ty->tag_len] = '\0';
     st->len = ty->tag_len;
@@ -281,7 +281,7 @@ void decl_struct(Type* ty) {
 
       // Member's tag name
       Token* memb_tok = consume_ident();
-      memb_tag->name = calloc(1, sizeof(memb_tok->len)+1);
+      memb_tag->name = calloc(1, (memb_tok->len)+1);
       strncpy(memb_tag->name, memb_tok->str, memb_tok->len);
       memb_tag->name[memb_tok->len] = '\0';
 
@@ -298,7 +298,7 @@ void decl_struct(Type* ty) {
 void decl_enum(Type* ty) {
   Tag* enu = calloc(1, sizeof(Tag));
   enu->ty = ty;
-  enu->name = calloc(1, sizeof(ty->tag_len)+1);
+  enu->name = calloc(1, (ty->tag_len)+1);
   strncpy(enu->name, ty->tag, ty->tag_len);
   enu->name[ty->tag_len] = '\0';
 
@@ -307,7 +307,7 @@ void decl_enum(Type* ty) {
     while (!consume("}")) {
       Tag*   idx_tag = calloc(1, sizeof(Tag));
       Token* iota_tok = consume_ident();
-      idx_tag->name = calloc(1, sizeof(iota_tok->len)+1);
+      idx_tag->name = calloc(1, (iota_tok->len)+1);
       strncpy(idx_tag->name, iota_tok->str, iota_tok->len);
       idx_tag->name[iota_tok->len] = '\0';
       idx_tag->memb = enu;
@@ -591,7 +591,7 @@ void program() {
       Token* tok = consume_ident(); // typedef's tag name
       Tag* def = calloc(1, sizeof(Tag));
       def->ty = ty;
-      def->name = calloc(1, sizeof(tok->len)+1);
+      def->name = calloc(1, (tok->len)+1);
       strncpy(def->name, tok->str, tok->len);
       def->name[tok->len] = '\0';
       def->len = tok->len;
@@ -629,7 +629,7 @@ void program() {
 
       node = calloc(1, sizeof(Node));
       node->kind = ND_GDECL;
-      node->call = calloc(1, sizeof(tok->len)+1);
+      node->call = calloc(1, (tok->len)+1);
       strncpy(node->call, tok->str, tok->len);
       node->call[tok->len] = '\0';
 
@@ -699,7 +699,7 @@ void program() {
 	  lvar->name = ininode->call; // name
 	  lvar->len  = len;        // length of name
 
-	  lvar->lite = calloc(1, sizeof(initok->len)+1);
+	  lvar->lite = calloc(1, (initok->len)+1);
 	  strncpy(lvar->lite, initok->str, initok->len); // literal string
 	  lvar->lite[initok->len] = '\0';
 	  lvar->offset = initok->len;                 // length of literal string
@@ -752,7 +752,7 @@ Node *func(Token* tok) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_FUNC;
     if (consume("(")) {
-      node->call = calloc(1, sizeof(tok->len)+1);
+      node->call = calloc(1, (tok->len)+1);
       strncpy(node->call, tok->str, tok->len);
       node->call[tok->len] = '\0';
 
@@ -1283,7 +1283,7 @@ Node *primary() {
     Node *node = calloc(1, sizeof(Node));
     if (consume("(")) {
       node->kind = ND_CALL;
-      node->call = calloc(1, sizeof(tok->len)+1);
+      node->call = calloc(1, (tok->len)+1);
       strncpy(node->call, tok->str, tok->len);
       node->call[tok->len] = '\0';
 
@@ -1306,7 +1306,7 @@ Node *primary() {
 	if (gvar) {
 	  node->kind = ND_GVAR;
 
-	  node->call = calloc(1, sizeof(gvar->len)+1);
+	  node->call = calloc(1, (gvar->len)+1);
 	  strncpy(node->call, gvar->name, gvar->len);
 	  node->call[gvar->len] = '\0';
 
@@ -1353,7 +1353,7 @@ Node *primary() {
     lvar->name = node->call; // name
     lvar->len  = len;        // length of name
 
-    lvar->lite = calloc(1, sizeof(tok->len)+1);
+    lvar->lite = calloc(1, (tok->len)+1);
     strncpy(lvar->lite, tok->str, tok->len); // literal string
     lvar->lite[tok->len] = '\0';
     lvar->offset = tok->len;                 // length of literal string
@@ -1370,7 +1370,7 @@ Node *primary() {
 
     Node* node = calloc(1, sizeof(Node));
     node->kind = ND_CHAR;
-    node->call = calloc(1, sizeof(tok->len)+1);
+    node->call = calloc(1, (tok->len)+1);
     strncpy(node->call, tok->str, tok->len); // literal string
     node->call[tok->len] = '\0';
     node->val = tok->val;
