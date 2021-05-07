@@ -427,7 +427,7 @@ void gen(Node *node) {
 	    printf("  .byte 0x%x\n", *p);
 	    p++;
 	  }
-	  printf("  .byte '\\0'\n", *p);
+	  printf("  .byte '\\0'\n");
 	} else {
 	  error("Not found a literal with initializer.");
 	}
@@ -670,7 +670,7 @@ void gen(Node *node) {
     printf("  jmp .Lend%d\n", uniq);
     printf(".Lante%d:\n", uniq);
     printf(".Ldesc%d:\n", uniq);
-    printf("  mov rax, 0\n", uniq);
+    printf("  mov rax, 0\n");
     printf(".Lend%d:\n", uniq);
     break;
   case ND_OR:
@@ -679,7 +679,7 @@ void gen(Node *node) {
     printf("  jne .Lante%d\n", uniq);
     printf("  cmp rax, 0\n");
     printf("  jne .Ldesc%d\n", uniq);
-    printf("  mov rax, 0\n", uniq);
+    printf("  mov rax, 0\n");
     printf("  jmp .Lend%d\n", uniq);
     printf(".Lante%d:\n", uniq);
     printf(".Ldesc%d:\n", uniq);
