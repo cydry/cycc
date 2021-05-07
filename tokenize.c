@@ -73,7 +73,7 @@ Token *tokenize(char *p) {
 
       cur = new_token(TK_CHAR, cur, begin, p - begin);
       if (cur->len == 3) {
-	cur->val = cur->str[1];
+	cur->val = *(begin + 1);
       } else if (cur->len == 4) {
 	if (strncmp(begin+1, "\0", 2) == 0)
 	  cur->val = 0;

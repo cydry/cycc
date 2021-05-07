@@ -1196,7 +1196,6 @@ Node *postfix() {
     Token* tok = consume_ident();
     Tag* st = find_struct(node->ty->tag, node->ty->tag_len);
     int offset = memb_off(st->memb, tok, 0);
-    fprintf(stdout, "#offset:%d\n", offset);
 
     Type* ty = calloc(1, sizeof(Type));
     ty->kind = PTR;
