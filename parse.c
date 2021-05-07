@@ -867,7 +867,21 @@ Node *stmt() {
     node->kind = ND_CASE;
     node->lhs = primary();
     expect(":");
-    node->rhs = stmt();
+
+    // Body of case statement.
+    Node* cbody = calloc(1, sizeof(Node));
+    cbody->kind = ND_BLOCK;
+
+    while(!inspect("case") && !inspect("break") &&
+	  !inspect("default") && !inspect("}")) {
+
+      Vec* elem = calloc(1, sizeof(Vec));
+      elem->node = stmt();
+      elem->next = cbody->block;
+      cbody->block = elem;
+    }
+
+    node->rhs = cbody;
     return node;
   }
 
