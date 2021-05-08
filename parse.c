@@ -1265,7 +1265,7 @@ Node *postfix() {
 	node->ty = mem_ty;
 
       } else
-	return node;
+	break;
     }
   }
   if (consume("[")) {
