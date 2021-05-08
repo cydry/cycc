@@ -872,7 +872,7 @@ Node *stmt() {
     Node* cbody = calloc(1, sizeof(Node));
     cbody->kind = ND_BLOCK;
 
-    while(!inspect("case") && !inspect("break") &&
+    while(!inspect("case") &&
 	  !inspect("default") && !inspect("}")) {
 
       Vec* elem = calloc(1, sizeof(Vec));

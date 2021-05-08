@@ -295,15 +295,13 @@ void gen(Node *node) {
     printf(".Lend%d:\n", uniq);
     return;
   case ND_SWITCH:
-    sw_uniq = unique_num();
+    sw_uniq = block_uniq_num();
     printf("#SW-BEGIN %d\n", sw_uniq);
     gen(node->lhs);
     printf("#SWITCH-COND-VALUE^\n");
     for (sw_elem = node->block; sw_elem; sw_elem = sw_elem->next) {
       if (sw_elem->node->kind == ND_DEFAU) {
 	sw_default = sw_elem;
-      } else if (sw_elem->node->kind == ND_BRK) {
-	// ND_BRK is handled by ND_CASE, continue.
       } else if (sw_elem->node->kind == ND_CASE) {
 	uniq = unique_num();
 	printf("#CASE-BEGIN %d\n", uniq);
@@ -317,8 +315,6 @@ void gen(Node *node) {
 	printf(".Lcase%d:\n", uniq);
 	gen(sw_elem->node->rhs);
 	printf("  pop rax #DISCARD-STMT-VALUE\n");
-	if (sw_elem->next && sw_elem->next->node->kind == ND_BRK)
-	  printf("  jmp .Lend%d #JMP-TO-SW-END\n", sw_uniq);
 	printf(".Lcaend%d:\n", uniq);
       } else {
 	error("Unsupportd node in switch.");
@@ -326,11 +322,15 @@ void gen(Node *node) {
     }
     if (sw_default)
       gen(sw_default->node);
+    printf(".Lbrk%d: #SW-BREAK\n", sw_uniq);
     printf(".Lend%d: #SW-END\n", sw_uniq);
     return;
   case ND_DEFAU:
     printf("#ND_DEFAU\n");
     gen(node->lhs);
+    return;
+  case ND_BRK:
+    printf("  jmp .Lbrk%d\n", block_uniq_has());
     return;
   case ND_WHILE:
     uniq = unique_num();
