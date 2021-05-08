@@ -9,6 +9,14 @@ int main(int argc, char **argv) {
   if (strcmp("-e", argv[1]) == 0) {
     user_input = argv[2];
     token = tokenize(argv[2]);
+
+  } else if (strcmp("-E", argv[1]) == 0) {
+    filename = argv[2];
+    user_input = read_file(filename);
+    user_input = preproc(user_input);
+    printf("%s\n", user_input);
+    return 0;
+
   } else {
     filename = argv[1];
     user_input = read_file(filename);

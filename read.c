@@ -25,6 +25,39 @@ char* read_file(char* path) {
   return buf;
 }
 
+
+// Built-in (Psuedo) Macro:
+// (Alternative to stdbool.h)
+// arg:
+//     p: user input.
+//
+// convert user input, below;
+//   bool  -> int
+//   true  -> 1
+//   false -> 0
+//
+bool bool_to_int(char* p) {
+  if (strncmp(p, "bool", 4) == 0) {
+    strncpy(p, "int ", 4);
+    p += 4;
+    return true;
+  }
+
+  if (strncmp(p, "true", 4) == 0) {
+    strncpy(p, "1   ", 4);
+    p += 4;
+    return true;
+  }
+
+  if (strncmp(p, "false", 5) == 0) {
+    strncpy(p, "0    ", 5);
+    p += 4;
+    return true;
+  }
+
+  return false;
+}
+
 // Preprocessor (Stub)
 // NOTE: Replace control-line to SPACE (32|Dec), ONLY.
 // args:
@@ -44,6 +77,9 @@ char* preproc(char* p) {
       ctr_line = 0;
     if (ctr_line)
       *p = 32;
+
+    if (bool_to_int(p))
+      continue;
 
     p++;
   }
