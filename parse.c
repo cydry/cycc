@@ -798,7 +798,7 @@ Node *func(Token* tok) {
 }
 
 Node *stmt() {
-  Node* node;
+  Node* node = NULL;
 
   // Compound statements.
   if (consume("{")) {
@@ -976,6 +976,9 @@ Node *stmt() {
     expect(";");
     return node;
   }
+
+  if (consume(";"))
+    return node;
 
   node = expr();
   expect(";");

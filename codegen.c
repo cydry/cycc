@@ -362,7 +362,8 @@ void gen(Node *node) {
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
     printf("  je  .Lend%d\n", uniq);
-    gen(node->rhs->rhs);    // Loop-Body
+    if (node->rhs->rhs)     // Loop-Body
+      gen(node->rhs->rhs);
     if (node->rhs->lhs)     // Clause-3
       gen(node->rhs->lhs);
     printf("  jmp .Lbegin%d\n", uniq);

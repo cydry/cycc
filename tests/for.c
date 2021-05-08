@@ -17,6 +17,16 @@ int loop_scope_var_test() {
   return x;
 }
 
+int loop_with_nop_test() {
+  int n = 5;
+  int x = 7;
+
+  for (int i=0; i<n; i++)
+    ; // nop
+
+  return x;
+}
+
 int main() {
   int got = 0;
 
@@ -25,5 +35,8 @@ int main() {
 
   got = loop_scope_var_test();
   assert(10, got);
+
+  got = loop_with_nop_test();
+  assert(7, got);
   return 0;
 }
