@@ -196,6 +196,13 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    // For valist builtin.
+    if (strncmp(p, "...", 3) == 0 && !is_alnum(p[3])) {
+      cur = new_token(TK_RESERVED, cur, p, 3);
+      p += 3;
+      continue;
+    }
+
     // Identifier
     if (isalpha(*p)) {
       char* begin = p;

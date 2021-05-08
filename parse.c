@@ -175,7 +175,8 @@ Node* decl_param() {
 
       node->offset = lvar->offset;
     } else {
-      // No name for declaration, valid for only prototype.
+      // No name for declaration, valid for prototype.
+      // Also, builtin macro: valist.
     }
     node->ty = ty;
 
@@ -476,6 +477,15 @@ Type* consume_type() {
       ty->tag = tok->str;
       ty->tag_len = tok->len;
     }
+
+  } else if (consume("...")) { // builtin, variadic list.
+    ty->kind = VOID;
+    ty->tag = "...";
+    ty->tag_len = 3;
+    Type* ptr = calloc(1, sizeof(Type));
+    ptr->kind = PTR;
+    ptr->ptr_to = ty;
+    ty = ptr;
 
   } else {
     Token* tok = token;

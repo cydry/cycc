@@ -75,6 +75,15 @@ bool bool_to_int(char* p) {
   return false;
 }
 
+
+char* define_builtin(char* defword, int deflen, char* src, int srclen) {
+  char* chunk = calloc(1, deflen+srclen+1);
+  strncpy(chunk, defword, deflen);
+  strcat(chunk, src);
+  *(chunk + deflen + srclen) = '\0';
+  return chunk;
+}
+
 // Return true if a line with poiter has #include directive.
 bool is_include(char* p){
   if (strncmp(p, "#include", 8) == 0) {
@@ -176,6 +185,10 @@ char* preproc_buflen(char* p, int len) {
     startp = incp;
 
     startp = preproc_buflen(startp, inclen+len);
+
+    char* builtin_valist = "typedef void* va_list;\nvoid va_start(void, void){0;}\n";
+    startp = define_builtin(builtin_valist, strlen(builtin_valist),
+			    startp, inclen+len);
   }
 
   return startp;
