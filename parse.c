@@ -994,6 +994,12 @@ Node *assign() {
     node = new_node(ND_ASSIGN, node, new_node(ND_ADD, node, add()));
   if (consume("-="))
     node = new_node(ND_ASSIGN, node, new_node(ND_SUB, node, add()));
+  if (consume("*="))
+    node = new_node(ND_ASSIGN, node, new_node(ND_MUL, node, add()));
+  if (consume("/="))
+    node = new_node(ND_ASSIGN, node, new_node(ND_DIV, node, add()));
+  if (consume("%="))
+    node = new_node(ND_ASSIGN, node, new_node(ND_REM, node, add()));
   return node;
 }
 
