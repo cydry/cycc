@@ -906,7 +906,18 @@ Node *stmt() {
     node = calloc(1, sizeof(Node));
     node->kind = ND_DEFAU;
     consume(":");
-    node->lhs = stmt();
+
+    // Body of default label.
+    Node* dbody = calloc(1, sizeof(Node));
+    dbody->kind = ND_BLOCK;
+
+    while(!inspect("case") && !inspect("}")) {
+      Vec* elem = calloc(1, sizeof(Vec));
+      elem->node = stmt();
+      elem->next = dbody->block;
+      dbody->block = elem;
+    }
+    node->lhs = dbody;
     return node;
   }
 
