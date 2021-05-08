@@ -230,3 +230,5 @@ int ceil_bound8(int size);
 
 Vec* vec_last(Vec* elem);
 
+int is_alnum(char c);
+

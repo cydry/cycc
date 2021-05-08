@@ -54,19 +54,19 @@ char* read_file(char* path) {
 //   false -> 0
 //
 bool bool_to_int(char* p) {
-  if (strncmp(p, "bool", 4) == 0) {
+  if (strncmp(p, "bool", 4) == 0 && !is_alnum(p[4])) {
     strncpy(p, "int ", 4);
     p += 4;
     return true;
   }
 
-  if (strncmp(p, "true", 4) == 0) {
+  if (strncmp(p, "true", 4) == 0 && !is_alnum(p[4])) {
     strncpy(p, "1   ", 4);
     p += 4;
     return true;
   }
 
-  if (strncmp(p, "false", 5) == 0) {
+  if (strncmp(p, "false", 5) == 0 && !is_alnum(p[5])) {
     strncpy(p, "0    ", 5);
     p += 4;
     return true;
