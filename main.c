@@ -22,8 +22,9 @@ int main(int argc, char **argv) {
 
   } else {
     filename = argv[1];
-    user_input = read_file(filename);
-    user_input = preproc(user_input);
+    in_len = 0;
+    user_input = read_file_buflen(filename, &in_len);
+    user_input = preproc_buflen(user_input, in_len);
     token = tokenize(user_input);
   }
 

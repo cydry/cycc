@@ -1,6 +1,5 @@
 #include "cycc.h"
 
-
 // Read file for user input.
 //
 // args:
@@ -76,6 +75,50 @@ bool bool_to_int(char* p) {
   return false;
 }
 
+// Return true if a line with poiter has #include directive.
+bool is_include(char* p){
+  if (strncmp(p, "#include", 8) == 0) {
+    return true;
+  }
+  return false;
+}
+
+
+// Return name of include file.
+// args:
+//      p  : pointer to a input buffer.
+//      len: as result value, length of name of a include file.
+//
+// return value:
+//      pointer to a start of a filename
+//
+char* include_name(char* p){
+  char* bufp   = p; // name string copied.
+  char* startp = NULL;
+  char* endp   = NULL;
+  int len = 0;
+
+  while (*bufp != '\n') {
+    if (*bufp == 34 && !startp)  // '\"',  searching current directory, ONLY .
+      startp = bufp;
+    if (*bufp == 34 && startp)
+      endp = bufp;
+
+    bufp++;
+  }
+
+  if (!startp)
+    return NULL;
+
+  // "include"
+  len = endp - startp;
+  bufp = calloc(1, len);
+
+  strncpy(bufp, startp+1, len);
+  bufp[len-1] = '\0';
+  return bufp;
+}
+
 
 // Preprocessing a user input.
 //
@@ -88,13 +131,32 @@ bool bool_to_int(char* p) {
 char* preproc_buflen(char* p, int len) {
   char* startp = p;
   int ctr_line = 0;
+  char* inc;         // a name of include file.
+  char* incp;        // pointer to buffer for include file.
+  int   inclen = 0;  // length of the buffer included.
 
-  if (*p == '#')
+  if (*p == '#') {
       ctr_line = 1;
+      if (is_include(p)) {
+	inc = include_name(p);               // inc is name of include file.
+	if (inc)
+	  incp = read_file_buflen(inc, &inclen);// inc is buffer of include file.
+      } else {
+	inc = NULL;
+      }
+  }
 
   while (*p) {
-    if ((*p == '#') && (*(p-1) == '\n'))
+    if ((*p == '#') && (*(p-1) == '\n')) {
       ctr_line = 1;
+      if (is_include(p)) {
+	inc = include_name(p);               // inc is name of include file.
+	if (inc)
+	  incp = read_file_buflen(inc, &inclen);// inc is buffer of include file.
+      } else {
+	inc = NULL;
+      }
+    }
     if (*p == '\n')
       ctr_line = 0;
     if (ctr_line)
@@ -105,12 +167,22 @@ char* preproc_buflen(char* p, int len) {
 
     p++;
   }
+
+  if (inclen) {
+    inc = incp;                        // Temporarily let include buffer be in 'inc'.
+    incp = calloc(1, (inclen+len));
+    incp = strncpy(incp, inc, inclen);
+    incp = strcat(incp, startp);       // 'include buffer' + 'src file buffer'
+    startp = incp;
+
+    startp = preproc_buflen(startp, inclen+len);
+  }
+
   return startp;
 }
 
 
 // Preprocessor (Stub)
-// NOTE: Replace control-line to SPACE (32|Dec), ONLY.
 // args:
 //      p: user input, provided by read_file.
 //
