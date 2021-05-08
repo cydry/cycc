@@ -1,7 +1,16 @@
 #include "cycc.h"
 
-// For input by file.
-char* read_file(char* path) {
+
+// Read file for user input.
+//
+// args:
+//      path: file path
+//      len : as a return value, a length of result buffer.
+//            invariantly, pass a buffer for the result.
+//
+// ret : buffer of the file.
+//
+char* read_file_buflen(char* path, int* len) {
 
   FILE* fp = fopen(path, "r");
   if(!fp)
@@ -22,7 +31,16 @@ char* read_file(char* path) {
     buf[size++] = '\n';
   buf[size] = '\n';
   fclose(fp);
+
+  *len = size;
   return buf;
+}
+
+
+// For input by file.
+char* read_file(char* path) {
+  int no = 0;
+  return read_file_buflen(path, &no);
 }
 
 
