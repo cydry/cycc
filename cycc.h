@@ -179,7 +179,8 @@ Tag *funcs;
 
 
 // Preprocess
-char* preproc(char *p);
+char* preproc(char* p);
+char* preproc_buflen(char* p, int len);
 
 // Tokenize
 Token *tokenize(char *p);
@@ -215,6 +216,7 @@ void error_at(char *loc, char *fmt, ...);
 int unique_num();
 
 char* read_file(char* path);
+char* read_file_buflen(char* path, int* len);
 
 LVar *find_initials(char* name);
 
@@ -227,3 +229,4 @@ int type_size(Type* ty);
 int ceil_bound8(int size);
 
 Vec* vec_last(Vec* elem);
+

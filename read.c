@@ -76,12 +76,16 @@ bool bool_to_int(char* p) {
   return false;
 }
 
-// Preprocessor (Stub)
-// NOTE: Replace control-line to SPACE (32|Dec), ONLY.
-// args:
-//      p: user input, provided by read_file.
+
+// Preprocessing a user input.
 //
-char* preproc(char* p) {
+// args:
+//      p   : a buffer having user input.
+//      len : length of the user input buffer.
+//
+// ret : buffer of the file, preprocessed.
+//
+char* preproc_buflen(char* p, int len) {
   char* startp = p;
   int ctr_line = 0;
 
@@ -102,4 +106,14 @@ char* preproc(char* p) {
     p++;
   }
   return startp;
+}
+
+
+// Preprocessor (Stub)
+// NOTE: Replace control-line to SPACE (32|Dec), ONLY.
+// args:
+//      p: user input, provided by read_file.
+//
+char* preproc(char* p) {
+  return preproc_buflen(p, 0);
 }
