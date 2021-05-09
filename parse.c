@@ -1369,7 +1369,18 @@ Node *primary() {
   }
 
   if (consume("(")) {
-    Node *node = expr();
+    Node *node;
+
+    // cast
+    Type* ty = consume_type();
+    if (ty) {
+      expect(")");
+      node = unary();
+      node->ty = ty;
+      return node;
+    }
+
+    node = expr();
     expect(")");
     return node;
   }
