@@ -355,6 +355,7 @@ void gen(Node *node) {
     return;
   case ND_FOR:
     uniq = unique_num();
+    sw_uniq = block_uniq_num();
     if (node->lhs->lhs)     // Clause-1
       gen(node->lhs->lhs);
     printf(".Lbegin%d:\n", uniq);
@@ -367,6 +368,7 @@ void gen(Node *node) {
     if (node->rhs->lhs)     // Clause-3
       gen(node->rhs->lhs);
     printf("  jmp .Lbegin%d\n", uniq);
+    printf(".Lbrk%d: #FOR-BREAK\n", sw_uniq);
     printf(".Lend%d:\n", uniq);
     return;
   case ND_BLOCK:

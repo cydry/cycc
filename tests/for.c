@@ -27,6 +27,16 @@ int loop_with_nop_test() {
   return x;
 }
 
+int break_loop_test() {
+  int n = 1;
+  for (;;) {
+    if (n>5)
+      break;
+    n++;
+  }
+  return n;
+}
+
 int main() {
   int got = 0;
 
@@ -38,5 +48,8 @@ int main() {
 
   got = loop_with_nop_test();
   assert(7, got);
+
+  got = break_loop_test();
+  assert(6, got);
   return 0;
 }
