@@ -14,7 +14,7 @@ test: cycc
 	./test.sh ${ARGS}
 
 clean:
-	rm -f cycc *.o tmp*
+	rm -f cycc *.o tmp* *.s
 
 .PHONY:
 	clean test
