@@ -1306,7 +1306,7 @@ Node *postfix() {
     }
 
     ty = node->ty;
-    node = new_node(ND_ADD, node, mul());
+    node = new_node(ND_ADD, node, add());
     node->ty = ty;
     if (node->rhs->ty && node->rhs->ty->kind == PTR)
       node->ty = node->rhs->ty;
