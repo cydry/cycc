@@ -718,7 +718,16 @@ void gen(Node *node) {
 
 void genasm() {
   printf(".intel_syntax noprefix\n");
-  printf(".globl main\n");
+
+  Node* node;
+  int i = 0;
+  while (code[i]) {
+    node = code[i];
+    if (node->kind == ND_FUNC && strcmp(node->call, "")) {
+      printf(".globl %s\n", node->call);
+    }
+    i++;
+  }
 
   printf(".data\n");
   for (LVar* var = literals; var; var = var->next) {
@@ -726,9 +735,8 @@ void genasm() {
     printf("  .string %s\n", var->lite);
   }
 
-  Node* node;
   int text = 0;
-  int i = 0;
+  i = 0;
   while (code[i]) {
     node = code[i];
     if (node->kind == ND_FUNC && !text) {
