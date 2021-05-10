@@ -75,13 +75,13 @@ Token *tokenize(char *p) {
       if (cur->len == 3) {
 	cur->val = *(begin + 1);
       } else if (cur->len == 4) {
-	if (strncmp(begin+1, "\0", 2) == 0)
+	if (strncmp(begin+1, "\\0", 2) == 0)
 	  cur->val = 0;
-	if (strncmp(begin+1, "\t", 2) == 0)
+	if (strncmp(begin+1, "\\t", 2) == 0)
 	  cur->val = 9;
-	if (strncmp(begin+1, "\n", 2) == 0)
+	if (strncmp(begin+1, "\\n", 2) == 0)
 	  cur->val = 10;
-	if (strncmp(begin+1, "\r", 2) == 0)
+	if (strncmp(begin+1, "\\r", 2) == 0)
 	  cur->val = 13;
       } else {
 	error("Invalid char literal");

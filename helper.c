@@ -26,6 +26,6 @@ int alloc4(int **pp, int a, int b, int c, int d) {
 void assert(int expected, int got) {
   if (expected != got) {
     printf("expected=%d, got=%d\n", expected, got);
-    exit(got);
+    exit(1);
   }
 }

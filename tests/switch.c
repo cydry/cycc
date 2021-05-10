@@ -134,7 +134,7 @@ int main() {
   got = switcher3(7);
   assert(5, got);
 
-  got = switcher3(13);
+  got = switcher4(13);
   assert(11, got);
 
   got = switcher5(7);
