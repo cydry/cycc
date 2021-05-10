@@ -13,9 +13,13 @@ cycc: $(OBJS)
 test: cycc
 	./test.sh ${ARGS}
 
+build: cycc
+	./sbuild.sh
+
 clean:
 	rm -f cycc *.o tmp* *.s
+	rm -f sbuild/cycc sbuild/*.o sbuild/*.s sbuild/*.c sbuild/*.h
 
 .PHONY:
-	clean test
+	clean test build
 

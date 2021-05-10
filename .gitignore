@@ -6,4 +6,6 @@ main
 misc
 lib
 cycc
+sbuild/*
+!sbuild/Makefile
 
