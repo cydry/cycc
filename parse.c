@@ -478,12 +478,21 @@ Type* consume_type() {
       ty->tag_len = tok->len;
     }
 
-  } else if (consume("...")) { // builtin, variadic list.
+  } else if (consume("...")) { // builtin, variadic list. signature.
     ty->kind = VOID;
     ty->tag = "...";
     ty->tag_len = 3;
     Type* ptr = calloc(1, sizeof(Type));
     ptr->kind = PTR;
+    ptr->ptr_to = ty;
+    ty = ptr;
+
+  } else if (consume("__builtin_va_list")) { // builtin, variadic list, type.
+    ty->kind = VOID;
+    Type* ptr = calloc(1, sizeof(Type));
+    ptr->kind = PTR;
+    ty->tag = "__builtin_va_list";
+    ty->tag_len = 17;
     ptr->ptr_to = ty;
     ty = ptr;
 
