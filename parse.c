@@ -613,6 +613,12 @@ void program() {
       continue;
     }
 
+    // External definition
+    bool is_external = false;
+    if (consume("extern")) {
+      is_external = true;
+    }
+
     ty = consume_type();
     if (!ty) {
       error_at(token->str, "Not found a type on top-level space.");
@@ -642,6 +648,8 @@ void program() {
       node->call = calloc(1, (tok->len)+1);
       strncpy(node->call, tok->str, tok->len);
       node->call[tok->len] = '\0';
+
+      node->is_ext = is_external;
 
       LVar* gvar = calloc(1, sizeof(LVar));
       gvar->next = globals;

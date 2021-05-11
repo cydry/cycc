@@ -743,6 +743,12 @@ void genasm() {
       printf(".text\n");
       text = 1;
     }
+
+    if (node->is_ext) {
+      i++;
+      continue;
+    }
+
     gen(code[i++]);
   }
 }

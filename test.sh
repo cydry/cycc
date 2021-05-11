@@ -21,6 +21,7 @@ assertf tests/for.c
 assertf tests/assign.c
 assertf tests/array.c
 assertf tests/cast.c
+assertf tests/extern.c
 
 assert 0   'int main() {char* a; a = "Hello,World!\n"; 0;}'
 assert 72  'int main() {char* a; a = "Hello,World!\n"; *a;}'

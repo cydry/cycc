@@ -111,6 +111,13 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    // Linkage.
+    if (strncmp(p, "extern", 6) == 0 && !is_alnum(p[6])) {
+      cur = new_token(TK_RESERVED, cur, p, 6);
+      p += 6;
+      continue;
+    }
+
     // Size of the type.
     if (strncmp(p, "sizeof", 6) == 0 && !is_alnum(p[6])) {
       cur = new_token(TK_RESERVED, cur, p, 6);

@@ -74,6 +74,7 @@ struct Node {
   Vec* param;    // If kind is ND_CALL, then it's parameters for function call.
                  // Also if kind is ND_GDECL, use in initializer with blocks.
   int locals;    // If kind is ND_FUNC, it's length of stack space for local variables.
+  int is_ext;    // If kind is ND_GDECL, then it's external definition.
 };
 
 struct Vec {
@@ -231,4 +232,12 @@ int ceil_bound8(int size);
 Vec* vec_last(Vec* elem);
 
 int is_alnum(char c);
+
+
+// Externals, terporarily.
+struct _IO_FILE;
+typedef struct _IO_FILE FILE;
+extern FILE *stdin;
+extern FILE *stdout;
+extern FILE *stderr;
 

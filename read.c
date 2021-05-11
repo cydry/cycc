@@ -186,7 +186,7 @@ char* preproc_buflen(char* p, int len) {
 
     startp = preproc_buflen(startp, inclen+len);
 
-    char* builtin_valist = "typedef void* va_list;\ntypedef void FILE;\nvoid va_start(void a, void b){0;}\nenum{NULL}CyccDef;\nenum{stdin,stdout,stderr}CyccStdIoDef;enum{SEEK_SET,SEEK_CUR,SEEK_END}CyccStdIoFseekDef;int errno;\n";
+    char* builtin_valist = "typedef void* va_list;\ntypedef void FILE;\nvoid va_start(void a, void b){0;}\nenum{NULL}CyccDef;\nenum{SEEK_SET,SEEK_CUR,SEEK_END}CyccStdIoFseekDef;int errno;\n";
     startp = define_builtin(builtin_valist, strlen(builtin_valist),
 			    startp, inclen+len);
   }
