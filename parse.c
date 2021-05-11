@@ -1367,7 +1367,11 @@ Node *primary() {
 
       LVar *lvar = find_lvar(tok);
       if (lvar) {
-	node->kind = ND_LVAR;
+	if (lvar->ty->kind == PTR && lvar->ty->ptr_to->kind == VA) {
+	  node->kind = ND_VA;
+	} else {
+	  node->kind = ND_LVAR;
+	}
 	node->offset = lvar->offset;
 	node->ty = lvar->ty;
       } else {
