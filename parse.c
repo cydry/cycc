@@ -773,6 +773,7 @@ void program() {
 
 Node *func(Token* tok) {
   Node *node = NULL;
+  locals = NULL;
 
   // The tok is identifier.
   if (tok) {
