@@ -177,7 +177,7 @@ Node* decl_param() {
     } else {
       // No name for declaration, valid for prototype.
       // Also, builtin macro: valist.
-      if (ty && ty->kind == PTR && ty->ptr_to->kind == VA) {
+      if (ty && ty->kind == VA) {
 	LVar* lvar = calloc(1, sizeof(LVar));
 	lvar->next = locals;
 	lvar->name = "__builtin_va_list";
@@ -493,10 +493,6 @@ Type* consume_type() {
     ty->kind = VA;
     ty->tag = "...";
     ty->tag_len = 3;
-    Type* ptr = calloc(1, sizeof(Type));
-    ptr->kind = PTR;
-    ptr->ptr_to = ty;
-    ty = ptr;
 
   } else if (consume("__builtin_va_list")) { // builtin, variadic list, type.
     ty->kind = VA;
