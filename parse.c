@@ -1393,6 +1393,18 @@ Node *primary() {
     return node;
   }
 
+  if (consume("__builtin_va_start")) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_ASSIGN;
+    expect("(");
+    node->lhs  = expr();
+    expect(",");
+    node->rhs  = new_node(ND_ADD, new_node(ND_ADDR, NULL, primary()),
+			  new_node_num(48));
+    expect(")");
+    return node;
+  }
+
   if (consume("(")) {
     Node *node;
 

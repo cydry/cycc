@@ -102,6 +102,11 @@ Token *tokenize(char *p) {
       p += 17;
       continue;
     }
+    if (strncmp(p, "__builtin_va_start", 18) == 0 && !is_alnum(p[18])) {
+      cur = new_token(TK_RESERVED, cur, p, 18);
+      p += 18;
+      continue;
+    }
 
     // Jump statement.
     if (strncmp(p, "continue", 8) == 0 && !is_alnum(p[8])) {
