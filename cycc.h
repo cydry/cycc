@@ -90,6 +90,7 @@ typedef enum {
   STRUCT,
   ENUM,
   VOID,
+  VA,            // builtin va list
 } TypeKind;
 
 struct Type {

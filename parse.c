@@ -177,6 +177,17 @@ Node* decl_param() {
     } else {
       // No name for declaration, valid for prototype.
       // Also, builtin macro: valist.
+      if (ty && ty->kind == PTR && ty->ptr_to->kind == VA) {
+	LVar* lvar = calloc(1, sizeof(LVar));
+	lvar->next = locals;
+	lvar->name = "__builtin_va_list";
+	lvar->len = 17;
+	lvar->offset = locals ? locals->offset + ceil_bound8(48) : 0 + ceil_bound8(48);
+	lvar->ty = ty;
+	locals = lvar;
+
+	node->offset = lvar->offset;
+      }
     }
     node->ty = ty;
 
@@ -479,7 +490,7 @@ Type* consume_type() {
     }
 
   } else if (consume("...")) { // builtin, variadic list. signature.
-    ty->kind = VOID;
+    ty->kind = VA;
     ty->tag = "...";
     ty->tag_len = 3;
     Type* ptr = calloc(1, sizeof(Type));
@@ -488,7 +499,7 @@ Type* consume_type() {
     ty = ptr;
 
   } else if (consume("__builtin_va_list")) { // builtin, variadic list, type.
-    ty->kind = VOID;
+    ty->kind = VA;
     Type* ptr = calloc(1, sizeof(Type));
     ptr->kind = PTR;
     ty->tag = "__builtin_va_list";
