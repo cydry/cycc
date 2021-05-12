@@ -18,7 +18,7 @@ build: cycc
 
 clean:
 	rm -f cycc *.o tmp* *.s
-	rm -f sbuild/cycc sbuild/*.o sbuild/*.s sbuild/*.c sbuild/*.h
+	rm -f sbuild/cycc sbuild/*.o sbuild/*.s sbuild/*.c
 
 .PHONY:
 	clean test build

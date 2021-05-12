@@ -6,7 +6,7 @@ ASMS = $(SRCS:.c=.s)
 OBJS = $(ASMS:.s=.o)
 
 cycc1: $(OBJS) $(ASMS)
-	$(LD) -o $@ $(OBJS)
+	$(LD) -o $@ $(OBJS) cycc.h
 
 %.o: %.s
 	$(AS) -c $<
