@@ -1397,7 +1397,7 @@ Node *primary() {
     return node;
   }
 
-  if (consume("__builtin_va_start")) {
+  if (consume("__builtin_va_startf")) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_ASSIGN;
     expect("(");

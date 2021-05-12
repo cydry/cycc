@@ -22,7 +22,7 @@ char* read_file_buflen(char* path, int* len) {
   if (fseek(fp, 0, SEEK_SET) == -1)
     error("%s: fseek: %s", path, strerror(errno));
 
-  char* buf = calloc(1, size+2);
+  char* buf = calloc(1, size+2+256); // 256 is for macro use space.
   fread(buf, size, 1, fp);
 
   // File should end with '\n\0'.
@@ -74,7 +74,6 @@ bool bool_to_int(char* p) {
 
   return false;
 }
-
 
 char* define_builtin(char* defword, int deflen, char* src, int srclen) {
   char* chunk = calloc(1, deflen+srclen+1);
@@ -174,6 +173,14 @@ char* preproc_buflen(char* p, int len) {
     if (bool_to_int(p))
       continue;
 
+    if (strncmp(p, "va_start", 8) == 0 && !is_alnum(p[8])) {
+      memmove(p+19, p+8, len - (p+8 - startp));
+      strncpy(p, "__builtin_va_startf", 19);
+      p += 19;
+      len += 11;
+      continue;
+    }
+
     p++;
   }
 
@@ -186,7 +193,7 @@ char* preproc_buflen(char* p, int len) {
 
     startp = preproc_buflen(startp, inclen+len);
 
-    char* builtin_valist = "typedef void FILE;\nvoid va_start(void a, void b){0;}\nenum{NULL}CyccDef;\nenum{SEEK_SET,SEEK_CUR,SEEK_END}CyccStdIoFseekDef;int errno;\n";
+    char* builtin_valist = "typedef void FILE;\nenum{NULL}CyccDef;\nenum{SEEK_SET,SEEK_CUR,SEEK_END}CyccStdIoFseekDef;int errno;\n";
     startp = define_builtin(builtin_valist, strlen(builtin_valist),
 			    startp, inclen+len);
   }
