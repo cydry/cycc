@@ -1403,7 +1403,7 @@ Node *primary() {
     expect("(");
     node->lhs  = expr();
     expect(",");
-    node->rhs  = new_node(ND_ADD, new_node(ND_ADDR, NULL, primary()),
+    node->rhs  = new_node(ND_SUB, new_node(ND_ADDR, NULL, primary()),
 			  new_node_num(48));
     expect(")");
     return node;

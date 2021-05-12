@@ -94,6 +94,15 @@ int init_block_vec_liter(Vec* elem, int acc) {
   return acc;
 }
 
+bool has_va(Vec* elem) {
+  if (!elem)
+    return false;
+  if (elem->node->lhs->ty && elem->node->lhs->ty->kind == VA)
+    return true;
+  return has_va(elem->next);
+}
+
+
 void gen_deref(Node* node, int acc) {
   // Counts the number of dereferencing, using accumrator parameter.
   if (node->rhs->kind == ND_DEREF) {
@@ -154,10 +163,12 @@ void gen_deref(Node* node, int acc) {
 }
 
 void gen_lval(Node *node) {
-  if (node->kind != ND_LVAR && node->kind != ND_GVAR)
+  if (node->kind != ND_LVAR && node->kind != ND_GVAR &&
+      node->kind != ND_VA) {
     error("Not lvalue of the assignment");
+  }
 
-  if (node->kind == ND_LVAR) {
+  if (node->kind == ND_LVAR || node->kind == ND_VA) {
     printf("  mov rax, rbp\n");
     printf("  sub rax, %d\n", node->offset);
     printf("  push rax\n");
@@ -224,6 +235,8 @@ void gen(Node *node) {
     printf("  pop rax\n");
     printf("  mov rax, [rax]\n");
     printf("  push rax\n");
+    return;
+  case ND_VA:
     return;
   case ND_GVAR:
     gen_lval(node);
@@ -408,10 +421,22 @@ void gen(Node *node) {
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
     printf("  sub rsp, %d\n", node->locals);
-    gen_vec(node->param);
-    for (int i = 0; i < vec_len(node->param); i++) {
-      printf(" pop rax\n");
-      printf(" mov [rax], %s\n", arg_to_reg[i]);
+    if (has_va(node->param)) {
+      gen_vec(node->param);
+      for (int i = 0; i < vec_len(node->param); i++) {
+	printf("  pop rax\n");
+	printf("  mov [rax], %s\n", arg_to_reg[i]);
+      }
+      for (int i = vec_len(node->param); i < 6; i++) {
+	printf("  add rax, 8\n");
+	printf("  mov [rax], %s\n", arg_to_reg[i]);
+      }
+    } else {
+      gen_vec(node->param);
+      for (int i = 0; i < vec_len(node->param); i++) {
+	printf("  pop rax\n");
+	printf("  mov [rax], %s\n", arg_to_reg[i]);
+      }
     }
 
     // statements of the function.
