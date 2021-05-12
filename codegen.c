@@ -97,7 +97,8 @@ int init_block_vec_liter(Vec* elem, int acc) {
 bool has_va(Vec* elem) {
   if (!elem)
     return false;
-  if (elem->node->lhs->ty && elem->node->lhs->ty->kind == VA)
+  if (elem->node->kind == ND_PARAM && elem->node->lhs->ty && elem->node->lhs->ty->kind == VA ||
+      elem->node->kind == ND_VA)
     return true;
   return has_va(elem->next);
 }
@@ -388,9 +389,27 @@ void gen(Node *node) {
     gen_vec_rev(node->block);
     return;
   case ND_CALL:
-    gen_vec(node->param);
-    for (int i = 0; i < vec_len(node->param); i++)
-      printf("  pop %s\n", arg_to_reg[i]);
+    if (has_va(node->param)) {
+      gen_vec(node->param);
+      int i;
+      for (i = 0; i < vec_len(node->param); i++)
+	printf("  pop %s\n", arg_to_reg[i]);
+
+      printf("  mov rax, %s\n", arg_to_reg[i-1]); // start position on ap, address.
+      printf("  push [rax]\n");
+      printf("  pop %s\n", arg_to_reg[i-1]);
+
+      for (i = vec_len(node->param); i < 6; i++) {
+	printf("  add rax, 8\n");
+        printf("  push [rax]\n");
+	printf("  pop %s\n", arg_to_reg[i]);
+      }
+
+    } else {
+      gen_vec(node->param);
+      for (int i = 0; i < vec_len(node->param); i++)
+	printf("  pop %s\n", arg_to_reg[i]);
+    }
     uniq = unique_num();
     printf("  mov rax, rsp\n");
     printf("  mov r10b, 15\n");
