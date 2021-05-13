@@ -13,6 +13,6 @@ int continue_test() {
 int main() {
   int got = 0;
   got = continue_test();
-  assert(10, got);
+  assert(9, got);
   return 0;
 }

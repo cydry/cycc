@@ -355,8 +355,7 @@ void gen(Node *node) {
     printf("  je  .Lend%d\n", uniq);
     sw_uniq = block_uniq_num();
     if (node->rhs->kind == ND_BLOCK) {
-      for (sw_elem = node->rhs->block; sw_elem; sw_elem = sw_elem->next)
-	gen(sw_elem->node);
+      gen_vec_rev(node->rhs->block);
     } else {
       gen(node->rhs);
     }
