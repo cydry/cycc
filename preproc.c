@@ -66,7 +66,7 @@ char* include_name(char* p){
   while (*bufp != '\n') {
     if (*bufp == 34 && !startp)  // '\"',  searching current directory, ONLY .
       startp = bufp;
-    if (*bufp == 34 && startp)
+    else if (*bufp == 34 && startp)
       endp = bufp;
 
     bufp++;

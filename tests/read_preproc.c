@@ -84,6 +84,12 @@ bool bool_to_int(char* p) {
   return false;
 }
 
+bool is_include(char* p){
+  if (strncmp(p, "#include", 8) == 0) {
+    return true;
+  }
+  return false;
+}
 
 
 /* TEST TARGET */
@@ -93,8 +99,12 @@ char* preproc_buflen(char* p, int len) {
   int ctr_line = 0;
   int in_lit = 0;
 
-  if (*p == '#')
+  if (*p == '#') {
     ctr_line = 1;
+      if (is_include(p)) {
+	printf("%c\n", *p);
+      }
+  }
 
   while (*p) {
     if ((*p == '#') && (*(p-1) == '\n')) {
