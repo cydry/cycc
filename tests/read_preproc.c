@@ -55,23 +55,71 @@ char* read_file_buflen(char* path, int* len) {
 
 
 
+int is_alnum(char c) {
+  return ('a' <= c && c <= 'z') ||
+         ('A' <= c && c <= 'Z') ||
+         ('0' <= c && c <= '9') ||
+         (c == '_');
+}
+
+bool bool_to_int(char* p) {
+  if (strncmp(p, "bool", 4) == 0 && !is_alnum(p[4])) {
+    strncpy(p, "int ", 4);
+    p += 4;
+    return true;
+  }
+
+  if (strncmp(p, "true", 4) == 0 && !is_alnum(p[4])) {
+    strncpy(p, "1   ", 4);
+    p += 4;
+    return true;
+  }
+
+  if (strncmp(p, "false", 5) == 0 && !is_alnum(p[5])) {
+    strncpy(p, "0    ", 5);
+    p += 4;
+    return true;
+  }
+
+  return false;
+}
+
+
+
 /* TEST TARGET */
 
 char* preproc_buflen(char* p, int len) {
   char* startp = p;
   int ctr_line = 0;
+  int in_lit = 0;
 
   if (*p == '#')
     ctr_line = 1;
 
   while (*p) {
-    if (*p == 10)
+    if ((*p == '#') && (*(p-1) == '\n')) {
+      ctr_line = 1;
+    }
+    if (*p == '\n')
       ctr_line = 0;
     if (ctr_line)
-      *p = 'a';
+      *p = 32;
+
+
+    if (!in_lit && (*p == '"')) {
+      in_lit = 1;
+    } else if (in_lit && (*p == '"')) {
+      in_lit = 0;
+    }
+    if (!in_lit) {
+      if (bool_to_int(p)) {
+	continue;
+      }
+    }
 
     p++;
   }
+
   return startp;
 }
 
@@ -86,7 +134,7 @@ int main(int argc, char **argv) {
   user_input = preproc_buflen(user_input, in_len);
 
   printf("%s\n", user_input);
-  assert(46, in_len);
+  assert(595, in_len);
   return 0;
 }
 

@@ -99,6 +99,7 @@ char* preproc_buflen(char* p, int len) {
   char* inc;         // a name of include file.
   char* incp;        // pointer to buffer for include file.
   int   inclen = 0;  // length of the buffer included.
+  int in_lit = 0;    // flag in processing a literal
 
   if (*p == '#') {
       ctr_line = 1;
@@ -127,8 +128,17 @@ char* preproc_buflen(char* p, int len) {
     if (ctr_line)
       *p = 32;
 
-    if (bool_to_int(p))
-      continue;
+
+    if (!in_lit && (*p == '"')) {
+      in_lit = 1;
+    } else if (in_lit && (*p == '"')) {
+      in_lit = 0;
+    }
+
+    if (!in_lit) {
+      if (bool_to_int(p))
+	continue;
+    }
 
     if (strncmp(p, "va_start", 8) == 0 && !is_alnum(p[8])) {
       memmove(p+19, p+8, len - (p+8 - startp));
