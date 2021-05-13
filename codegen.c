@@ -280,6 +280,21 @@ void gen(Node *node) {
 	printf("  mov [rax], rdi\n");
 	break;
       }
+    } else if (node->lhs && node->lhs->kind == ND_DEREF) {
+      switch (type_size(node->lhs->rhs->ty->ptr_to)) {
+      case 1:
+	printf("  mov BYTE PTR  [rax], dil\n");
+	break;
+      case 4:
+	printf("  mov DWORD PTR [rax], edi\n");
+	break;
+      case 8:
+	printf("  mov QWORD PTR [rax], rdi\n");
+	break;
+      default:
+	printf("  mov [rax], rdi\n");
+	break;
+      }
     } else {
 	printf("  mov [rax], rdi\n"); // default
     }
