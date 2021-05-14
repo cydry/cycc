@@ -1409,6 +1409,12 @@ Node *primary() {
     return node;
   }
 
+  if (consume("__builtin_null_ptr")) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_NULL;
+    return node;
+  }
+
   if (consume("(")) {
     Node *node;
 

@@ -52,6 +52,7 @@ typedef enum {
   ND_CHAR,   // characters
   ND_MEMB,   // '.' accessing member of struct.
   ND_VA,     // '...' builtin va list
+  ND_NULL,   // builtin null.
 } NodeKind;
 
 // A Vector for block, compound statement.

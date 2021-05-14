@@ -14,7 +14,6 @@ extern FILE *stderr;
 int SEEK_END = 2;
 int SEEK_SET = 0;
 int errno = 0;
-int NULL = 0;
 
 char *user_input;
 char *filename;
@@ -28,7 +27,6 @@ void error(char *fmt, ...) {
 }
 
 char* read_file_buflen(char* path, int* len) {
-
   FILE* fp = fopen(path, "r");
   if(!fp)
     error("cannot open %s: %s", path, strerror(errno));
@@ -106,8 +104,9 @@ char* include_name(char* p){
     bufp++;
   }
 
-  if (!startp)
-    return NULL;
+  if (!startp) {
+    return NULL ;
+  }
 
   // "include"
   len = endp - startp;
@@ -132,14 +131,16 @@ char* preproc_buflen(char* p, int len) {
 
   if (*p == '#') {
     ctr_line = 1;
-      if (is_include(p)) {
-	inc = include_name(p);
-	if (inc)
-	  incp = read_file_buflen(inc, &inclen);// inc is buffer of include file.
-      } else {
-	inc = NULL;
+    if (is_include(p)) {
+      inc = include_name(p);
+      if (inc) {
+	incp = read_file_buflen(inc, &inclen);// inc is buffer of include file.
       }
+    } else {
+      inc = NULL;
+    }
   }
+
 
   while (*p) {
     if ((*p == '#') && (*(p-1) == '\n')) {
@@ -161,7 +162,15 @@ char* preproc_buflen(char* p, int len) {
 	continue;
       }
     }
-
+    if (!in_lit) {
+      if (strncmp(p, "NULL", 4) == 0 && !is_alnum(p[4]) && !is_alnum(*(p-1)) && !in_lit) {
+	memmove(p+18, p+4, len - (p+4 - startp));
+	strncpy(p, "__builtin_null_ptr", 18);
+	p += 18;
+	len += 14;
+	continue;
+      }
+    }
     p++;
   }
 
@@ -171,6 +180,8 @@ char* preproc_buflen(char* p, int len) {
     incp = strncpy(incp, inc, inclen);
     incp = strcat(incp, startp);
     startp = incp;
+
+    startp = preproc_buflen(startp, inclen+len);
   }
 
   return startp;
@@ -187,7 +198,7 @@ int main(int argc, char **argv) {
   user_input = preproc_buflen(user_input, in_len);
 
   printf("%s\n", user_input);
-  assert(595, in_len);
+  assert(5645, strlen(user_input));
   return 0;
 }
 

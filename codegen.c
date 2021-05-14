@@ -223,6 +223,10 @@ void gen(Node *node) {
   case ND_CHAR:
     printf("  push %d\n", node->val);
     return;
+  case ND_NULL:
+    printf("  xor rax, rax\n");
+    printf("  push rax\n");
+    return;
   case ND_LVAR:
     gen_lval(node);
     if (node->ty->kind == PTR &&

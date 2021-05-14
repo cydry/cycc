@@ -30,5 +30,6 @@ bool bool_to_int(char* p) {
 }
 
 int main() {
+  char* p = NULL;
   return 0;
 }

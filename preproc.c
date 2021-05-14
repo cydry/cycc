@@ -128,6 +128,12 @@ char* preproc_buflen(char* p, int len) {
     if (ctr_line)
       *p = 32;
 
+    if (strncmp(p, "//", 2) == 0) {
+      p += 2;
+      while (*p != '\n')
+	p++;
+      continue;
+    }
 
     if (!in_lit && (*p == '"')) {
       in_lit = 1;
@@ -138,14 +144,22 @@ char* preproc_buflen(char* p, int len) {
     if (!in_lit) {
       if (bool_to_int(p))
 	continue;
-    }
 
-    if (strncmp(p, "va_start", 8) == 0 && !is_alnum(p[8])) {
-      memmove(p+19, p+8, len - (p+8 - startp));
-      strncpy(p, "__builtin_va_startf", 19);
-      p += 19;
-      len += 11;
-      continue;
+      if (strncmp(p, "va_start", 8) == 0 && !is_alnum(p[8])) {
+	memmove(p+19, p+8, len - (p+8 - startp));
+	strncpy(p, "__builtin_va_startf", 19);
+	p += 19;
+	len += 11;
+	continue;
+      }
+
+      if (strncmp(p, "NULL", 4) == 0 && !is_alnum(p[4]) && !is_alnum(*(p-1)) && !in_lit) {
+	memmove(p+18, p+4, len - (p+4 - startp));
+	strncpy(p, "__builtin_null_ptr", 18);
+	p += 18;
+	len += 14;
+	continue;
+      }
     }
 
     p++;
@@ -159,10 +173,6 @@ char* preproc_buflen(char* p, int len) {
     startp = incp;
 
     startp = preproc_buflen(startp, inclen+len);
-
-    char* builtin_valist = "typedef void FILE;\nenum{NULL}CyccDef;\nenum{SEEK_SET,SEEK_CUR,SEEK_END}CyccStdIoFseekDef;int errno;\n";
-    startp = define_builtin(builtin_valist, strlen(builtin_valist),
-			    startp, inclen+len);
   }
 
   return startp;
