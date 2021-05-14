@@ -126,12 +126,16 @@ char* preproc_buflen(char* p, int len) {
   char* startp = p;
   int ctr_line = 0;
   char* inc;
+  char* incp;
+  int   inclen = 0;
   int in_lit = 0;
 
   if (*p == '#') {
     ctr_line = 1;
       if (is_include(p)) {
 	inc = include_name(p);
+	if (inc)
+	  incp = read_file_buflen(inc, &inclen);// inc is buffer of include file.
       } else {
 	inc = NULL;
       }
@@ -159,6 +163,14 @@ char* preproc_buflen(char* p, int len) {
     }
 
     p++;
+  }
+
+  if (inclen) {
+    inc = incp;
+    incp = calloc(1, (inclen+len));
+    incp = strncpy(incp, inc, inclen);
+    incp = strcat(incp, startp);
+    startp = incp;
   }
 
   return startp;
