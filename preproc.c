@@ -172,7 +172,8 @@ char* preproc_buflen(char* p, int len) {
     incp = strcat(incp, startp);       // 'include buffer' + 'src file buffer'
     startp = incp;
 
-    startp = preproc_buflen(startp, inclen+len);
+    startp = preproc_buflen(startp, inclen+len+1);
+    startp[inclen+len] = '\0';
   }
 
   return startp;
