@@ -92,31 +92,29 @@ bool is_include(char* p){
 }
 
 char* include_name(char* p){
-  char* curp = p;
-  char* bufp = NULL; // name string copied.
+  char* bufp   = p; // name string copied.
   char* startp = NULL;
   char* endp   = NULL;
-  int len = 10;
-  int in = 0;
-  
-  printf("curp:%d\n", curp);
-  while (*curp != 10) {
-    if (*curp == 34 && !startp) {
-      startp = curp;
-      printf("startp:%d\n", startp);
-    } else if (*curp == 34 && startp) {
-      endp = curp;
-      printf("endp:%d\n", endp);
-    }
+  int len = 0;
 
-    curp++;
+  while (*bufp != '\n') {
+    if (*bufp == 34 && !startp)  // '\"',  searching current directory, ONLY .
+      startp = bufp;
+    else if (*bufp == 34 && startp)
+      endp = bufp;
+
+    bufp++;
   }
 
+  if (!startp)
+    return NULL;
+
+  // "include"
   len = endp - startp;
-  printf("startp:%d\n", startp);
-  printf("len:%d\n", len);
   bufp = calloc(1, len);
-  bufp[0] = 97;
+
+  strncpy(bufp, startp+1, len);
+  bufp[len-1] = '\0';
   return bufp;
 }
 
@@ -134,7 +132,6 @@ char* preproc_buflen(char* p, int len) {
     ctr_line = 1;
       if (is_include(p)) {
 	inc = include_name(p);
-	printf("%c\n", *inc);
       } else {
 	inc = NULL;
       }
