@@ -23,6 +23,8 @@ assertf tests/array.c
 assertf tests/cast.c
 assertf tests/extern.c
 assertf tests/va.c
+assertf tests/read.c
+assertf tests/read_preproc.c
 
 assert 0   'int main() {char* a; a = "Hello,World!\n"; 0;}'
 assert 72  'int main() {char* a; a = "Hello,World!\n"; *a;}'
