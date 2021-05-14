@@ -91,18 +91,52 @@ bool is_include(char* p){
   return false;
 }
 
+char* include_name(char* p){
+  char* curp = p;
+  char* bufp = NULL; // name string copied.
+  char* startp = NULL;
+  char* endp   = NULL;
+  int len = 10;
+  int in = 0;
+  
+  printf("curp:%d\n", curp);
+  while (*curp != 10) {
+    if (*curp == 34 && !startp) {
+      startp = curp;
+      printf("startp:%d\n", startp);
+    } else if (*curp == 34 && startp) {
+      endp = curp;
+      printf("endp:%d\n", endp);
+    }
+
+    curp++;
+  }
+
+  len = endp - startp;
+  printf("startp:%d\n", startp);
+  printf("len:%d\n", len);
+  bufp = calloc(1, len);
+  bufp[0] = 97;
+  return bufp;
+}
+
+
 
 /* TEST TARGET */
 
 char* preproc_buflen(char* p, int len) {
   char* startp = p;
   int ctr_line = 0;
+  char* inc;
   int in_lit = 0;
 
   if (*p == '#') {
     ctr_line = 1;
       if (is_include(p)) {
-	printf("%c\n", *p);
+	inc = include_name(p);
+	printf("%c\n", *inc);
+      } else {
+	inc = NULL;
       }
   }
 

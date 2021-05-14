@@ -578,7 +578,7 @@ void gen(Node *node) {
   case ND_NEGA:
     gen(node->rhs);
     printf("  pop rax\n");
-    printf("  cmp rax, 0\n");
+    printf("  cmp al, 0\n");
     printf("  sete al\n");
     printf("  movzx eax, al\n");
     printf("  push rax\n");
