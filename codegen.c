@@ -29,9 +29,28 @@ int block_uniq_has() {
   return block_uniq_current;
 }
 
-// Uniqueness for Jump statements in a switch, use in loop-body.
+// Uniqueness for Jump statements in a switch, break loops.
 int switch_uniq_number  = 0;
 int switch_uniq_current = 0;
+
+int uniq_stack[64];
+int uniq_stack_i = 0;
+
+void push_uniq(int uniq) {
+  uniq_stack_i++;
+  uniq_stack[uniq_stack_i] = uniq;
+}
+
+int pop_uniq() {
+  int uniq;
+  uniq = uniq_stack[uniq_stack_i];
+  uniq_stack_i--;
+  return uniq;
+}
+
+int top_uniq() {
+  return uniq_stack[uniq_stack_i];
+}
 
 // Issue an unique number for jump stmt.
 int switch_uniq_num() {
@@ -349,6 +368,7 @@ void gen(Node *node) {
     return;
   case ND_SWITCH:
     sw_uniq = switch_uniq_num();
+    push_uniq(sw_uniq);
     printf("#SW-BEGIN %d\n", sw_uniq);
     gen(node->lhs);
     printf("#SWITCH-COND-VALUE^\n");
@@ -376,16 +396,20 @@ void gen(Node *node) {
     if (sw_default)
       gen(sw_default->node);
     printf(".Lbrk%d: #SW-BREAK\n", sw_uniq);
+    pop_uniq();
     return;
   case ND_DEFAU:
     printf("#ND_DEFAU\n");
     gen(node->lhs);
     return;
   case ND_BRK:
-    printf("  jmp .Lbrk%d\n", switch_uniq_has());
+    sw_uniq = top_uniq();
+    printf("  jmp .Lbrk%d\n", sw_uniq);
     return;
   case ND_WHILE:
     uniq = unique_num();
+    sw_uniq = switch_uniq_num();
+    push_uniq(sw_uniq);
     printf(".Lbegin%d:\n", uniq);
     gen(node->lhs);
     printf("  pop rax\n");
@@ -400,6 +424,8 @@ void gen(Node *node) {
 
     printf("  jmp .Lbegin%d\n", uniq);
     printf(".Lend%d:\n", uniq);
+    printf(".Lbrk%d: #WHILE-END\n", sw_uniq);
+    pop_uniq();
     return;
   case ND_CONTIN:
     printf("  jmp .Lcontin%d\n", block_uniq_has());
@@ -407,6 +433,7 @@ void gen(Node *node) {
   case ND_FOR:
     uniq = unique_num();
     sw_uniq = switch_uniq_num();
+    push_uniq(sw_uniq);
     if (node->lhs->lhs)     // Clause-1
       gen(node->lhs->lhs);
     printf(".Lbegin%d:\n", uniq);
@@ -421,6 +448,7 @@ void gen(Node *node) {
     printf("  jmp .Lbegin%d\n", uniq);
     printf(".Lbrk%d: #FOR-BREAK\n", sw_uniq);
     printf(".Lend%d:\n", uniq);
+    pop_uniq();
     return;
   case ND_BLOCK:
     sw_uniq = block_uniq_num();

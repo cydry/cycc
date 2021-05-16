@@ -26,6 +26,7 @@ assertf tests/va.c
 assertf tests/read.c
 assertf tests/read_preproc.c
 assertf tests/continue.c
+assertf tests/break.c
 
 
 assert 0   'int main() {char* a; a = "Hello,World!\n"; 0;}'
