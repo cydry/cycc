@@ -29,6 +29,26 @@ int block_uniq_has() {
   return block_uniq_current;
 }
 
+// Uniqueness for Jump statements in a switch, use in loop-body.
+int switch_uniq_number  = 0;
+int switch_uniq_current = 0;
+
+// Issue an unique number for jump stmt.
+int switch_uniq_num() {
+  int u = switch_uniq_number;
+  switch_uniq_current = u;
+
+  switch_uniq_number++;
+  return u;
+}
+
+// Query current number of jump stmt.
+int switch_uniq_has() {
+  return switch_uniq_current;
+}
+
+
+
 // Generates each node of Vecs by reverse order.
 void gen_vec_rev(Vec* elem) {
   if (!elem)
@@ -328,7 +348,7 @@ void gen(Node *node) {
     printf(".Lend%d:\n", uniq);
     return;
   case ND_SWITCH:
-    sw_uniq = block_uniq_num();
+    sw_uniq = switch_uniq_num();
     printf("#SW-BEGIN %d\n", sw_uniq);
     gen(node->lhs);
     printf("#SWITCH-COND-VALUE^\n");
@@ -356,14 +376,13 @@ void gen(Node *node) {
     if (sw_default)
       gen(sw_default->node);
     printf(".Lbrk%d: #SW-BREAK\n", sw_uniq);
-    printf(".Lend%d: #SW-END\n", sw_uniq);
     return;
   case ND_DEFAU:
     printf("#ND_DEFAU\n");
     gen(node->lhs);
     return;
   case ND_BRK:
-    printf("  jmp .Lbrk%d\n", block_uniq_has());
+    printf("  jmp .Lbrk%d\n", switch_uniq_has());
     return;
   case ND_WHILE:
     uniq = unique_num();
@@ -372,13 +391,13 @@ void gen(Node *node) {
     printf("  pop rax\n");
     printf("  cmp rax, 0\n");
     printf("  je  .Lend%d\n", uniq);
-    sw_uniq = block_uniq_num();
+
     if (node->rhs->kind == ND_BLOCK) {
       gen_vec_rev(node->rhs->block);
     } else {
       gen(node->rhs);
     }
-    printf(".Lcontin%d:\n", sw_uniq);
+
     printf("  jmp .Lbegin%d\n", uniq);
     printf(".Lend%d:\n", uniq);
     return;
@@ -387,7 +406,7 @@ void gen(Node *node) {
     return;
   case ND_FOR:
     uniq = unique_num();
-    sw_uniq = block_uniq_num();
+    sw_uniq = switch_uniq_num();
     if (node->lhs->lhs)     // Clause-1
       gen(node->lhs->lhs);
     printf(".Lbegin%d:\n", uniq);
@@ -404,7 +423,9 @@ void gen(Node *node) {
     printf(".Lend%d:\n", uniq);
     return;
   case ND_BLOCK:
+    sw_uniq = block_uniq_num();
     gen_vec_rev(node->block);
+    printf(".Lcontin%d:\n", sw_uniq);
     return;
   case ND_CALL:
     if (has_va(node->param)) {
