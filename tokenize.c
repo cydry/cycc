@@ -374,7 +374,7 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    error_at(p, "cannot tokenize");
+    error("cannot tokenize");
   }
 
   new_token(TK_EOF, cur, p, 0);

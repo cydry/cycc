@@ -29,6 +29,7 @@ assertf tests/break.c
 assertf tests/read.c
 assertf tests/read_preproc.c
 assertf tests/read_preproc_token.c
+assertf tests/read2parse.c
 
 
 assert 0   'int main() {char* a; a = "Hello,World!\n"; 0;}'

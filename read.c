@@ -22,7 +22,7 @@ char* read_file_buflen(char* path, int* len) {
   if (fseek(fp, 0, SEEK_SET) == -1)
     error("%s: fseek: %s", path, strerror(errno));
 
-  char* buf = calloc(1, size+2+256); // 256 is for macro use space.
+  char* buf = calloc(1, (size+2)+size); // for macro use space.
   fread(buf, size, 1, fp);
 
   // File should end with '\n\0'.

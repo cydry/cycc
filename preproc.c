@@ -32,14 +32,6 @@ bool bool_to_int(char* p) {
   return false;
 }
 
-char* define_builtin(char* defword, int deflen, char* src, int srclen) {
-  char* chunk = calloc(1, deflen+srclen+1);
-  strncpy(chunk, defword, deflen);
-  strcat(chunk, src);
-  *(chunk + deflen + srclen) = '\0';
-  return chunk;
-}
-
 // Return true if a line with poiter has #include directive.
 bool is_include(char* p){
   if (strncmp(p, "#include", 8) == 0) {
