@@ -278,6 +278,7 @@ Token *tokenize(char *p) {
   Token *cur = &head;
 
   while (*p) {
+
     if (isspace(*p)) {
       p++;
       continue;
@@ -299,27 +300,350 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    printf("%c", *p);
-    p++;
+    // literals
+    if (*p == '"') {
+      char* begin = p;
+      p++;
+      while (*p != '"') {
+	p++;
+      }
+      p++;
+      cur = new_token(TK_LITERAL, cur, begin, p - begin);
+      continue;
+    }
+    // 1 charactor
+    if (*p == 39) {     // single quot '\''
+      char* begin = p;
+
+      p = p + 2;
+      while (*p != 39) {
+	if (*p == 92)   // escape sequence '\\'
+	  p++;
+	p++;
+      }
+      p++;
+
+      cur = new_token(TK_CHAR, cur, begin, p - begin);
+      if (cur->len == 3) {
+	cur->val = *(begin + 1);
+      } else if (cur->len == 4) {
+	if (strncmp(begin+1, "\\0", 2) == 0)
+	  cur->val = 0;
+	if (strncmp(begin+1, "\\t", 2) == 0)
+	  cur->val = 9;
+	if (strncmp(begin+1, "\\n", 2) == 0)
+	  cur->val = 10;
+	if (strncmp(begin+1, "\\r", 2) == 0)
+	  cur->val = 13;
+      } else {
+	error("Invalid char literal");
+      }
+      continue;
+    }
+
+    // builtin va list
+    if (strncmp(p, "__builtin_va_list", 17) == 0 && !is_alnum(p[17])) {
+      cur = new_token(TK_RESERVED, cur, p, 17);
+      p += 17;
+      continue;
+    }
+    if (strncmp(p, "__builtin_va_startf", 19) == 0 && !is_alnum(p[19])) {
+      cur = new_token(TK_RESERVED, cur, p, 19);
+      p += 19;
+      continue;
+    }
+
+
+    // builtin null pointer constant.
+    if (strncmp(p, "__builtin_null_ptr", 18) == 0 && !is_alnum(p[18])) {
+      cur = new_token(TK_RESERVED, cur, p, 18);
+      p += 18;
+      continue;
+    }
+
+
+    // Jump statement.
+    if (strncmp(p, "continue", 8) == 0 && !is_alnum(p[8])) {
+      cur = new_token(TK_RESERVED, cur, p, 8);
+      p += 8;
+      continue;
+    }
+
+    // Size of the type.
+    if (strncmp(p, "typedef", 7) == 0 && !is_alnum(p[7])) {
+      cur = new_token(TK_RESERVED, cur, p, 7);
+      p += 7;
+      continue;
+    }
+
+    // Linkage.
+    if (strncmp(p, "extern", 6) == 0 && !is_alnum(p[6])) {
+      cur = new_token(TK_RESERVED, cur, p, 6);
+      p += 6;
+      continue;
+    }
+
+    // Size of the type.
+    if (strncmp(p, "sizeof", 6) == 0 && !is_alnum(p[6])) {
+      cur = new_token(TK_RESERVED, cur, p, 6);
+      p += 6;
+      continue;
+    }
+
+    // default in switch.
+    if (strncmp(p, "default", 7) == 0 && !is_alnum(p[7])) {
+      cur = new_token(TK_RESERVED, cur, p, 7);
+      p += 7;
+      continue;
+    }
+    // break in switch.
+    if (strncmp(p, "break", 5) == 0 && !is_alnum(p[5])) {
+      cur = new_token(TK_RESERVED, cur, p, 5);
+      p += 5;
+      continue;
+    }
+
+    // Type
+    if (strncmp(p, "int", 3) == 0 && !is_alnum(p[3])) {
+      cur = new_token(TK_RESERVED, cur, p, 3);
+      p += 3;
+      continue;
+    }
+    if (strncmp(p, "char", 4) == 0 && !is_alnum(p[4])) {
+      cur = new_token(TK_RESERVED, cur, p, 4);
+      p += 4;
+      continue;
+    }
+    if ((*p == '[') || (*p == ']')) {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+    if (strncmp(p, "struct", 6) == 0 && !is_alnum(p[6])) {
+      cur = new_token(TK_RESERVED, cur, p, 6);
+      p += 6;
+      continue;
+    }
+    if (strncmp(p, "enum", 4) == 0 && !is_alnum(p[4])) {
+      cur = new_token(TK_RESERVED, cur, p, 4);
+      p += 4;
+      continue;
+    }
+    if (strncmp(p, "void", 4) == 0 && !is_alnum(p[4])) {
+      cur = new_token(TK_RESERVED, cur, p, 4);
+      p += 4;
+      continue;
+    }
+
+    // Return statemment
+    if (strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
+      cur = new_token(TK_RESERVED, cur, p, 6);
+      p += 6;
+      continue;
+    }
+
+    // Control flow, if else
+    if (strncmp(p, "if", 2) == 0 && !is_alnum(p[2])) {
+      cur = new_token(TK_RESERVED, cur, p, 2);
+      p += 2;
+      continue;
+    }
+    if (strncmp(p, "else", 4) == 0 && !is_alnum(p[4])) {
+      cur = new_token(TK_RESERVED, cur, p, 4);
+      p += 4;
+      continue;
+    }
+    // Control switch
+    if (strncmp(p, "switch", 6) == 0 && !is_alnum(p[6])) {
+      cur = new_token(TK_RESERVED, cur, p, 6);
+      p += 6;
+      continue;
+    }
+    if (strncmp(p, "case", 4) == 0 && !is_alnum(p[4])) {
+      cur = new_token(TK_RESERVED, cur, p, 4);
+      p += 4;
+      continue;
+    }
+    // Control flow, for, while
+    if (strncmp(p, "for", 3) == 0 && !is_alnum(p[3])) {
+      cur = new_token(TK_RESERVED, cur, p, 3);
+      p += 3;
+      continue;
+    }
+    if (strncmp(p, "while", 5) == 0 && !is_alnum(p[5])) {
+      cur = new_token(TK_RESERVED, cur, p, 5);
+      p += 5;
+      continue;
+    }
+
+    // For valist builtin.
+    if (strncmp(p, "...", 3) == 0 && !is_alnum(p[3])) {
+      cur = new_token(TK_RESERVED, cur, p, 3);
+      p += 3;
+      continue;
+    }
+
+    // Identifier
+    if (is_alpha(*p)) {
+      char* begin = p;
+      while (is_alnum(*p))
+	p++;
+      cur = new_token(TK_IDENT, cur, begin, p - begin);
+      continue;
+    }
+
+
+    // assign
+    if (strncmp(p, "+=", 2) == 0||
+        strncmp(p, "-=", 2) == 0||
+        strncmp(p, "*=", 2) == 0||
+	strncmp(p, "/=", 2) == 0||
+	strncmp(p, "%=", 2) == 0) {
+      cur = new_token(TK_RESERVED, cur, p, 2);
+      p += 2;
+      continue;
+    }
+
+    // logical
+    if (strncmp(p, "&&", 2) == 0 ||
+        strncmp(p, "||", 2) == 0) {
+      cur = new_token(TK_RESERVED, cur, p, 2);
+      p += 2;
+      continue;
+    }
+
+    // postfix
+    if (strncmp(p, "++", 2) == 0 ||
+	strncmp(p, "--", 2) == 0) {
+      cur = new_token(TK_RESERVED, cur, p, 2);
+      p += 2;
+      continue;
+    }
+    if (strncmp(p, "->", 2) == 0) {
+      cur = new_token(TK_RESERVED, cur, p, 2);
+      p += 2;
+      continue;
+    }
+
+    // bitwise or
+    if (*p == '|') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+    // bitwise xor
+    if (*p == '^') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+    // Referencing. Bitwise AND.
+    if (*p == '&') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
+    // equality
+    if (strncmp(p, "==", 2) == 0 ||
+	strncmp(p, "!=", 2) == 0) {
+      cur = new_token(TK_RESERVED, cur, p, 2);
+      p += 2;
+      continue;
+    }
+
+    // relational
+    if (strncmp(p, "<=", 2) == 0 ||
+	strncmp(p, ">=", 2) == 0) {
+      cur = new_token(TK_RESERVED, cur, p, 2);
+      p += 2;
+      continue;
+    }
+    if (*p == '<' || *p == '>' ) {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
+    // assign
+    if (*p == '=') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
+    // statement
+    if (*p == ';') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+    if (*p == '{' || *p == '}') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+    // Case statement. Conditional branch (OR).
+    if (*p == ':') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
+
+    // comma separated expressions
+    if (*p == ',') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
+    // Struct member access expression
+    if (*p == '.') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
+    // Conditional branch.
+    if (*p == '?') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
+   // Negation.
+    if (*p == '!') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
+    if (*p == '+' || *p == '-' ||
+        *p == '*' || *p == '/' ||
+	*p == '(' || *p == ')' || *p == '%') {
+      cur = new_token(TK_RESERVED, cur, p++, 1);
+      continue;
+    }
+
+    if (isdigit(*p)) {
+      cur = new_token(TK_NUM, cur, p, 1);
+      cur->val = strtol(p, &p, 10);
+      continue;
+    }
+
+    error_at(p, "cannot tokenize");
   }
 
   new_token(TK_EOF, cur, p, 0);
   return head.next;
 }
 
-
 /* MAIN FOR TEST */
 int main(int argc, char **argv) {
   int in_len;  // Length of a buffer for a input file.
+  Token* cur;
 
   filename = "tests/preproc.c";
   in_len = 0;
   user_input = read_file_buflen(filename, &in_len);
   user_input = preproc_buflen(user_input, in_len);
-  printf("before...");
   token = tokenize(user_input);
-  printf("after...");
-  //  printf("%s\n", user_input);
+
+  for (cur = token; cur; cur = cur->next) {
+    printf("{%c", cur->str[0]);
+    printf("%c",  cur->str[1]);
+    printf("%c}", cur->str[2]);
+    printf(" :%d\n", cur->len);
+  }
+
   assert(5645, strlen(user_input));
   return 0;
 }
