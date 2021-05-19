@@ -10,25 +10,6 @@ int unique_num() {
   return unique_number++;
 }
 
-
-// Uniqueness for Jump statements in a block, use in loop-body.
-int block_uniq_number  = 0;
-int block_uniq_current = 0;
-
-// Issue an unique number for jump stmt.
-int block_uniq_num() {
-  int u = block_uniq_number;
-  block_uniq_current = u;
-
-  block_uniq_number++;
-  return u;
-}
-
-// Query current number of jump stmt.
-int block_uniq_has() {
-  return block_uniq_current;
-}
-
 // Uniqueness for Jump statements in a switch, break loops.
 int switch_uniq_number  = 0;
 int switch_uniq_current = 0;
@@ -419,14 +400,14 @@ void gen(Node *node) {
     } else {
       gen(node->rhs);
     }
-
+    printf(".Lcontin%d:\n", sw_uniq);
     printf("  jmp .Lbegin%d\n", uniq);
     printf(".Lend%d:\n", uniq);
     printf(".Lbrk%d: #WHILE-END\n", sw_uniq);
     pop_uniq();
     return;
   case ND_CONTIN:
-    printf("  jmp .Lcontin%d\n", block_uniq_has());
+    printf("  jmp .Lcontin%d\n", top_uniq());
     return;
   case ND_FOR:
     uniq = unique_num();
@@ -443,15 +424,14 @@ void gen(Node *node) {
       gen(node->rhs->rhs);
     if (node->rhs->lhs)     // Clause-3
       gen(node->rhs->lhs);
+    printf(".Lcontin%d:\n", sw_uniq);
     printf("  jmp .Lbegin%d\n", uniq);
     printf(".Lbrk%d: #FOR-BREAK\n", sw_uniq);
     printf(".Lend%d:\n", uniq);
     pop_uniq();
     return;
   case ND_BLOCK:
-    sw_uniq = block_uniq_num();
     gen_vec_rev(node->block);
-    printf(".Lcontin%d:\n", sw_uniq);
     return;
   case ND_CALL:
     if (has_va(node->param)) {
