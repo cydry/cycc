@@ -128,18 +128,25 @@ char* preproc_buflen(char* p, int len) {
     if (ctr_line)
       *p = 32;
 
-    if (strncmp(p, "//", 2) == 0) {
+    if (!in_lit && (*p == '"')) {
+      in_lit = 1;
+	p++;
+      continue;
+    }
+    if (in_lit && (*p == '"')) {
+      in_lit = 0;
+	p++;
+      continue;
+    }
+
+
+    if (strncmp(p, "//", 2) == 0 && !in_lit) {
       p += 2;
       while (*p != '\n')
 	p++;
       continue;
     }
 
-    if (!in_lit && (*p == '"')) {
-      in_lit = 1;
-    } else if (in_lit && (*p == '"')) {
-      in_lit = 0;
-    }
 
     if (!in_lit) {
       if (bool_to_int(p))
