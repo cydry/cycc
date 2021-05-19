@@ -170,11 +170,9 @@ void gen_deref(Node* node, int acc) {
       printf("  mov eax, DWORD PTR[rax]\n");
       printf("  push rax\n");
     } else if (node->rhs->ty->ptr_to->kind == PTR) {
-      if (node->rhs->ty->ptr_to->ptr_to->kind != STRUCT) {
-	printf("  pop rax\n");
-	printf("  mov rax, QWORD PTR[rax]\n");
-	printf("  push rax\n");
-      }
+      printf("  pop rax\n");
+      printf("  mov rax, QWORD PTR[rax]\n");
+      printf("  push rax\n");
 
     } else if (node->rhs->ty->ptr_to->kind == ARRAY) {  // Dereferencing an array,
       if (node->rhs->ty->ptr_to->ptr_to->kind == CHAR) { // the unit is element's size.
@@ -193,6 +191,10 @@ void gen_deref(Node* node, int acc) {
       } else {
 	error("Invalid type at dereferencing an array.\n");
       }
+    } else if (node->rhs->ty->ptr_to->kind == STRUCT) {
+      printf("  pop rax\n");
+      printf("  mov rax, QWORD PTR[rax]\n");
+      printf("  push rax\n");
     } else {
       error("Invalid type at dereferencing.\n");
     }
@@ -271,10 +273,6 @@ void gen(Node *node) {
     if (node->ty->kind == PTR &&
 	node->ty->ptr_to &&
 	node->ty->ptr_to->kind == ARRAY)
-      return;
-    if (node->ty->kind == PTR &&
-	node->ty->ptr_to &&
-	node->ty->ptr_to->kind == STRUCT)
       return;
     printf("  pop rax\n");
     printf("  mov rax, [rax]\n");
@@ -646,17 +644,17 @@ void gen(Node *node) {
     switch (type_size(node->ty)) {
     case 1:
       printf("  pop rax\n");
-      printf("  movzx rax, BYTE PTR[rax]\n");
+      printf("  movzx rax, BYTE PTR[rax] #ND_MEMB\n");
       printf("  push rax\n");
       break;
     case 4:
       printf("  pop rax\n");
-      printf("  mov eax, DWORD PTR[rax]\n");
+      printf("  mov eax, DWORD PTR[rax] #ND_MEMB\n");
       printf("  push rax\n");
       break;
     case 8:
       printf("  pop rax\n");
-      printf("  mov rax, QWORD PTR[rax]\n");
+      printf("  mov rax, QWORD PTR[rax] #ND_MEMB\n");
       printf("  push rax\n");
       break;
     }

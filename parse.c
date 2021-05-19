@@ -1265,19 +1265,13 @@ Node *postfix() {
     Token* tok = consume_ident();
     Tag* st = find_struct(node->ty->tag, node->ty->tag_len);
     int offset = memb_off(st->memb, tok, 0);
-
-    Type* ty = calloc(1, sizeof(Type));
-    ty->kind = PTR;
-    ty->ptr_to = node->ty;
-    node->ty = ty;
-
-    ty = node->ty;
-    node = new_node(ND_ADD, node, new_node_num(offset));
-    node->ty = ty;
-    if (node->rhs->ty && node->rhs->ty->kind == PTR)
-      node->ty = node->rhs->ty;
-
     Type* mem_ty = memb_type(st->memb, tok);
+
+    node = new_node(ND_ADDR, NULL, node);
+    node->ty = node->rhs->ty;
+    node = new_node(ND_ADD, node, new_node_num(offset));
+    node->ty = node->lhs->ty;
+
     node = new_node(ND_MEMB, node, NULL);
     node->ty = mem_ty;
 
@@ -1287,29 +1281,13 @@ Node *postfix() {
     for (;;) {
       if (consume("->")) {
 	Token* tok = consume_ident();
-	Tag* st;
-	if (node->ty->kind == PTR && node->ty->ptr_to->kind == STRUCT)
-	  st = find_struct(node->ty->ptr_to->tag, node->ty->ptr_to->tag_len);
-	else
-	  st = find_struct(node->ty->tag, node->ty->tag_len);
-	int offset = memb_off(st->memb, tok, 0);
-
-	Type* ty = calloc(1, sizeof(Type));
-	ty->kind = PTR;
-	ty->ptr_to = node->ty;
-	node->ty = ty;
-
-	ty = node->ty;
-	node = new_node(ND_DEREF, NULL, node);
-	node->ty = ty->ptr_to;
-
-	ty = node->ty;
-	node = new_node(ND_ADD, node, new_node_num(offset));
-	node->ty = ty;
-	if (node->rhs->ty && node->rhs->ty->kind == PTR)
-	  node->ty = node->rhs->ty;
-
+	Tag*   st  = find_struct(node->ty->ptr_to->tag, node->ty->ptr_to->tag_len);
 	Type* mem_ty = memb_type(st->memb, tok);
+	int offset   = memb_off(st->memb, tok, 0);
+
+	node = new_node(ND_ADD, node, new_node_num(offset));
+	node->ty = node->lhs->ty;
+
 	node = new_node(ND_MEMB, node, NULL);
 	node->ty = mem_ty;
 
