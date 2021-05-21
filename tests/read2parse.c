@@ -2217,12 +2217,8 @@ int main(int argc, char **argv) {
   user_input = preproc_buflen(user_input, in_len);
   token = tokenize(user_input);
 
-  for (cur = token; cur; cur = cur->next) {
-    for (int i = 0; i < cur->len; i++)
-      printf("%c", cur->str[i]);
-    printf("\n");
-  }
-
+  program();
+  
   assert(5645, strlen(user_input));
   return 0;
 }
