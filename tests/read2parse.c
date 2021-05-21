@@ -2218,10 +2218,9 @@ int main(int argc, char **argv) {
   token = tokenize(user_input);
 
   for (cur = token; cur; cur = cur->next) {
-    printf("{%c", cur->str[0]);
-    printf("%c",  cur->str[1]);
-    printf("%c}", cur->str[2]);
-    printf(" :%d\n", cur->len);
+    for (int i = 0; i < cur->len; i++)
+      printf("%c", cur->str[i]);
+    printf("\n");
   }
 
   assert(5645, strlen(user_input));
