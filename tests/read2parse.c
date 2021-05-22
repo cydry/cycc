@@ -2219,7 +2219,13 @@ int main(int argc, char **argv) {
   token = tokenize(user_input);
 
   program();
-  
+
+  int i = 0;
+  while (code[i]) {
+    Node* node = code[i];
+    printf("%2d:NodeKind(%d)\n", i, node->kind);
+    i++;
+  }
   assert(5645, strlen(user_input));
   return 0;
 }
