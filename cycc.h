@@ -130,7 +130,7 @@ char *user_input;
 char *filename;
 
 // AST of the code.
-Node* code[100];
+Node* code[1000];
 
 typedef struct LVar LVar;
 
