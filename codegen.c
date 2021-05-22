@@ -645,6 +645,46 @@ void gen(Node *node) {
     gen(node->lhs->rhs);
     printf(".Lend%d:\n", uniq);
     return;
+  case ND_AND:
+    uniq = unique_num();
+    gen(node->lhs);
+    printf("  pop rax\n");
+    printf("  xor rsi, rsi\n");
+    printf("  cmp rax, rsi\n");
+    printf("  je .Lante%d\n", uniq);
+    gen(node->rhs);
+    printf("  xor rsi, rsi\n");
+    printf("  pop rdi\n");
+    printf("  cmp rdi, rsi\n");
+    printf("  je .Ldesc%d\n", uniq);
+    printf("  mov rax, 1\n");
+    printf("  jmp .Lend%d\n", uniq);
+    printf(".Lante%d:\n", uniq);
+    printf(".Ldesc%d:\n", uniq);
+    printf("  mov rax, 0\n");
+    printf(".Lend%d:\n", uniq);
+    printf("  push rax\n");
+    return;
+  case ND_OR:
+    uniq = unique_num();
+    gen(node->lhs);
+    printf("  xor rsi, rsi\n");
+    printf("  pop rax\n");
+    printf("  cmp rax, rsi\n");
+    printf("  jne .Lante%d\n", uniq);
+    gen(node->rhs);
+    printf("  xor rsi, rsi\n");
+    printf("  pop rdi\n");
+    printf("  cmp rdi, rsi\n");
+    printf("  jne .Ldesc%d\n", uniq);
+    printf("  mov rax, 0\n");
+    printf("  jmp .Lend%d\n", uniq);
+    printf(".Lante%d:\n", uniq);
+    printf(".Ldesc%d:\n", uniq);
+    printf("  mov rax, 1\n");
+    printf(".Lend%d:\n", uniq);
+    printf("  push rax\n");
+    return;
   }
 
   gen(node->lhs);
@@ -756,32 +796,6 @@ void gen(Node *node) {
     printf("  cmp rax, rdi\n");
     printf("  setl al\n");
     printf("  movzb rax, al\n");
-    break;
-  case ND_AND:
-    uniq = unique_num();
-    printf("  cmp rdi, 0\n");
-    printf("  je .Lante%d\n", uniq);
-    printf("  cmp rax, 0\n");
-    printf("  je .Ldesc%d\n", uniq);
-    printf("  mov rax, 1\n");
-    printf("  jmp .Lend%d\n", uniq);
-    printf(".Lante%d:\n", uniq);
-    printf(".Ldesc%d:\n", uniq);
-    printf("  mov rax, 0\n");
-    printf(".Lend%d:\n", uniq);
-    break;
-  case ND_OR:
-    uniq = unique_num();
-    printf("  cmp rdi, 0\n");
-    printf("  jne .Lante%d\n", uniq);
-    printf("  cmp rax, 0\n");
-    printf("  jne .Ldesc%d\n", uniq);
-    printf("  mov rax, 0\n");
-    printf("  jmp .Lend%d\n", uniq);
-    printf(".Lante%d:\n", uniq);
-    printf(".Ldesc%d:\n", uniq);
-    printf("  mov rax, 1\n");
-    printf(".Lend%d:\n", uniq);
     break;
   case ND_BITOR:
     printf("  or rax, rdi\n");
