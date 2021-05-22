@@ -1158,6 +1158,7 @@ void decl_struct(Type* ty) {
       memb_tag->name = calloc(1, (memb_tok->len)+1);
       strncpy(memb_tag->name, memb_tok->str, memb_tok->len);
       memb_tag->name[memb_tok->len] = '\0';
+      memb_tag->name = memb_tok->len;
 
       // Updates struct's dictionary.
       memb_tag->next = st->memb;

@@ -296,6 +296,7 @@ void decl_struct(Type* ty) {
       memb_tag->name = calloc(1, (memb_tok->len)+1);
       strncpy(memb_tag->name, memb_tok->str, memb_tok->len);
       memb_tag->name[memb_tok->len] = '\0';
+      memb_tag->len = memb_tok->len;
 
       // Updates struct's dictionary.
       memb_tag->next = st->memb;
@@ -571,7 +572,7 @@ int memb_off(Tag* memb, Token* tok, int flag) {
     return 0;
 
   int acc = 0;
-  if (!strncmp(memb->name, tok->str, tok->len))
+  if (memb->len == tok->len && !strncmp(memb->name, tok->str, tok->len))
     acc = memb_off(memb->next, tok, 1);
   else
     acc = memb_off(memb->next, tok, flag);
@@ -586,7 +587,7 @@ Type* memb_type(Tag* memb, Token* tok) {
   if (!memb)
     return NULL;
 
-  if (!strncmp(memb->name, tok->str, tok->len))
+  if (memb->len == tok->len && !strncmp(memb->name, tok->str, tok->len))
     return memb->ty;
 
   return memb_type(memb->next, tok);
