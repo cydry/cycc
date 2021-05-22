@@ -1987,7 +1987,7 @@ Node *unary() {
   if (consume("!")) {
     node = unary();
     ty = node->ty;
-    node = new_node(ND_NEGA, NULL, node);
+    node = new_node(ND_EQL, node, new_node_num(0));
     node->ty = ty;
     return node;
   }
