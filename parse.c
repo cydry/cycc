@@ -773,6 +773,8 @@ void program() {
 	      node->rhs = ininode;
 	    } else if (ininode->kind == ND_ADD) {// addition of address and constants, on global variables
 	      node->rhs = ininode;
+	    } else if (ininode->kind == ND_NULL) {// addition of address and constants, on global variables
+	      node->rhs = ininode;
 	    } else {
 	      error("Unsupported initializtion at a global variable");
 	    }

@@ -8,4 +8,5 @@ lib
 cycc
 sbuild/*
 !sbuild/Makefile
+!sbuild/cycc.h
 

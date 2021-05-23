@@ -244,3 +244,8 @@ extern FILE *stdin;
 extern FILE *stdout;
 extern FILE *stderr;
 
+
+extern int* __errno_location ();
+
+typedef __builtin_va_list __cycc_va_list;
+typedef __cycc_va_list va_list;

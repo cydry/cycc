@@ -642,7 +642,7 @@ int main(int argc, char **argv) {
     printf(" :%d\n", cur->len);
   }
 
-  assert(5666, strlen(user_input));
+  assert(5750, strlen(user_input));
   return 0;
 }
 

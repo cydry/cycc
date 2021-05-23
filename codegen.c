@@ -524,7 +524,8 @@ void gen(Node *node) {
     if (node->rhs) {
       if (node->rhs->kind == ND_NUM) {
 	printf("  .long %d\n", node->rhs->val);
-
+      } else if (node->rhs->kind == ND_NULL) {
+        printf("  .quad 0\n");
       } else if (node->rhs->kind == ND_LITER) {
 	LVar* ivar = find_initials(node->rhs->call);
 	if (ivar) {
@@ -822,8 +823,9 @@ void genasm() {
   int i = 0;
   while (code[i]) {
     node = code[i];
-    if (node->kind == ND_FUNC && strcmp(node->call, "")) {
-      printf(".globl %s\n", node->call);
+    if (node->kind == ND_FUNC || node->kind == ND_GDECL) {
+      if (strcmp(node->call, ""))
+        printf(".globl %s\n", node->call);
     }
     i++;
   }
