@@ -194,6 +194,14 @@ char* preproc_buflen(char* p, int len) {
 	len += 14;
 	continue;
       }
+
+      if (strncmp(p, "errno", 5) == 0 && !is_alnum(p[5]) && !is_alnum(*(p-1)) && !in_lit) {
+	memmove(p+20, p+5, len - (p+5 - startp));
+	strncpy(p, "* __errno_location()", 20);
+	p += 20;
+	len += 15;
+	continue;
+      }
     }
 
     p++;

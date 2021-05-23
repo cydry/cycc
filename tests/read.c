@@ -11,7 +11,7 @@ extern FILE *stdin;
 extern FILE *stdout;
 extern FILE *stderr;
 
-int errno = 0;
+extern int* __errno_location ();
 
 char *user_input;
 char *filename;
@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
   user_input = read_file_buflen(filename, &in_len);
 
   printf("%s\n", user_input);
-  assert(1551, in_len);
+  assert(1569, in_len);
   return 0;
 }
 

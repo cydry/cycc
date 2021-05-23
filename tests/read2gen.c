@@ -11,7 +11,7 @@ extern FILE *stdin;
 extern FILE *stdout;
 extern FILE *stderr;
 
-int errno = 0;
+extern int* __errno_location ();
 
 char *user_input;
 char *filename;
