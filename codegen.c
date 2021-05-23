@@ -834,9 +834,12 @@ void genasm() {
   i = 0;
   while (code[i]) {
     node = code[i];
-    if (node->kind == ND_FUNC && !text) {
+    if (!text && node->kind == ND_FUNC) {
       printf(".text\n");
       text = 1;
+    } else if (text && node->kind != ND_FUNC) {
+      printf(".data\n");
+      text = 0;
     }
 
     if (node->is_ext) {
