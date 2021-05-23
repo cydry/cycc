@@ -32,6 +32,38 @@ bool bool_to_int(char* p) {
   return false;
 }
 
+// Built-in (Psuedo) Macro:
+// (Alternative to stdio.h)
+// arg:
+//     p: user input.
+//
+// convert user input, below;
+//   SEEK_SET  -> 0
+//   SEEK_CUR  -> 1
+//   SEEK_END  -> 2
+//
+bool seek_to_int(char* p) {
+  if (strncmp(p, "SEEK_SET", 8) == 0 && !is_alnum(p[8])) {
+    strncpy(p, "0       ", 8);
+    p += 8;
+    return true;
+  }
+
+  if (strncmp(p, "SEEK_CUR", 8) == 0 && !is_alnum(p[8])) {
+    strncpy(p, "1       ", 8);
+    p += 8;
+    return true;
+  }
+
+  if (strncmp(p, "SEEK_END", 8) == 0 && !is_alnum(p[8])) {
+    strncpy(p, "2       ", 8);
+    p += 8;
+    return true;
+  }
+
+  return false;
+}
+
 // Return true if a line with poiter has #include directive.
 bool is_include(char* p){
   if (strncmp(p, "#include", 8) == 0) {
@@ -142,6 +174,9 @@ char* preproc_buflen(char* p, int len) {
 
     if (!in_lit) {
       if (bool_to_int(p))
+	continue;
+
+      if (seek_to_int(p))
 	continue;
 
       if (strncmp(p, "va_start", 8) == 0 && !is_alnum(p[8])) {

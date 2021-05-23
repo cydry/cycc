@@ -11,8 +11,6 @@ extern FILE *stdin;
 extern FILE *stdout;
 extern FILE *stderr;
 
-int SEEK_END = 2;
-int SEEK_SET = 0;
 int errno = 0;
 
 char *user_input;
