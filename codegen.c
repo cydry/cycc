@@ -362,7 +362,11 @@ void gen(Node *node) {
 	printf("  pop rax  #SWITCH-VALUE\n");
 	printf("  push rax #SWITCH-VALUE-REUSE\n");
 	printf("  cmp rax, rdi\n");
-	printf("  je .Lcase%d\n", uniq);
+	if (sw_elem->node->rhs->block) {
+	  printf("  je .Lcase%d\n", uniq);
+	} else {
+	  printf("  je .Lcase%d\n", uniq+1);
+	}
 	printf("  jmp .Lcaend%d\n", uniq);
 	printf(".Lcase%d:\n", uniq);
 	gen(sw_elem->node->rhs);
