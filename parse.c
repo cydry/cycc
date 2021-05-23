@@ -156,6 +156,15 @@ Type *find_typedef(Token *tok) {
   return NULL;
 }
 
+// Find function name for calling.
+// If not find the token, returns NULL.
+Type *find_func(Token *tok) {
+  for (Tag *tag = funcs; tag; tag = tag->next)
+    if (tag->len == tok->len && !memcmp(tok->str, tag->name, tag->len))
+      return tag->ty;
+  return NULL;
+}
+
 Node* decl_param() {
   Node* node = calloc(1, sizeof(Node));
   node->kind = ND_LVAR;
@@ -653,7 +662,7 @@ void program() {
     tok = consume_ident();
 
     if (inspect("(")) {
-      node = func(tok);
+      node = func(tok, ty);
       if (!node) // The func is prototype.
 	continue;
 
@@ -779,7 +788,7 @@ void program() {
   code[i] = NULL;
 }
 
-Node *func(Token* tok) {
+Node *func(Token* tok, Type* ty) {
   Node *node = NULL;
   locals = NULL;
 
@@ -804,24 +813,26 @@ Node *func(Token* tok) {
     error("Not found identifier of function");
   }
 
+  // register node -> funcs
+  Tag* func = calloc(1, sizeof(Tag));
+  func->name = node->call;
+  func->len = tok->len;
+  func->ty = ty;
+
+  Tag* param_tag;
+  for (Vec* param = node->param; param; param = param->next) {
+    param_tag = calloc(1, sizeof(Tag));
+    param_tag->ty = param->node->lhs->ty;
+
+    param_tag->next = func->memb;
+    func->memb = param_tag;
+  }
+
+  func->next = funcs;
+  funcs = func;
+
   if (consume(";")) {
-    // register node -> funcs
-    Tag* func = calloc(1, sizeof(Tag));
-    func->name = node->call;
-    func->ty = NULL;
-
-    Tag* param_tag;
-    for (Vec* param = node->param; param; param = param->next) {
-      param_tag = calloc(1, sizeof(Tag));
-      param_tag->ty = param->node->lhs->ty;
-
-      param_tag->next = func->memb;
-      func->memb = param_tag;
-    }
-
-    func->next = funcs;
-    funcs = func;
- return NULL;
+    return NULL;
   }
 
   node->rhs = stmt();
@@ -1342,6 +1353,13 @@ Node *primary() {
 	node->param = param;
 	consume(",");
       }
+
+      // Return type
+      Type* fn_ty = find_func(tok);
+      if (fn_ty) {
+	node->ty = fn_ty;
+      }
+
     } else {
 
       LVar *lvar = find_lvar(tok);

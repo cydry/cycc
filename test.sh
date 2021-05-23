@@ -25,6 +25,7 @@ assertf tests/extern.c
 assertf tests/va.c
 assertf tests/continue.c
 assertf tests/break.c
+assertf tests/errnum.c
 
 assertf tests/read.c
 assertf tests/read_preproc.c

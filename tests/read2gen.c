@@ -3066,7 +3066,7 @@ int main(int argc, char **argv) {
 
   genasm();
 
-  assert(5646, strlen(user_input));
+  assert(5666, strlen(user_input));
   return 0;
 }
 

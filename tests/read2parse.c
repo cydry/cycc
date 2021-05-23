@@ -2224,7 +2224,7 @@ int main(int argc, char **argv) {
     printf("%2d:NodeKind(%d)\n", i, node->kind);
     i++;
   }
-  assert(5646, strlen(user_input));
+  assert(5666, strlen(user_input));
   return 0;
 }
 

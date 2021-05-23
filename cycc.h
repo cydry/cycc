@@ -191,7 +191,7 @@ Token *tokenize(char *p);
 
 // Parse.
 void program();
-Node *func();
+Node *func(Token* tok, Type* ty);
 Node *stmt();
 Node *expr();
 Node *assign();

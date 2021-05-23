@@ -196,7 +196,7 @@ int main(int argc, char **argv) {
   user_input = preproc_buflen(user_input, in_len);
 
   printf("%s\n", user_input);
-  assert(5646, strlen(user_input));
+  assert(5666, strlen(user_input));
   return 0;
 }
 
