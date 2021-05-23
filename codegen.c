@@ -235,8 +235,8 @@ void gen_lval(Node *node) {
 }
 
 void gen(Node *node) {
-  int uniq; // Make a label to have a unique label.
-  int  sw_uniq;           // Have a label to end in ND_SWITCH, ND_CONTIN.
+  int uniq = 0; // Make a label to have a unique label.
+  int  sw_uniq = 0;           // Have a label to end in ND_SWITCH, ND_CONTIN.
   Vec* sw_default = NULL; // Have a temprarily node to end in ND_SWITCH.
   Vec* sw_elem = NULL;    // Have a temprarily node to be handled in ND_SWITCH.
 
