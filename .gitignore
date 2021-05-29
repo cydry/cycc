@@ -8,5 +8,7 @@ lib
 cycc
 sbuild/*
 !sbuild/Makefile
+!sbuild/Makefile2
 !sbuild/cycc.h
+!sbuild/rebuild.sh
 

@@ -1,0 +1,23 @@
+CC = ./cycc1
+AS = gcc
+LD = gcc
+SRCS = $(wildcard *.c)
+ASMS = $(SRCS:.c=.s)
+OBJS = $(ASMS:.s=.o)
+
+cycc2: $(OBJS) $(ASMS)
+	$(LD) -o $@ $(OBJS) cycc.h
+	cmp cycc1 cycc2
+
+%.o: %.s
+	$(AS) -c $<
+
+%.s: %.c
+	$(CC) $< > $@
+
+clean:
+	rm -f cycc1 *.o tmp* *.s
+
+.PHONY:
+	clean
+

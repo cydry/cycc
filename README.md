@@ -17,6 +17,10 @@ Run to build a second stage compiler, self-hosting.
 
     make build
 
+Build a third stage compiler, using self-hosting compiler.
+
+    make rebuild
+
 
 References
 ----------

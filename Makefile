@@ -16,10 +16,13 @@ test: cycc
 build: cycc
 	./sbuild.sh
 
+rebuild: build
+	./sbuild/rebuild.sh
+
 clean:
 	rm -f cycc *.o tmp* *.s
-	rm -f sbuild/cycc sbuild/*.o sbuild/*.s sbuild/*.c
+	rm -f sbuild/cycc sbuild/cycc1 sbuild/cycc2 sbuild/*.o sbuild/*.s sbuild/*.c
 
 .PHONY:
-	clean test build
+	clean test build rebuild
 
