@@ -17,6 +17,12 @@ Run to build a second stage compiler, self-hosting.
 
     make build
 
+Note that prerequiste of building is below:
+
+* gcc (Debian 8.3.0-6) 8.3.0
+* ldd (Debian GLIBC 2.28-10) 2.28
+
+
 
 References
 ----------
