@@ -523,7 +523,8 @@ void gen(Node *node) {
     printf("%s:\n", node->call);
     if (node->rhs) {
       if (node->rhs->kind == ND_NUM) {
-	printf("  .long %d\n", node->rhs->val);
+        printf("  .long %d\n", node->rhs->val);
+        printf("  .zero 4\n");
       } else if (node->rhs->kind == ND_NULL) {
         printf("  .quad 0\n");
       } else if (node->rhs->kind == ND_LITER) {
