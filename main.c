@@ -34,6 +34,10 @@ Tag *typedefs = NULL;
 // Dictionary for tags of function prototype, external.
 Tag *funcs = NULL;
 
+// Command line option.
+int cmd_option_equals_to(char** argv, const char* option) {
+  return strcmp(argv[1], option) == 0;
+}
 
 int main(int argc, char **argv) {
   int in_len = 0;  // Length of a buffer for a input file.
@@ -43,11 +47,11 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  if (strcmp("-e", argv[1]) == 0) {
+  if (is_cmd_option(argv, "-e")) {
     user_input = argv[2];
     token = tokenize(argv[2]);
 
-  } else if (strcmp("-E", argv[1]) == 0) {
+  } else if (is_cmd_option(argv, "-E")) {
     filename = argv[2];
     user_input = read_file_buflen(filename, &in_len);
     user_input = preproc_buflen(user_input, in_len);
