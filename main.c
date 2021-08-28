@@ -35,12 +35,12 @@ Tag *typedefs = NULL;
 Tag *funcs = NULL;
 
 // Command line option.
-int cmd_option_equals_to(char** argv, const char* option) {
+int is_cmd_option(char** argv, const char* option) {
   return strcmp(argv[1], option) == 0;
 }
 
 int main(int argc, char **argv) {
-  int in_len = 0;  // Length of a buffer for a input file.
+  int input_length = 0;  // Length of a buffer for a input file.
 
   if (argc < 2) {
     fprintf(stderr, "The number of arguments is not correct\n");
@@ -53,15 +53,15 @@ int main(int argc, char **argv) {
 
   } else if (is_cmd_option(argv, "-E")) {
     filename = argv[2];
-    user_input = read_file_buflen(filename, &in_len);
-    user_input = preproc_buflen(user_input, in_len);
+    user_input = read_file_buflen(filename, &input_length);
+    user_input = preproc_buflen(user_input, input_length);
     printf("%s\n", user_input);
     return 0;
 
   } else {
     filename = argv[1];
-    user_input = read_file_buflen(filename, &in_len);
-    user_input = preproc_buflen(user_input, in_len);
+    user_input = read_file_buflen(filename, &input_length);
+    user_input = preproc_buflen(user_input, input_length);
     token = tokenize(user_input);
   }
 
